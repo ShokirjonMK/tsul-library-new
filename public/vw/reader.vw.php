@@ -1,0 +1,1 @@
+vw_vw("_rdr_small.vw");

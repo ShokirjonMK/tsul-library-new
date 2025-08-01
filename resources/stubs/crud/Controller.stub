@@ -1,0 +1,112 @@
+<?php
+
+namespace {{controllerNamespace}};
+
+use {{modelNamespace}}\{{modelName}};
+use Illuminate\Http\Request;
+
+/**
+ * Class {{modelName}}Controller
+ * @package App\Http\Controllers
+ */
+class {{modelName}}Controller extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function index()
+    {
+        $perPage = 20;
+        ${{modelNamePluralLowerCase}} = {{modelName}}::orderBy('id', 'desc')->paginate($perPage);
+
+        return view('{{modelView}}.index', compact('{{modelNamePluralLowerCase}}'))
+            ->with('i', (request()->input('page', 1) - 1) * ${{modelNamePluralLowerCase}}->perPage());
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
+    {
+        ${{modelNameLowerCase}} = new {{modelName}}();
+        return view('{{modelView}}.create', compact('{{modelNameLowerCase}}'));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        request()->validate({{modelName}}::rules());
+
+        ${{modelNameLowerCase}} = {{modelName}}::create({{modelName}}::GetData($request));
+
+        toast(__('Created successfully.'), 'success');
+
+        return redirect()->route('{{modelRoute}}.index', app()->getLocale());
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($language, $id)
+    {
+        ${{modelNameLowerCase}} = {{modelName}}::find($id);
+
+        return view('{{modelView}}.show', compact('{{modelNameLowerCase}}'));
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($language, $id)
+    {
+        ${{modelNameLowerCase}} = {{modelName}}::find($id);
+
+        return view('{{modelView}}.edit', compact('{{modelNameLowerCase}}'));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param  {{modelName}} ${{modelNameLowerCase}}
+     * @return \Illuminate\Http\Response
+     */
+    public function update($language, Request $request, {{modelName}} ${{modelNameLowerCase}})
+    {
+
+        request()->validate({{modelName}}::rules());
+
+        ${{modelNameLowerCase}}->update({{modelName}}::GetData($request));
+        toast(__('Updated successfully.'), 'success');
+
+        return redirect()->route('{{modelRoute}}.index', app()->getLocale());
+    }
+
+    /**
+     * @param int $id
+     * @return \Illuminate\Http\RedirectResponse
+     * @throws \Exception
+     */
+    public function destroy($language, $id)
+    {
+        ${{modelNameLowerCase}} = {{modelName}}::find($id)->delete();
+        toast(__('Deleted successfully.'), 'info');
+
+        return redirect()->route('{{modelRoute}}.index', app()->getLocale());
+    }
+}
