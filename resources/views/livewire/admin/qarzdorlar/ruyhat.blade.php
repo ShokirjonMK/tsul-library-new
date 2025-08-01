@@ -44,12 +44,17 @@
                                         <td> <a href="tel:{!! $debtor->reader ? $debtor->reader->profile->phone_number : '' !!}">{!! $debtor->reader ? $debtor->reader->profile->phone_number : '' !!}</a></td>
                                         <td>
                                             <div class="text-center">
-                                                @php
-                                                    if ($debtor->reader->inventar_number) {
-                                                        $generator = new Picqer\Barcode\BarcodeGeneratorPNG();
-                                                        echo '<img src="data:image/png;base64,' . base64_encode($generator->getBarcode($debtor->reader->inventar_number, $generator::TYPE_CODE_128)) . '">';
-                                                    }
-                                                @endphp
+                                                @if(($debtor->reader->inventar_number))
+
+                                                    @if (env('USER_BAR_CODE_TYPE')=='QRCODE')
+                                                        {!! QrCode::size(100)->generate($debtor->reader->inventar_number); !!}
+                                                    @else
+                                                        @php
+                                                            $generator = new Picqer\Barcode\BarcodeGeneratorSVG();
+                                                            echo $generator->getBarcode($debtor->reader->inventar_number, $generator::TYPE_CODE_128, 2.30);
+                                                        @endphp
+                                                    @endif
+                                                @endif
                                                 <br>
                                                 {{ $debtor->reader->inventar_number }}
                                             </div>

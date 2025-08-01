@@ -27,23 +27,51 @@
                     <div class="card-header">
 
                         <form action="{{ route('subjects.index', app()->getLocale()) }}" method="GET"
-                            accept-charset="UTF-8" role="search" style="width: 100%;">
+                              accept-charset="UTF-8" role="search" style="width: 100%;">
                             <div class="row">
                                 <div class="col-md-12">
                                     <input type="text" class="form-control" name="keyword"
-                                        placeholder="{{ __('Keyword') }}..." value="{{ $keyword }}">
+                                           placeholder="{{ __('Keyword') }}..." value="{{ $keyword }}">
                                 </div>
+                            </div>
+                            <br>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    @if ($subjectGroups->count() > 0)
+                                        <div class="form-group">
+                                            {!! Form::select('subject_group_id', $subjectGroups, $subject_group_id, [
+                                                'class' => 'border  p-2 bg-white',
+                                                'placeholder' => __('Subject Group'),
+                                            ]) !!}
+                                        </div>
+                                    @endif
+                                </div>
+                                <div class="col-md-6">
+                                    @if ($educationTypes->count() > 0)
+                                        <div class="form-group">
+                                            {!! Form::select('education_type_id', $educationTypes, $education_type_id, [
+                                                'class' => 'border  p-2 bg-white',
+                                                'placeholder' => __('Education Type'),
+                                            ]) !!}
+                                        </div>
+                                    @endif
+                                </div>
+
                             </div>
 
                             <div class="card-footer">
-                                <button type="submit"
-                                    class="btn btn-sm btn-primary float-left">{{ __('Search') }}</button>
+                                <div class="col-md-12 d-flex justify-content-between align-items-center">
 
-                                <a href="{{ route('subjects.index', app()->getLocale()) }}"
-                                    class="btn btn-sm btn-info ">{{ __('Clear') }}</a>
-                                <a href="{{ route('subjects.export', [app()->getLocale(), 'keyword'=>$keyword]) }}" class="btn btn-sm btn-success float-right">
-                                    {{ __('Export to Excel') }}
-                                </a> 
+                                    <button type="submit"
+                                            class="btn btn-sm btn-primary float-left">{{ __('Search') }}</button>
+
+                                    <a href="{{ route('subjects.index', app()->getLocale()) }}"
+                                       class="btn btn-sm btn-info ">{{ __('Clear') }}</a>
+                                    <a href="{{ route('subjects.export', [app()->getLocale(), 'keyword'=>$keyword]) }}"
+                                       class="btn btn-sm btn-success float-right">
+                                        {{ __('Export to Excel') }}
+                                    </a>
+                                </div>
                             </div>
                         </form>
                         <div class="row">
@@ -59,61 +87,71 @@
 
                             <table class="table table-striped table-hover">
                                 <thead class="thead">
-                                    <tr>
-                                        <th>No</th>
+                                <tr>
+                                    <th>No</th>
 
-                                        <th>{{ __('IsActive') }}</th>
-                                        <th>{{ __('Title') }}</th>
-                                        <th>{{ __('Bibliographic record') }}</th>
-                                        <th>{{ __('Number of books') }}</th>
-                                        <th>{{ __('Books in Copy') }}</th>
-                                        <th></th>
-                                    </tr>
+                                    <th>{{ __('IsActive') }}</th>
+                                    <th>{{ __('Subject Group') }}</th>
+                                    <th>{{ __('Education Type') }}</th>
+                                    <th>{{ __('Title') }}</th>
+                                    <th>{{ __('HEMIS Code') }}</th>
+                                    <th>{{ __('Bibliographic record') }}</th>
+                                    <th>{{ __('Number of books') }}</th>
+                                    <th>{{ __('Books in Copy') }}</th>
+                                    <th></th>
+                                </tr>
                                 </thead>
                                 <tbody>
 
-                                    @foreach ($subjects as $subject)
-                                        {{-- <tr class="clickable-row" data-href="{{ route('subjects.show', [app()->getLocale(), $subject->id]) }}"> --}}
-                                        <tr >
+                                @foreach ($subjects as $subject)
+                                    {{-- <tr class="clickable-row" data-href="{{ route('subjects.show', [app()->getLocale(), $subject->id]) }}"> --}}
+                                    <tr>
 
-                                            <td>{{ $subject->id }}</td>
+                                        <td>{{ $subject->id }}</td>
 
-                                            <td>{!! $subject->isActive == 1
+                                        <td>{!! $subject->isActive == 1
                                                 ? '<span class="badge badge-success"><i class="mdi mdi-check-circle"></i></span>'
                                                 : '<span class="badge badge-danger"><i class="mdi mdi-close-circle "></i></span>' !!}</td>
-                                            <td>{{ $subject->title }}</td>
-                                            <td>{{ $subject->books_count }}</td>
-                                            <td>{!! \App\Models\Subject::GetCountBookByBookTypeId($subject->id) !!}</td>
-                                            <td>
-                                                {!! \App\Models\Subject::GetCountBookCopiesByBookTypeId($subject->id) !!}
-                                            </td>
+                                        <td>{!! $subject->subjectGroup ? $subject->subjectGroup->title:''!!}</td>
+                                        <td>{!! $subject->educationType ? $subject->educationType->title:''!!}</td>
 
-                                            <td>
-                                                <form
-                                                    action="{{ route('subjects.destroy', [app()->getLocale(), $subject->id]) }}"
-                                                    method="POST">
-                                                    <a class="btn btn-sm btn-primary "
-                                                        href="{{ route('subjects.show', [app()->getLocale(), $subject->id]) }}">
-                                                        {{ __('Show') }}</a>
-                                                    <a class="btn btn-sm btn-success"
-                                                        href="{{ route('subjects.edit', [app()->getLocale(), $subject->id]) }}">
-                                                        {{ __('Edit') }}</a>
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit"
+                                        <td>{{ $subject->title }}</td>
+                                        <td>{{ $subject->code }}</td>
+                                        <td>{{ $subject->books_count }}</td>
+                                        <td>{!! \App\Models\Subject::GetCountBookByBookTypeId($subject->id) !!}</td>
+                                        <td>
+                                            {!! \App\Models\Subject::GetCountBookCopiesByBookTypeId($subject->id) !!}
+                                        </td>
+
+                                        <td>
+                                            <form
+                                                action="{{ route('subjects.destroy', [app()->getLocale(), $subject->id]) }}"
+                                                method="POST">
+                                                <a class="btn btn-sm btn-primary "
+                                                   href="{{ route('subjects.show', [app()->getLocale(), $subject->id]) }}">
+                                                    {{ __('Show') }}</a>
+                                                <a class="btn btn-sm btn-success"
+                                                   href="{{ route('subjects.edit', [app()->getLocale(), $subject->id]) }}">
+                                                    {{ __('Edit') }}</a>
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit"
                                                         class="btn btn-danger btn-sm">{{ __('Delete') }}</button>
+                                            </form>
+                                            @if (Auth::user()->hasRole('SuperAdmin'))
+                                                <br>
+                                                <form method="POST"
+                                                      action="{{ route('subjects.delete', [app()->getLocale(), 'id'=>$subject->id]) }}">
+                                                    @csrf
+                                                    <input name="type" type="hidden" value="DELETE">
+                                                    <button type="submit"
+                                                            class="btn btn-sm btn-danger btn-flat show_confirm"
+                                                            data-toggle="tooltip">{{ __('Delete from DataBase') }}</button>
                                                 </form>
-                                                @if (Auth::user()->hasRole('SuperAdmin'))
-                                                    <br>
-                                                    <form method="POST" action="{{ route('subjects.delete', [app()->getLocale(), 'id'=>$subject->id]) }}">
-                                                        @csrf
-                                                        <input name="type" type="hidden" value="DELETE">
-                                                        <button type="submit" class="btn btn-sm btn-danger btn-flat show_confirm" data-toggle="tooltip" >{{ __('Delete from DataBase') }}</button>
-                                                    </form>                                                    
-                                                @endif
-                                            </td>
-                                        </tr>
-                                    @endforeach
+                                            @endif
+                                        </td>
+                                    </tr>
+                                @endforeach
                                 </tbody>
                             </table>
                         </div>

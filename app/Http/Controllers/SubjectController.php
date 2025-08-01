@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Exports\ExportSubjects;
+use App\Models\EducationType;
 use App\Models\Subject;
+use App\Models\SubjectGroup;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -21,23 +23,11 @@ class SubjectController extends Controller
     function __construct()
     {
         $this->middleware(['role:SuperAdmin|Admin|Manager']);
-
-        // $this->middleware('permission:list|create|edit|delete|user-list|user-create|user-edit|user-delete', ['only' => ['index', 'store']]);
-        // $this->middleware('permission:create|user-create', ['only' => ['create', 'store']]);
-        // $this->middleware('permission:edit|user-edit', ['only' => ['edit', 'update']]);
-        // $this->middleware('permission:delete|user-delete', ['only' => ['destroy']]);
-        // $this->middleware('permission:deletedb', ['only' => ['destroyDB']]);
-        //  $this->middleware('permission:list|create|edit|delete', ['only' => ['index', 'store']]);
-        //  $this->middleware('permission:create', ['only' => ['create', 'store']]);
-        //  $this->middleware('permission:edit', ['only' => ['edit', 'update']]);
-        //  $this->middleware('permission:delete', ['only' => ['destroy']]);
-        //  $this->middleware('permission:deletedb', ['only' => ['destroyDB']]);
-
     }
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\Response
      */
     public function index($language, Request $request)
     {
@@ -45,17 +35,31 @@ class SubjectController extends Controller
         $q = Subject::query();
 
         $keyword=trim($request->get('keyword'));
-        if($keyword != null){ 
+        $subject_group_id = trim($request->get('subject_group_id'));
+        $education_type_id = trim($request->get('education_type_id'));
+
+        if($keyword != null){
             $q->whereHas('translations', function ($query) use ($keyword) {
                 if($keyword) {
                     $query->where('title', 'like', '%'.$keyword.'%');
                 }
-            }); 
+            });
+        }
+        if ($subject_group_id != null && $subject_group_id > 0) {
+            $q->where('subject_group_id', '=', $subject_group_id);
         }
 
-        $subjects = $q->with('translations')->withCount('books')->orderBy('id', 'desc')->paginate($perPage);
+        if ($education_type_id != null && $education_type_id > 0) {
+            $q->where('education_type_id', '=', $education_type_id);
+        }
 
-        return view('subject.index', compact('subjects', 'keyword'))
+        $subjectGroups = SubjectGroup::active()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
+        $educationTypes = EducationType::active()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
+
+
+        $subjects = $q->with('translations', 'subjectGroup', 'subjectGroup.translations', 'educationType', 'educationType.translations')->withCount('books')->orderBy('id', 'desc')->paginate($perPage);
+
+        return view('subject.index', compact('subjects', 'keyword', 'subjectGroups', 'educationTypes', 'subject_group_id', 'education_type_id'))
             ->with('i', (request()->input('page', 1) - 1) * $subjects->perPage());
     }
 
@@ -68,7 +72,7 @@ class SubjectController extends Controller
     /**
      * Show the form for creating a new resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\Response
      */
     public function create()
     {
@@ -80,7 +84,7 @@ class SubjectController extends Controller
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\RedirectResponse
      */
     public function store(Request $request)
     {
@@ -91,9 +95,9 @@ class SubjectController extends Controller
         ],
         [
             'title_en' => __('Title EN'),
-            'title_uz' => __('Title UZ'), 
+            'title_uz' => __('Title UZ'),
         ]);
- 
+
         $subject = Subject::create(Subject::GetData($request));
 
         toast(__('Created successfully.'), 'success');
@@ -144,7 +148,7 @@ class SubjectController extends Controller
         ],
         [
             'title_en' => __('Title EN'),
-            'title_uz' => __('Title UZ'), 
+            'title_uz' => __('Title UZ'),
         ]);
 
         $subject->update(Subject::GetData($request));
@@ -186,9 +190,9 @@ class SubjectController extends Controller
             // $booksType->isActive=false;
             // $booksType->Save();
             toast(__('Deleted successfully.'), 'info');
-            return back();    
+            return back();
         }else{
-            return view('book-file-types.show', compact('bookFileType'));
+            return view('subjects.index', compact('bookFileType'));
         }
     }
 

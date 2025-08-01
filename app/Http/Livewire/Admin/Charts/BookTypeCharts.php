@@ -2,113 +2,55 @@
 
 namespace App\Http\Livewire\Admin\Charts;
 
-use App\Models\Book;
-use App\Models\BooksType;
-use Asantibanez\LivewireCharts\Models\AreaChartModel;
-use Asantibanez\LivewireCharts\Models\ColumnChartModel;
-use Asantibanez\LivewireCharts\Models\LineChartModel;
-use Asantibanez\LivewireCharts\Models\PieChartModel;
-
+use App\Models\ReferenceGender;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
+use Spatie\Permission\Models\Role;
 
 class BookTypeCharts extends Component
 {
-    public $types = ['food', 'shopping', 'entertainment', 'travel', 'other'];
-    public $colors = [
-        'food' => '#f6ad55',
-        'shopping' => '#fc8181',
-        'entertainment' => '#90cdf4',
-        'travel' => '#66DA26',
-        'other' => '#cbd5e0',
-    ];
-    public $firstRun = true;
-    protected $listeners = [
-        'onPointClick' => 'handleOnPointClick',
-        'onSliceClick' => 'handleOnSliceClick',
-        'onColumnClick' => 'handleOnColumnClick',
-    ];
-    public function handleOnPointClick($point)
-    {
-        dd($point);
-    }
-    public function handleOnSliceClick($slice)
-    {
-        dd($slice);
-    }
-    public function handleOnColumnClick($column)
-    {
-        dd($column);
-    }
+    public $categories = [], $data = [], $genderName = [], $genderData = [];
+
+//    protected $listeners = [
+//        'onPointClick' => 'handleOnPointClick',
+//        'onSliceClick' => 'handleOnSliceClick',
+//        'onColumnClick' => 'handleOnColumnClick',
+//    ];
+//    public function handleOnPointClick($point)
+//    {
+//        echo "function handleOnPointClick";
+//        dd($point);
+//    }
+//    public function handleOnSliceClick($slice)
+//    {
+//        echo "function handleOnSliceClick";
+//        dd($slice);
+//    }
+//    public function handleOnColumnClick($column)
+//    {
+//        echo "function handleOnColumnClick";
+//        dd($column);
+//    }
 
     public function render()
     {
-      
-        // $expenses = Book::whereIn('books_type_id', $this->types)->get();
-        // $columnChartModel = $expenses->groupBy('books_type_id')
-        //     ->reduce(
-        //         function (ColumnChartModel $columnChartModel, $data) {
-        //             $type = $data->first()->books_type_id;
-        //             // $value = $data->sum('amount');
-        //             $value = 999;
-        //             return $columnChartModel->addColumn($type, $value, $this->colors[$type]);
-        //         },
-        //         (new ColumnChartModel())
-        //             ->setTitle('Expenses by Type')
-        //             ->setAnimated($this->firstRun)
-        //             ->withOnColumnClickEventName('onColumnClick')
-        //     );
-        // $pieChartModel = $expenses->groupBy('books_type_id')
-        //     ->reduce(
-        //         function (PieChartModel $pieChartModel, $data) {
-        //             $type = $data->first()->type;
-        //             // $value = $data->sum('amount');
-        //             $value = 999;
-        //             return $pieChartModel->addSlice($type, $value, $this->colors[$type]);
-        //         },
-        //         (new PieChartModel())
-        //             ->setTitle('Expenses by Type')
-        //             ->setAnimated($this->firstRun)
-        //             ->withOnSliceClickEvent('onSliceClick')
-        //     );
-        // $lineChartModel = $expenses
-        //     ->reduce(
-        //         function (LineChartModel $lineChartModel, $data) use ($expenses) {
-        //             $index = $expenses->search($data);
-        //             $amountSum = $expenses->take($index + 1)->sum('amount');
-        //             if ($index == 6) {
-        //                 $lineChartModel->addMarker(7, $amountSum);
-        //             }
-        //             if ($index == 11) {
-        //                 $lineChartModel->addMarker(12, $amountSum);
-        //             }
-        //             return $lineChartModel->addPoint($index, $amountSum, ['id' => $data->id]);
-        //         },
-        //         (new LineChartModel())
-        //             ->setTitle('Expenses Evolution')
-        //             ->setAnimated($this->firstRun)
-        //             ->withOnPointClickEvent('onPointClick')
-        //     );
-        // $areaChartModel = $expenses
-        //     ->reduce(
-        //         function (AreaChartModel $areaChartModel, $data) use ($expenses) {
-        //             return $areaChartModel->addPoint($data->description, $data->amount, ['id' => $data->id]);
-        //         },
-        //         (new AreaChartModel())
-        //             ->setTitle('Expenses Peaks')
-        //             ->setAnimated($this->firstRun)
-        //             ->setColor('#f6ad55')
-        //             ->withOnPointClickEvent('onAreaPointClick')
-        //             ->setXAxisVisible(false)
-        //             ->setYAxisVisible(true)
-        //     );
-        // $this->firstRun = false;
 
-        // return view('livewire.admin.charts.book-type-charts')->with([
-        //     'columnChartModel' => $columnChartModel,
-        //     'pieChartModel' => $pieChartModel,
-        //     'lineChartModel' => $lineChartModel,
-        //     'areaChartModel' => $areaChartModel,
-        // ]);
-        return view('livewire.admin.charts.book-type-charts', );
+        $rolesWithUsersCount = Role::withCount('users')->get();
+
+        $genderCounts = DB::table('user_profiles')
+            ->select('gender_id', DB::raw('COUNT(*) as total'))
+            ->groupBy('gender_id')
+            ->get();
+
+        foreach ($genderCounts as $book) {
+            $this->genderName[] = ReferenceGender::getGenderTitleById($book->gender_id);
+            $this->genderData[] = $book->total;
+        }
+        foreach ($rolesWithUsersCount as $book) {
+            $this->categories[] = $book->name;
+            $this->data[] = $book->users_count;
+        }
+
+        return view('livewire.admin.charts.book-type-charts');
     }
 }

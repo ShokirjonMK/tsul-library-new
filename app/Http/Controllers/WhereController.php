@@ -54,7 +54,7 @@ class WhereController extends Controller
         }
 
 
-        $wheres = $q->with('translations')->orderBy('id', 'desc')->paginate($perPage);
+        $wheres = $q->with('translations', 'akts')->orderBy('id', 'desc')->paginate($perPage);
 
         return view('where.index', compact('wheres', 'keyword'))
             ->with('i', (request()->input('page', 1) - 1) * $wheres->perPage());
@@ -93,7 +93,7 @@ class WhereController extends Controller
         ],
         [
             'title_en' => __('Title EN'),
-            'title_uz' => __('Title UZ'), 
+            'title_uz' => __('Title UZ'),
         ]);
 
         $where = Where::create(Where::GetData($request));
@@ -146,7 +146,7 @@ class WhereController extends Controller
         ],
         [
             'title_en' => __('Title EN'),
-            'title_uz' => __('Title UZ'), 
+            'title_uz' => __('Title UZ'),
         ]);
 
         $where->update(Where::GetData($request));
@@ -186,7 +186,7 @@ class WhereController extends Controller
             // $booksType->isActive=false;
             // $booksType->Save();
             toast(__('Deleted successfully.'), 'info');
-            return back();    
+            return back();
         }else{
             return view('book-file-types.show', compact('bookFileType'));
         }

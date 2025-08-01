@@ -110,16 +110,18 @@
                                         @endif
                                     </div>
                                     <div class="form-group">
-                                        <strong>{{ __('Book file') }}:</strong> 
+                                        <strong>{{ __('Book file') }}:</strong>
                                         @if ($book->full_text_path)
                                             @if ($book->file_format=='pdf')
-                                                <a href="{{ url(app()->getLocale() . '/books/' . $book->id) }}/pdf" target="__blank">{{ __('Download') }}</a>
+                                                <a href="{{ url(app()->getLocale() . '/books/' . $book->id) }}/pdf"
+                                                   target="__blank">{{ __('Download') }}</a>
                                             @else
-                                                <a href="/storage/{{ $book->full_text_path }}" target="__blank">{{ __('Download') }}</a>
+                                                <a href="/storage/{{ $book->full_text_path }}"
+                                                   target="__blank">{{ __('Download') }}</a>
                                             @endif
-{{-- 
-                                            <a href="/storage/{{ $book->full_text_path }}"
-                                                target="__blank">{{ __('Download') }}</a> --}}
+                                            {{--
+                                                                                        <a href="/storage/{{ $book->full_text_path }}"
+                                                                                            target="__blank">{{ __('Download') }}</a> --}}
                                         @endif
                                     </div>
                                     <div class="form-group">
@@ -187,64 +189,74 @@
 
                                         <table class="table table-striped table-hover">
                                             <thead class="thead">
-                                                <tr>
-                                                    <th>No </th>
-                                                    <th>{{ __('IsActive') }}</th>
-                                                    <th>{{ __('Organization') }}</th>
-                                                    <th>{{ __('Branches') }}</th>
-                                                    <th>{{ __('Departments') }}</th>
+                                            <tr>
+                                                <th>No</th>
+                                                <th>{{ __('IsActive') }}</th>
+                                                <th>{{ __('Organization') }}</th>
+                                                <th>{{ __('Branches') }}</th>
+                                                <th>{{ __('Departments') }}</th>
 
-                                                    <th>{{ __('Arrived Year') }}</th>
-                                                    <th>{{ __('Copy count') }}</th>
+                                                <th>{{ __('Arrived Year') }}</th>
+                                                <th>{{ __('Copy count') }}</th>
+                                                <th>{{ __('Number of copies of books available') }}</th>
 
-                                                    <th>{{ __('Is it in the library?') }}</th>
-                                                    <th>{{ __('Is it in electronic format?') }}</th>
-                                                    <th></th>
-                                                </tr>
+                                                <th>{{ __('Is it in the library?') }}</th>
+                                                <th>{{ __('Is it in electronic format?') }}</th>
+                                                <th></th>
+                                            </tr>
                                             </thead>
                                             <tbody>
-                                                @php
-                                                    $total = 0;
-                                                @endphp
-                                                @foreach ($book_informations as $k => $item)
-                                                    <tr>
-                                                        <td>
-                                                            {{ $k + 1 }}
-                                                        </td>
-                                                        <td>
-
-                                                            {!! $item->isActive == 1 ? '<span class="badge badge-success"><i class="mdi mdi-check-circle"></i></span>' : '<span class="badge badge-danger"><i class="mdi mdi-close-circle "></i></span>' !!}
-
-                                                        </td>
-                                                        <td>{!! $item->organization ? $item->organization->title : '' !!}</td>
-                                                        <td>{!! $item->branch ? $item->branch->title : '' !!}</td>
-                                                        <td>{!! $item->department ? $item->department->title : '' !!}</td>
-
-                                                        <td>{{ $item->arrived_year }}</td>
-                                                        @php
-                                                            $total += $item->bookInventar->count();
-                                                        @endphp
-                                                        <td>{{ $item->bookInventar->count() }}</td>
-
-                                                        <td>{!! $item->kutubxonada_bor == 1 ? '<span class="badge badge-success"><i class="mdi mdi-check-circle"></i></span>' : '<span class="badge badge-danger"><i class="mdi mdi-close-circle "></i></span>' !!}</td>
-                                                        <td>{!! $item->elektronni_bor == 1 ? '<span class="badge badge-success"><i class="mdi mdi-check-circle"></i></span>' : '<span class="badge badge-danger"><i class="mdi mdi-close-circle "></i></span>' !!}</td>
-                                                        <td>
-
-                                                        </td>
-                                                    </tr>
-                                                @endforeach
+                                            @php
+                                                $total = 0;
+                                                $available = 0;
+                                            @endphp
+                                            @foreach ($book_informations as $k => $item)
                                                 <tr>
-                                                    <td colspan="6">{{ __('Total') }}:</td>
                                                     <td>
-                                                        {{ $total }}
+                                                        {{ $k + 1 }}
                                                     </td>
-                                                </tr>
-                                                <tr>
-                                                    <td colspan="7">
-                                                        <p class="btn-holder"><a href="{{ route('addtocart', [app()->getLocale(), $book->id, 'type'=>'book']) }}" class="btn btn-success btn-block text-center" role="button">{{ __('Add to cart') }}</a> </p>
+                                                    <td>
+
+                                                        {!! $item->isActive == 1 ? '<span class="badge badge-success"><i class="mdi mdi-check-circle"></i></span>' : '<span class="badge badge-danger"><i class="mdi mdi-close-circle "></i></span>' !!}
+
+                                                    </td>
+                                                    <td>{!! $item->organization ? $item->organization->title : '' !!}</td>
+                                                    <td>{!! $item->branch ? $item->branch->title : '' !!}</td>
+                                                    <td>{!! $item->department ? $item->department->title : '' !!}</td>
+
+                                                    <td>{{ $item->arrived_year }}</td>
+                                                    @php
+                                                        $total += $item->bookInventar->count();
+                                                        $available +=  \App\Models\BookInventar::GetAvailablesByBookId($item->book_id);
+                                                    @endphp
+                                                    <td>{{ $item->bookInventar->count() }}</td>
+                                                    <td>{{ \App\Models\BookInventar::GetAvailablesByBookId($item->book_id) }}</td>
+
+                                                    <td>{!! $item->kutubxonada_bor == 1 ? '<span class="badge badge-success"><i class="mdi mdi-check-circle"></i></span>' : '<span class="badge badge-danger"><i class="mdi mdi-close-circle "></i></span>' !!}</td>
+                                                    <td>{!! $item->elektronni_bor == 1 ? '<span class="badge badge-success"><i class="mdi mdi-check-circle"></i></span>' : '<span class="badge badge-danger"><i class="mdi mdi-close-circle "></i></span>' !!}</td>
+                                                    <td>
 
                                                     </td>
                                                 </tr>
+                                            @endforeach
+                                            <tr>
+                                                <td colspan="6">{{ __('Total') }}:</td>
+                                                <td>
+                                                    {{ $total }}
+                                                </td>
+                                                <td>{{$available}}</td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="7">
+                                                    @if($available>0)
+                                                        <p class="btn-holder"><a
+                                                                href="{{ route('addtocart', [app()->getLocale(), $book->id, 'type'=>'book']) }}"
+                                                                class="btn btn-success btn-block text-center"
+                                                                role="button">{{ __('Add to cart') }}</a></p>
+                                                    @endif
+
+                                                </td>
+                                            </tr>
                                             </tbody>
                                         </table>
                                     </div>

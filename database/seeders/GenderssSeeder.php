@@ -18,6 +18,7 @@ class GenderssSeeder extends Seeder
             'isActive' => 1,
             'created_by' => 1,
             'updated_by' => 1,
+            'code' => '11',
             'uz' => ['title' => "Erkak"],
             'en' => ['title' => "Male"],
         ];
@@ -26,8 +27,18 @@ class GenderssSeeder extends Seeder
             'isActive' => 1,
             'created_by' => 1,
             'updated_by' => 1,
+            'code' => '12',
             'uz' => ['title' => "Ayol"],
             'en' => ['title' => "Female"],
+        ];
+        ReferenceGender::create($data);
+        $data = [
+            'isActive' => 1,
+            'created_by' => 1,
+            'updated_by' => 1,
+            'code' => '10',
+            'uz' => ['title' => "Noma’lum"],
+            'en' => ['title' => "Unknown"],
         ];
         ReferenceGender::create($data);
     }

@@ -100,7 +100,7 @@
                                     <select id="gender_id"
                                         class=" form-select form-control {{ $errors->has('gender_id') ? ' is-invalid' : '' }}"
                                         wire:model="gender_id">
-                                        <option value="0">{{ __('Choose') }}</option>
+                                        <option value>{{ __('Choose') }}</option>
                                         @foreach ($genders as $k => $v)
                                             <option value="{{ $k }}">{{ $v }}</option>
                                         @endforeach
@@ -126,7 +126,7 @@
                                     <select id="userType_id"
                                         class=" form-select form-control {{ $errors->has('userType_id') ? ' is-invalid' : '' }}"
                                         wire:model="userType_id">
-                                        <option value="0">{{ __('Choose') }}</option>
+                                        <option value>{{ __('Choose') }}</option>
                                         @foreach ($userTypes as $k => $v)
                                             <option value="{{ $k }}">{{ $v }}</option>
                                         @endforeach
@@ -140,7 +140,7 @@
                                     <select id="organization_id"
                                         class=" form-select form-control {{ $errors->has('organization_id') ? ' is-invalid' : '' }}"
                                         wire:model="organization_id">
-                                        <option value="0">{{ __('Choose') }}</option>
+                                        <option value>{{ __('Choose') }}</option>
                                         @foreach ($organizations as $k => $v)
                                             <option value="{{ $k }}">{{ $v }}</option>
                                         @endforeach
@@ -148,7 +148,7 @@
                                 </div>
                                 {!! $errors->first('organization_id', '<div class="invalid-feedback">:message</div>') !!}
                             </div>
-                           
+
                             <div class="form-group">
                                 @if ($organization_id > 0)
                                     <label for="branch_id">{{ __('Branches') }}</label>
@@ -156,7 +156,7 @@
                                         <select id="branch_id"
                                             class=" form-select form-control {{ $errors->has('branch_id') ? ' is-invalid' : '' }}"
                                             wire:model="branch_id">
-                                            <option value="0">{{ __('Choose') }}</option>
+                                            <option value>{{ __('Choose') }}</option>
                                             @foreach ($branches as $k => $v)
                                                 <option value="{{ $k }}">{{ $v }}</option>
                                             @endforeach
@@ -167,12 +167,12 @@
                                     <select id="branch_id"
                                             class=" form-select form-control {{ $errors->has('branch_id') ? ' is-invalid' : '' }}"
                                             wire:model="branch_id">
-                                            <option value="0">{{ __('Choose') }}</option>
+                                            <option value>{{ __('Choose') }}</option>
                                     </select>
                                 @endif
                                 {!! $errors->first('branch_id', '<div class="invalid-feedback">:message</div>') !!}
                             </div>
-                            
+
                             <div class="form-group">
                                 <label for="department_id">{{ __('Departments') }}</label>
                                 @if ($organization_id > 0 && $branch_id > 0)
@@ -180,27 +180,27 @@
                                         <select id="department_id"
                                             class=" form-select form-control {{ $errors->has('department_id') ? ' is-invalid' : '' }}"
                                             wire:model="department_id">
-                                            <option value="0">{{ __('Choose') }}</option>
+                                            <option value>{{ __('Choose') }}</option>
                                             @foreach ($departments as $k => $v)
                                                 <option value="{{ $k }}">{{ $v }}</option>
                                             @endforeach
                                         </select>
                                     </div>
-                                @else 
+                                @else
                                 <div>
                                     <select id="department_id"
                                         class=" form-select form-control {{ $errors->has('department_id') ? ' is-invalid' : '' }}"
                                         wire:model="department_id">
-                                        <option value="0">{{ __('Choose') }}</option>
+                                        <option value>{{ __('Choose') }}</option>
                                     </select>
                                 @endif
                                 {!! $errors->first('department_id', '<div class="invalid-feedback">:message</div>') !!}
                             </div>
 
-                            
+
                             <div class="form-group ">
                                 @if (!is_null($organization_id) && !is_null($branch_id))
-    
+
                                     <label for="faculty_id">{{ __('Faculties') }}</label>
                                     <select wire:model="faculty_id"
                                         class="form-control {{ $errors->has('faculty_id') ? ' is-invalid' : '' }}"
@@ -238,7 +238,7 @@
                                         name="chair_id" id="chair_id">
                                         <option value="" selected>{{ __('Choose') }}</option>
                                     </select>
-    
+
                                 @endif
                                 {!! $errors->first('chair_id', '<div class="invalid-feedback">:message</div>') !!}
                             </div>
@@ -261,7 +261,7 @@
                                         name="group_id" id="group_id">
                                         <option value="" selected>{{ __('Choose') }}</option>
                                     </select>
-    
+
                                 @endif
                                 {!! $errors->first('group_id', '<div class="invalid-feedback">:message</div>') !!}
                             </div>

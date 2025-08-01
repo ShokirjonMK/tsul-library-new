@@ -35,7 +35,7 @@ use Illuminate\Support\Facades\Auth;
  */
 class Depository extends Model
 {
-    
+
     static $rules = [
     ];
 
@@ -45,7 +45,7 @@ class Depository extends Model
      *
      * @var array
      */
-    protected $fillable = ['isActive','comment','inventar_number','bar_code','book_id','book_information_id','book_inventar_id','branch_id','department_id','created_by','updated_by'];
+    protected $fillable = ['isActive','comment','inventar_number','bar_code','book_id','book_information_id','book_inventar_id', 'organization_id', 'branch_id','department_id','created_by','updated_by'];
 
 
     /**
@@ -55,7 +55,7 @@ class Depository extends Model
     {
         return $this->hasOne('App\Models\Book', 'id', 'book_id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -63,7 +63,7 @@ class Depository extends Model
     {
         return $this->hasOne('App\Models\BookInformation', 'id', 'book_information_id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -71,7 +71,7 @@ class Depository extends Model
     {
         return $this->hasOne('App\Models\BookInventar', 'id', 'book_inventar_id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -79,7 +79,7 @@ class Depository extends Model
     {
         return $this->hasOne('App\Models\Branch', 'id', 'branch_id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -87,8 +87,8 @@ class Depository extends Model
     {
         return $this->hasOne('App\Models\Department', 'id', 'department_id');
     }
-    
-    
+
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -126,13 +126,13 @@ class Depository extends Model
         });
     }
 
-    
+
     public static function GET_COMMENT_BY_INVENTAR_ID($inventar_id)
-    {   
+    {
 
         $model=self::where('book_inventar_id', '=', $inventar_id)->first();
         return $model->comment;
-    } 
+    }
 
 
 

@@ -21,7 +21,7 @@ class Group extends Component
     public $faculties;
     public $chairs;
 
-    public $updateMode=false, $group_id, $group, $title, $isActive= '1', $roles;
+    public $updateMode=false, $group_id, $group, $title, $isActive= '1', $roles, $code;
     public $organization_id = NULL;
     public $branch_id = NULL;
     public $faculty_id = NULL;
@@ -42,14 +42,15 @@ class Group extends Component
             $this->branch_id=$this->group->branch_id;
             $this->faculty_id=$this->group->faculty_id;
             $this->chair_id=$this->group->chair_id;
-            $this->isActive=$this->group->isActive;   
+            $this->isActive=$this->group->isActive;
+            $this->code=$this->group->code;
         }else{
             $this->roles = Auth::user()->getRoleNames()->toArray();
-            if(count($this->roles)>0){ 
+            if(count($this->roles)>0){
                 $user = Auth::user()->profile;
                 $this->organization_id = $user->organization_id;
                 $this->branch_id = $user->branch_id;
-            }     
+            }
         }
         $this->organizations = Organization::active()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
         // $this->branches = collect();
@@ -78,14 +79,14 @@ class Group extends Component
         if(!is_null($this->organization_id)){
             $this->branches = Branch::where('organization_id', $this->organization_id)->active()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
             if($this->branches->count()==0){
-                $this->branches=[]; 
+                $this->branches=[];
                 $this->branch_id=null;
             }
         }else{
             $this->branches=[];
             $this->branch_id=null;
         }
-        
+
         if(!is_null($this->organization_id) && !is_null($this->branch_id)){
             $this->faculties = Faculty::where('organization_id', $this->organization_id)->where('branch_id', $this->branch_id)->active()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
             if($this->faculties->count()==0){
@@ -96,7 +97,7 @@ class Group extends Component
             $this->faculties=[];
             $this->faculty_id=null;
         }
-        
+
         if(!is_null($this->organization_id) && !is_null($this->branch_id) && !is_null($this->faculty_id)){
             $this->chairs = Chair::where('organization_id', $this->organization_id)->where('branch_id', $this->branch_id)->where('faculty_id', $this->faculty_id)->active()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
             if($this->chairs->count()==0){
@@ -120,7 +121,7 @@ class Group extends Component
                 'chair_id' => 'required',
             ],
             [
-                'title.required' =>  __('The :attribute field is required.'), 
+                'title.required' =>  __('The :attribute field is required.'),
                 'organization_id.required' =>  __('The :attribute field is required.'),
                 'branch_id.required' =>  __('The :attribute field is required.'),
                 'faculty_id.required' =>  __('The :attribute field is required.'),
@@ -137,12 +138,13 @@ class Group extends Component
             ]
         );
         $input = [
-            'title' => trim($this->title),    
-            'organization_id' => $this->organization_id,  
-            'branch_id' => $this->branch_id,  
-            'faculty_id' => $this->faculty_id,  
-            'chair_id' => $this->chair_id,  
-            'isActive' => $this->isActive,  
+            'title' => trim($this->title),
+            'organization_id' => $this->organization_id,
+            'branch_id' => $this->branch_id,
+            'faculty_id' => $this->faculty_id,
+            'chair_id' => $this->chair_id,
+            'isActive' => $this->isActive,
+            'code' => $this->code,
         ];
         DB::beginTransaction();
         try {
@@ -170,7 +172,7 @@ class Group extends Component
                 'chair_id' => 'required',
             ],
             [
-                'title.required' =>  __('The :attribute field is required.'), 
+                'title.required' =>  __('The :attribute field is required.'),
                 'organization_id.required' =>  __('The :attribute field is required.'),
                 'branch_id.required' =>  __('The :attribute field is required.'),
                 'faculty_id.required' =>  __('The :attribute field is required.'),
@@ -187,12 +189,13 @@ class Group extends Component
             ]
         );
         $input = [
-            'title' => trim($this->title),    
-            'organization_id' => $this->organization_id,  
-            'branch_id' => $this->branch_id,  
-            'faculty_id' => $this->faculty_id,  
-            'chair_id' => $this->chair_id,  
-            'isActive' => $this->isActive,  
+            'title' => trim($this->title),
+            'organization_id' => $this->organization_id,
+            'branch_id' => $this->branch_id,
+            'faculty_id' => $this->faculty_id,
+            'chair_id' => $this->chair_id,
+            'isActive' => $this->isActive,
+            'code' => $this->code,
         ];
         DB::beginTransaction();
         try {

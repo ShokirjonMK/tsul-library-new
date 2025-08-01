@@ -46,7 +46,7 @@ class CreateBooksTable extends Migration
             $table->integer('status')->default(1);
 
             $table->string('published_year')->nullable();
- 
+
             $table->longText('extra1')->nullable();
             $table->longText('extra2')->nullable();
             $table->longText('extra3')->nullable();
@@ -82,7 +82,7 @@ class CreateBooksTable extends Migration
                 ->references('id')->on('book_file_types')
                 ->onDelete('set null');
 //  subjectlarni bitta columnga yoziladi
-            
+
             $table->unsignedBigInteger('created_by')->nullable();
             $table->foreign('created_by')
                 ->references('id')->on('users')

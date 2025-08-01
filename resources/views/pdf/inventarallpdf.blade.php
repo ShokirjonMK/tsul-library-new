@@ -160,7 +160,7 @@
         <div class="row toPrint d-flex align-content-start flex-wrap">
 
             @foreach ($bookInventars as $k => $book_inventar)
-                
+
                 @if (env('BAR_CODE_TYPE')=='QRCODE')
                     <div class="col">
                         <div class=" text-center">
@@ -179,8 +179,10 @@
                             <div class="qr_code barcodeOne text-center">
                                 <br>
                                 @php
-                                    $generator = new Picqer\Barcode\BarcodeGeneratorPNG();
-                                    echo '<img style="display: block" src="data:image/png;base64,' . base64_encode($generator->getBarcode($book_inventar->bar_code, $generator::TYPE_CODE_128)) . '">';
+
+                                    $generator = new Picqer\Barcode\BarcodeGeneratorSVG();
+                                    echo $generator->getBarcode($book_inventar->bar_code, $generator::TYPE_CODE_128, 2.30);
+                                    echo "<br>";
                                     echo $book_inventar->bar_code;
                                 @endphp
                             </div>

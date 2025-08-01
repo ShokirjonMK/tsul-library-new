@@ -16,15 +16,15 @@
             </p>
         </div>
         <div>
-            <a class="btn btn-success" href="{{ route('books.edit', [app()->getLocale(), $book->id]) }}"> {{ __('Edit') }}</a> | 
+            <a class="btn btn-success" href="{{ route('books.edit', [app()->getLocale(), $book->id]) }}"> {{ __('Edit') }}</a> |
             @if ($previous_page)
                 <a href="{{ $previous_page }}"  class="btn btn-primary" >{{ __('Back') }}</a>
             @else
-                <a href="{{ url(app()->getLocale() . '/admin/books') }}"  class="btn btn-primary" >{{ __('Back') }}</a>
+                <a href="{{ url(session()->previousUrl()) }}"  class="btn btn-primary" >{{ __('Back') }}</a>
             @endif
         </div>
     </div>
-     
+
     <div class="row">
         <div class="col-xl-12 col-lg-12">
             <div class="ec-cat-list card card-default">

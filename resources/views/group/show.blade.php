@@ -19,7 +19,7 @@
         <a href="{{ url(app()->getLocale() . '/admin/groups') }}"  class="btn btn-primary" >{{ __('Back') }}</a>
         </div>
     </div>
-    
+
     <div class="row">
         <div class="col-xl-12 col-lg-12">
             <div class="ec-cat-list card card-default">
@@ -29,7 +29,7 @@
                             <strong>{{ __('IsActive') }}:</strong>
                             {!! $group->isActive == 1 ? '<span class="badge badge-success"><i class="mdi mdi-check-circle"></i></span>' : '<span class="badge badge-danger"><i class="mdi mdi-close-circle "></i></span>' !!}
                         </div>
-                         
+
                         <div class="form-group">
                             <strong>{{ __('Organization') }}:</strong>
                             {!! $group->organization ? $group->organization->title : '' !!}
@@ -51,6 +51,10 @@
                             {{ $group->title }}
                         </div>
                         <div class="form-group">
+                            <strong>{{ __('HEMIS Code') }}:</strong>
+                            {{ $group->code }}
+                        </div>
+                        <div class="form-group">
                             <strong>{{ __('Created By') }}:</strong>
                             {!! $group->created_by ? $group->createdBy->name : '' !!}
                         </div>
@@ -66,7 +70,7 @@
                             <strong>{{ __('Updated At') }}:</strong>
                             {{ $group->updated_at  }}
                         </div>
-                         
+
 
                     </div>
                 </div>

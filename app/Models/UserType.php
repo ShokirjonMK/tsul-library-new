@@ -29,10 +29,10 @@ use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
  */
 class UserType extends Model implements TranslatableContract
 {
-    
+
     use Translatable; // 2. To add translation methods
     public $translatedAttributes = ['title', 'locale', 'slug'];
-    
+
 
 
 
@@ -43,7 +43,7 @@ class UserType extends Model implements TranslatableContract
      */
     protected $fillable = ['code','isActive','image_path','icon_path','created_by','updated_by'];
 
- 
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -51,7 +51,7 @@ class UserType extends Model implements TranslatableContract
     {
         return $this->hasMany('App\Models\UserTypeTranslation', 'user_type_id', 'id');
     }
-    
+
  /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -59,8 +59,8 @@ class UserType extends Model implements TranslatableContract
     {
         return $this->hasMany('App\Models\UserProfile', 'user_type_id', 'id');
     }
-     
-   
+
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -107,8 +107,9 @@ class UserType extends Model implements TranslatableContract
                 $data[$k][$val] = $request->input($val . '_' . $k);
             }
         }
-        
+
         $data['isActive'] = $request->input('isActive');
+        $data['code'] = $request->input('code');
         return $data;
     }
     public static function rules()
@@ -118,6 +119,22 @@ class UserType extends Model implements TranslatableContract
         }
         return $rules;
     }
+    public static function createOrUpdateByHemisCode($data)
+    {
+        $model = self::updateOrCreate(
+            ['code' => $data['code']], // Check by student ID
+            [
 
+                'isActive' => true,
+                'uz' => [
+                    "title" => $data['name'],
+                    "locale" => "uz",
+                    "slug" => null
+                ],
+            ]
+        );
+        return $model;
+
+    }
 
 }

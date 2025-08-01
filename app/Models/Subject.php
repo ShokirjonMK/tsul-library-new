@@ -26,24 +26,22 @@ use Illuminate\Support\Facades\DB;
  * @property Book[] $books
  * @property SubjectTranslation[] $subjectTranslations
  * @property User $user
- * @property User $user
+ * @property User $updatedBy
  * @package App
  * @mixin \Illuminate\Database\Eloquent\Builder
  */
 class Subject extends Model  implements TranslatableContract
 {
-    
+
     use Translatable; // 2. To add translation methods
     public $translatedAttributes = ['title', 'locale', 'slug', 'body'];
-    
-    
 
     /**
      * Attributes that should be mass-assignable.
      *
      * @var array
      */
-    protected $fillable = ['code','isActive','image_path','icon_path','created_by','updated_by'];
+    protected $fillable = ['code','isActive','image_path','icon_path','created_by','updated_by', 'subject_group_id', 'education_type_id'];
 
 
     /**
@@ -53,10 +51,19 @@ class Subject extends Model  implements TranslatableContract
     {
         return $this->hasMany('App\Models\Book', 'subject_id', 'id');
     }
-    
+
     public static function GetCountBookCopiesByBookTypeId($id = null)
     {
         $cards = DB::select("SELECT COUNT(*) as nusxa FROM `subjects` as bt left JOIN books as b on b.subject_id =bt.id left join book_inventars as bil on bil.book_id=b.id where b.status=1 and bil.isActive=1 and bt.id=$id GROUP by bt.id;");
+
+        if (count($cards) > 0) {
+            return $cards[0]->nusxa;
+        }
+        return 0;
+    }
+    public static function GetCountBookCopiesByBookTypeIdMonthNumber($id = null, $month=null)
+    {
+        $cards = DB::select("SELECT COUNT(*) as nusxa FROM `subjects` as bt left JOIN books as b on b.subject_id =bt.id left join book_inventars as bil on bil.book_id=b.id where b.status=1 and bil.isActive=1 and bt.id=$id and MONTH(bil.created_at) =$month GROUP by bt.id;");
 
         if (count($cards) > 0) {
             return $cards[0]->nusxa;
@@ -74,8 +81,8 @@ class Subject extends Model  implements TranslatableContract
         return 0;
     }
 
-    
-    
+
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -83,8 +90,8 @@ class Subject extends Model  implements TranslatableContract
     {
         return $this->hasMany('App\Models\SubjectTranslation', 'subject_id', 'id');
     }
-    
-  
+
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -131,10 +138,11 @@ class Subject extends Model  implements TranslatableContract
                 $data[$k][$val] = $request->input($val . '_' . $k);
             }
         }
-        
- 
+
+
         $data['isActive'] = $request->input('isActive');
-         
+        $data['code'] = $request->input('code');
+
         return $data;
     }
     public static function rules()
@@ -145,21 +153,27 @@ class Subject extends Model  implements TranslatableContract
         return $rules;
     }
 
-    public static function GetCountBookByBookTypeByMonthAndId($id = null, $year, $month)
+    public static function GetCountBookByBookTypeByMonthAndId($id, $year, $month)
     {
-        $from = $year . '-' . $month;
-        $to = $year . '-' . $month;
+        $startDate = Carbon::create($year, $month, 1)->startOfMonth()->toDateString();
+        $endDate = Carbon::create($year, $month, 1)->endOfMonth()->toDateString();
 
-        $startDate = Carbon::createFromFormat('Y-m', $from)->startOfMonth();
-        $endDate = Carbon::createFromFormat('Y-m', $to)->endOfMonth();
-       
-        $cards = DB::select("SELECT SUM(COUNT(DISTINCT bil.book_id)) OVER() as nomda FROM `subjects` as bt left JOIN books as b on b.subject_id =bt.id left join book_inventars as bil on bil.book_id=b.id where b.status=1 and bil.isActive=1 and bt.id=$id and DATE(bil.created_at) between '$startDate' and '$endDate' GROUP by bil.book_id  limit 1;");
+        $query = "
+        SELECT COUNT(DISTINCT bil.book_id) as nomda
+        FROM subjects bt
+        LEFT JOIN books b ON b.subject_id = bt.id
+        LEFT JOIN book_inventars bil ON bil.book_id = b.id
+        WHERE b.status = 1
+        AND bil.isActive = 1
+        AND bt.id = ?
+        AND bil.created_at BETWEEN ? AND ?
+    ";
 
-        if (count($cards) > 0) {
-            return $cards[0]->nomda;
-        }
-        return 0;
+        $result = DB::selectOne($query, [$id, $startDate, $endDate]);
+
+        return $result ? $result->nomda : 0;
     }
+
 
     public static function GetCountBookCopiesByBookTypeByMonthAndId($id = null, $year, $month)
     {
@@ -177,5 +191,16 @@ class Subject extends Model  implements TranslatableContract
         return 0;
     }
 
+    // Relationship with SubjectGroup
+    public function subjectGroup()
+    {
+        return $this->belongsTo(SubjectGroup::class, 'subject_group_id');
+    }
+
+    // Relationship with EducationType
+    public function educationType()
+    {
+        return $this->belongsTo(EducationType::class, 'education_type_id');
+    }
 
 }

@@ -9,7 +9,7 @@ use Astrotomic\Translatable\Translatable;
 use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
 
 /**
- * Class ReferenceGender 
+ * Class ReferenceGender
  *
  * @property $id
  * @property $code
@@ -29,10 +29,10 @@ use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
  */
 class ReferenceGender extends Model implements TranslatableContract
 {
-    
+
     use Translatable; // 2. To add translation methods
     public $translatedAttributes = ['title', 'locale', 'slug'];
-    
+
 
 
 
@@ -51,8 +51,8 @@ class ReferenceGender extends Model implements TranslatableContract
     {
         return $this->hasMany('App\Models\ReferenceGenderTranslation', 'reference_gender_id', 'id');
     }
-    
-   
+
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -99,8 +99,9 @@ class ReferenceGender extends Model implements TranslatableContract
                 $data[$k][$val] = $request->input($val . '_' . $k);
             }
         }
-        
+
         $data['isActive'] = $request->input('isActive');
+        $data['code'] = $request->input('code');
         return $data;
     }
     public static function rules()
@@ -111,8 +112,25 @@ class ReferenceGender extends Model implements TranslatableContract
         return $rules;
     }
 
-    public static function GetIdOrCreateData($name){
-        // $gender = self::
+    public static function getGenderTitleById($id){
+        $checkExist = self::find($id);
+
+        if ($checkExist != null) {
+            $model = ReferenceGenderTranslation::where('reference_gender_id', $id)->where('locale', app()->getLocale())->first();
+            return $model->title;
+        }else{
+            return __('Not selected');
+        }
+    }
+
+    public static function getGenderIdByHemisCode($code){
+        $checkExist = self::where('code', $code)->first();
+
+        if ($checkExist != null) {
+            return $checkExist->id;
+        }else{
+            return null;
+        }
     }
  /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
@@ -121,5 +139,21 @@ class ReferenceGender extends Model implements TranslatableContract
     {
         return $this->hasMany('App\Models\UserProfile', 'gender_id', 'id');
     }
- 
+    public static function createOrUpdateByHemisCode($data)
+    {
+        $model = self::updateOrCreate(
+            ['code' => $data['code']], // Check by student ID
+            [
+
+                'isActive' => true,
+                'uz' => [
+                    "title" => $data['name'],
+                    "locale" => "uz",
+                    "slug" => null
+                ],
+            ]
+        );
+        return $model;
+
+    }
 }

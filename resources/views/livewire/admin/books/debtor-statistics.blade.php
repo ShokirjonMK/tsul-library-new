@@ -3,7 +3,7 @@
         <div class="ec-cat-list card card-default">
             <div class="card">
                 <div class="card-body">
-                    
+
                     <div class="table-responsive">
                         <table class="table table-striped table-hover">
                             <thead class="thead">
@@ -25,7 +25,7 @@
                                 @php
                                 $total = 0;
                             @endphp
-                                @foreach ($debtors as $debtor)  
+                                @foreach ($debtors as $debtor)
                                     <tr>
                                         <td>{{ $debtor->id }}</td>
                                         <td>
@@ -37,14 +37,16 @@
                                                         {!! QrCode::size(100)->generate($debtor->bookInventar->bar_code); !!}
                                                     @else
                                                         @php
-                                                            $generator = new Picqer\Barcode\BarcodeGeneratorPNG();
-                                                            echo '<img src="data:image/png;base64,' . base64_encode($generator->getBarcode($debtor->bookInventar->bar_code, $generator::TYPE_CODE_128)) . '">';
+                                                            $generator = new Picqer\Barcode\BarcodeGeneratorSVG();
+                                                            echo $generator->getBarcode($debtor->bookInventar->bar_code, $generator::TYPE_CODE_128, 2.30);
+
+//                                                            echo '<img src="data:image/png;base64,' . base64_encode($generator->getBarcode($debtor->bookInventar->bar_code, $generator::TYPE_CODE_128)) . '">';
                                                         @endphp
-                                                    @endif 
+                                                    @endif
                                                     <br>
                                                     {{ $debtor->bookInventar->bar_code }}
 
-                                                </div>                                                        
+                                                </div>
                                             @endif
                                         </td>
                                         <td>{!! \App\Models\Debtor::GetStatus($debtor->status) !!}</td>
@@ -59,7 +61,7 @@
 
                                                 if ( $debtor->returned_time != null) {
                                                     $from = date_create($debtor->returned_time);
-                                                   
+
                                                 } else {
                                                     $from = date_create($today);
                                                 }
@@ -97,4 +99,3 @@
         </div>
     </div>
 </div>
- 

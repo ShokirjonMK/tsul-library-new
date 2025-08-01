@@ -21,7 +21,7 @@ class ExportSubjects implements FromCollection, WithMapping, WithHeadings
         $this->keyword = $keyword;
     }
 
-    
+
     /**
      * @return \Illuminate\Support\Collection
      */

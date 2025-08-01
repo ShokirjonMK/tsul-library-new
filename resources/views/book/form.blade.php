@@ -195,11 +195,11 @@
 
                     <div class="form-group">
                         {{ Form::label(__('Book face image')) }}
-                        <input type="file" name="file" class='form-control' />
+                        <input type="file" name="file" class='form-control' accept="image/*" />
                         @if ($book->image_path)
                             <img src="{{ asset('/storage/' . $book->image_path) }}" width="100px">
                         @endif
-                        {!! $errors->first('image_path', '<div class="invalid-feedback">:message</div>') !!}
+                        {!! $errors->first('file', '<div class="invalid-feedback">:message</div>') !!}
                     </div>
 
                     <div class="form-group">
@@ -209,7 +209,7 @@
                             <input type="file" name="full_text" class='form-control'
                                 value="{{ $book->full_text_path }}" />
                             <a href="/storage/{{ $book->full_text_path }}" target="__blank">{{ __('Download') }}</a>
-                            
+
                             <livewire:admin.books.deletefiles :book='$book' />
 
                         @else

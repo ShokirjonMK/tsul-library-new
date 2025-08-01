@@ -33,21 +33,22 @@
                                                 name="locale_{{ $k }}" id="locale_{{ $k }}"
                                                 value="{{ $k }}" />
                                             <div class="form-group">
-                                                <label class="required"
-                                                    for="title_{{ $k }}">{{ __('Title') }}
-                                                    {{ $k }}:</label>
+                                                <label class="required" for="title_{{ $k }}">
+                                                    {{ __('Title') }} {{ $k }}:
+                                                </label>
                                                 @php
                                                     $title = null;
                                                     if (count($scientificPublication->scientificPublicationTranslations) > 0 && isset($scientificPublication->scientificPublicationTranslations[$step]) && $scientificPublication->scientificPublicationTranslations[$step]->locale == $k) {
                                                         $title = $scientificPublication->scientificPublicationTranslations[$step]->title;
                                                     }
-                                                    
                                                 @endphp
-                                                <input type="text" class="form-control "
-                                                    name="title_{{ $k }}" id="title_{{ $k }}"
-                                                    placeholder="{{ __('Title') }}" value="{{ $title }}" />
-                                                @error('title_{{ $k }}')
-                                                    <span class="text-danger">{{ $message }}</span>
+                                                <input type="text" class="form-control"
+                                                       name="title_{{ $k }}" id="title_{{ $k }}"
+                                                       placeholder="{{ __('Title') }}"
+                                                       value="{{ old('title_'.$k, $title) }}" />
+
+                                                @error('title_'.$k)
+                                                <span class="text-danger">{{ $message }}</span>
                                                 @enderror
                                             </div>
                                             <div class="form-group">
@@ -179,7 +180,7 @@
                         if ($scientificPublication->count() > 0 && isset($scientificPublication->isActive)) {
                             $isActive = $scientificPublication->isActive;
                         }
-                        
+
                     @endphp
 
                     <div class="form-group row">

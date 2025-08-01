@@ -40,7 +40,10 @@ class OrganizationController extends Controller
     public function index()
     {
         $perPage = 20;
-        $organizations = Organization::with('translations')->withCount(['book', 'bookInventar'])->orderBy('id', 'desc')->paginate($perPage);
+        $organizations = Organization::with('translations')->withCount([
+            'book',
+            'bookInventar'
+        ])->orderBy('id', 'desc')->paginate($perPage);
         return view('organization.index', compact('organizations'))
             ->with('i', (request()->input('page', 1) - 1) * $organizations->perPage());
     }
@@ -71,7 +74,7 @@ class OrganizationController extends Controller
         ],
         [
             'title_en' => __('Title EN'),
-            'title_uz' => __('Title UZ'), 
+            'title_uz' => __('Title UZ'),
         ]);
 
         $organization = Organization::create(Organization::GetData($request));
@@ -124,7 +127,7 @@ class OrganizationController extends Controller
         ],
         [
             'title_en' => __('Title EN'),
-            'title_uz' => __('Title UZ'), 
+            'title_uz' => __('Title UZ'),
         ]);
 
         $organization->update(Organization::GetData($request));
@@ -166,7 +169,7 @@ class OrganizationController extends Controller
             // $booksType->isActive=false;
             // $booksType->Save();
             toast(__('Deleted successfully.'), 'info');
-            return back();    
+            return back();
         }else{
             return view('book-types.show', compact('booksType'));
         }

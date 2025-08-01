@@ -24,7 +24,6 @@ use Illuminate\Support\Facades\DB;
  * @property $organization_id
  * @property $branch_id
  * @property $department_id
- * @property $faculty_id
  * @property $chair_id
  * @property $group_id
  * @property $created_by
@@ -37,20 +36,18 @@ use Illuminate\Support\Facades\DB;
  * @property Department $department
  * @property ReferenceGender $referenceGender
  * @property User $user
- * @property User $user
- * @property User $user
  * @property UserType $userType
  * @package App
  * @mixin \Illuminate\Database\Eloquent\Builder
  */
 class UserProfile extends Model
 {
-    
+
     static $rules = [
 		'phone_number' => 'required',
     ];
 
- 
+
     /**
      * Attributes that should be mass-assignable.
      *
@@ -73,7 +70,7 @@ class UserProfile extends Model
     {
         return $this->hasOne('App\Models\Branch', 'id', 'branch_id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -81,7 +78,7 @@ class UserProfile extends Model
     {
         return $this->hasOne('App\Models\Department', 'id', 'department_id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -90,7 +87,7 @@ class UserProfile extends Model
         return $this->hasOne('App\Models\Faculty', 'id', 'faculty_id');
     }
 
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -98,7 +95,7 @@ class UserProfile extends Model
     {
         return $this->hasOne('App\Models\Group', 'id', 'group_id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -106,7 +103,7 @@ class UserProfile extends Model
     {
         return $this->hasOne('App\Models\Chair', 'id', 'chair_id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -114,7 +111,7 @@ class UserProfile extends Model
     {
         return $this->hasOne('App\Models\ReferenceGender', 'id', 'gender_id');
     }
-    
+
     // /**
     //  * @return \Illuminate\Database\Eloquent\Relations\HasOne
     //  */
@@ -122,7 +119,7 @@ class UserProfile extends Model
     // {
     //     return $this->hasOne('App\Models\User', 'id', 'user_id');
     // }
-    
+
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -134,7 +131,7 @@ class UserProfile extends Model
     {
         return $this->hasOne('App\Models\UserType', 'id', 'user_type_id');
     }
- 
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -151,7 +148,7 @@ class UserProfile extends Model
         return $this->hasOne('App\Models\User', 'id', 'created_by');
     }
 
-     
+
     /**
      * This is model Observer which helps to do the same actions automatically when you creating or updating models
      *
@@ -171,7 +168,7 @@ class UserProfile extends Model
 
     public static function GetCountUsersByUserByTwoMonth($user_id = null, $startDate, $endDate)
     {
-        
+
         $cards = DB::select("SELECT SUM(COUNT(DISTINCT d.id)) OVER() as nomda FROM `user_profiles` as d where d.`created_by`=$user_id and DATE(d.created_at) between '$startDate' and '$endDate' GROUP by d.id limit 1;");
 
         if (count($cards) > 0) {

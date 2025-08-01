@@ -135,7 +135,7 @@
     "Accept it all": "Принятие всех",
     "User indebtedness list": "Список долгов пользователя",
     "Extension": "Продление срока",
-    
+
     "Accept the book": "Kitobni qabul qilish",
     "The deadline for submission of books is :attribute days": "Kitob topshirish muddati :attribute kun o'tib ketgan",
     "The deadline is :attribute days": "Kitob topshirish muddati :attribute kun qoldi",
@@ -223,6 +223,7 @@
     "Number of records is :attribute": "Yozuvlar soni <b>:attribute</b> ta",
     "Number of bar code records is :attribute": "Shtrix kodli yozuvlar soni <b>:attribute</b> ta",
     "Number of books is :attribute": "Kitoblar soni <b>:attribute</b> ta",
+    "Number of books": "Kitoblar soni",
     "Users :attribute": "Foydalanuvchilar <b>:attribute</b> ta",
     "New Users": "Yangi foydalanuvchilar",
     "New Books": "Yangi kitoblar",
@@ -267,11 +268,11 @@
     "Address": "Manzil",
     "Print": "Chop etish",
     "Order books": "Kitoblarga buyurtma berish",
-    "Order": "Buyurtma",   
+    "Order": "Buyurtma",
     "SENT": "Buyurtma berilgan",
     "ACCEPTED": "Buyurtma qabul qilingan",
     "READY": "Buyurtma tayyor",
-    "TAKEN_BY_READER": "Buyurtmani kitobxon qabul qilgan", 
+    "TAKEN_BY_READER": "Buyurtmani kitobxon qabul qilgan",
     "User updated successfully.": "Foydalanuvchi muvaffaqiyatli yangilandi.",
     "User deleted successfully.": "Foydalanuvchi muvaffaqiyatli oʻchirildi.",
     "My Orders": "Mening Buyurtmalarim",
@@ -323,7 +324,7 @@
     "Select Year": "Выберите год",
     "Abstracts": "Тезисы",
 
- 
+
 
     "Comment": "Объяснение",
     "Chairs": "Kafedralar",

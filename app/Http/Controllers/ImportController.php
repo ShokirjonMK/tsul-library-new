@@ -57,8 +57,6 @@ class ImportController extends Controller
      */
     public function index($language, Request $request)
     {
-
-
         // $biblioRecords = Bibliographicrecord::whereBetween('id', [18370, 18500])->get();
         // $biblioRecords = Bibliographicrecord::where('id', '>', 18500)->get();
         // $biblioRecords = \DB::table('bibliographicrecords')->whereRaw('id < 3532')->get();
@@ -67,7 +65,7 @@ class ImportController extends Controller
 
         // foreach ($biblioRecords as $k => $biblioRecord) {
         //     $res = Import::GetArrayFromIsoArmatPP($biblioRecord->record);
-          
+
         //     if ($res === false) {
         //         $err = "INCORRECT_FORMAT";
         //         break;
@@ -170,13 +168,13 @@ class ImportController extends Controller
         //     // if ($res === false) {
         //     //     $err = "INCORRECT_FORMAT";
         //     //     break;
-        //     // } 
+        //     // }
         //     // Import::importData($res, "irbis_2013");
 
 
         // }
 
-        // MarcImportProcess::dispatch("str", "from_armatplus"); 
+        // MarcImportProcess::dispatch("str", "from_armatplus");
 
 
         // dd("");

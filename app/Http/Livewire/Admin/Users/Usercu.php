@@ -14,6 +14,8 @@ use App\Models\UserProfile;
 use App\Models\UserType;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
 
 use Livewire\WithFileUploads;
@@ -26,6 +28,7 @@ class Usercu extends Component
 {
     use WithFileUploads;
     use LivewireAlert;
+
     public $branches, $departments, $organizations, $genders, $userTypes, $user_id, $updateMode = false, $roles, $organization_id, $branch_id, $department_id, $gender_id, $userType_id;
     public $userroles = [], $user, $isActive = true, $name, $inventar_number, $password, $password_confirmation, $email, $user_image, $user_old_image, $phone_number, $date_of_birth, $course, $pnf_code, $passport_seria_number, $address, $passport_copy;
     public $selectedState = NULL;
@@ -36,9 +39,11 @@ class Usercu extends Component
     public $faculties;
     public $chairs;
     public $groups;
+    public $studentId, $hemisImagePath;
 
     public function mount($user_id)
     {
+
         $this->organizations = Organization::active()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
         $this->inventar_number = 'f' . (User::count() + 1);
         // $this->branches = collect();
@@ -56,7 +61,7 @@ class Usercu extends Component
         if ($this->user_id != null) {
             $this->edit($this->user_id);
         } else {
-            // if(count($this->role)>0){ 
+            // if(count($this->role)>0){
             //     $user = Auth::user()->profile;
             //     $this->organization_id = $user->organization_id;
             //     $this->branch_id = $user->branch_id;
@@ -64,6 +69,7 @@ class Usercu extends Component
             // }
         }
     }
+
     protected function edit($id)
     {
         $this->user = User::find($this->user_id);
@@ -99,6 +105,7 @@ class Usercu extends Component
 
         $this->updateMode = true;
     }
+
     public function render()
     {
         // $this->organizations = Organization::active()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
@@ -107,15 +114,14 @@ class Usercu extends Component
         $this->genders = ReferenceGender::active()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
         $this->userTypes = UserType::active()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
         if (in_array('SuperAdmin', $this->role)) {
-            $this->roles = Role::pluck('name', 'name')->all();
-        }
-        if (in_array('Admin', $this->role)) {
             $this->roles = Role::where('name', '!=', 'SuperAdmin')->pluck('name', 'name')->all();
         }
-        if (in_array('Manager', $this->role)) {
-            $this->roles = Role::where('name', '!=', 'Admin')->where('name', '!=', 'SuperAdmin')->pluck('name', 'name')->all();
+        if (in_array('Admin', $this->role)) {
+            $this->roles = Role::where('name', '!=', 'SuperAdmin')->where('name', '!=', 'Admin')->pluck('name', 'name')->all();
         }
-
+        if (in_array('Manager', $this->role)) {
+            $this->roles = Role::where('name', '!=', 'Admin')->where('name', '!=', 'SuperAdmin')->where('name', '!=', 'Manager')->pluck('name', 'name')->all();
+        }
 
 
         if (!is_null($this->organization_id)) {
@@ -161,9 +167,24 @@ class Usercu extends Component
         }
 
 
-
         return view('livewire.admin.users.usercu');
     }
+
+    public function updatedOrganizationId($value)
+    {
+        if (!$value) {
+            $this->branch_id = null;
+            $this->department_id = null;
+        }
+    }
+
+    public function updatedBranchId($value)
+    {
+        if (!$value) {
+            $this->department_id = null;
+        }
+    }
+
     public function save()
     {
 
@@ -182,23 +203,23 @@ class Usercu extends Component
                 'userroles' => 'required'
             ],
             [
-                'name.required' =>  __('The :attribute field is required.'),
-                'organization_id.required' =>  __('The :attribute field is required.'),
-                'branch_id.required' =>  __('The :attribute field is required.'),
-                'department_id.required' =>  __('The :attribute field is required.'),
-                'gender_id.required' =>  __('The :attribute field is required.'),
-                'userType_id.required' =>  __('The :attribute field is required.'),
-                'password.required' =>  __('The :attribute field is required.'),
-                'email.required' =>  __('The :attribute field is required.'),
-                'phone_number.required' =>  __('The :attribute field is required.'),
-                'userroles.required' =>  __('The :attribute field is required.'),
-                'inventar_number.required' =>  __('The :attribute field is required.'),
-                'inventar_number.unique' =>  __('The :attribute has already been taken.'),
-                'password.confirmed' =>  __('The :attribute confirmation does not match.'),
-                'email.unique' =>  __('The :attribute has already been taken.'),
-                'email.email' =>  __('Email must be email'),
+                'name.required' => __('The :attribute field is required.'),
+                'organization_id.required' => __('The :attribute field is required.'),
+                'branch_id.required' => __('The :attribute field is required.'),
+                'department_id.required' => __('The :attribute field is required.'),
+                'gender_id.required' => __('The :attribute field is required.'),
+                'userType_id.required' => __('The :attribute field is required.'),
+                'password.required' => __('The :attribute field is required.'),
+                'email.required' => __('The :attribute field is required.'),
+                'phone_number.required' => __('The :attribute field is required.'),
+                'userroles.required' => __('The :attribute field is required.'),
+                'inventar_number.required' => __('The :attribute field is required.'),
+                'inventar_number.unique' => __('The :attribute has already been taken.'),
+                'password.confirmed' => __('The :attribute confirmation does not match.'),
+                'email.unique' => __('The :attribute has already been taken.'),
+                'email.email' => __('Email must be email'),
 
-                'phone_number.unique' =>  __('The :attribute has already been taken.'),
+                'phone_number.unique' => __('The :attribute has already been taken.'),
             ],
             [
                 'inventar_number' => __('Bar code'),
@@ -219,25 +240,37 @@ class Usercu extends Component
         if ($this->user_image != null) {
             $image_path = $this->user_image->store('users/avatar/images', 'public');
         }
-        $int_inventar = 0;
-        $inventar = trim($this->inventar_number);
-        if ($inventar[0] == 'f') {
-            $inventar = trim($this->inventar_number);
-            $int_inventar = substr($this->inventar_number, 1);
-        } else {
-            $int_inventar = trim($this->inventar_number);
-            $inventar = 'f' . trim($this->inventar_number);
-        }
+        if ($this->hemisImagePath != null) {
+            $response = Http::get($this->hemisImagePath);
+            if ($response->successful()) {
+                // Get file extension from URL
+                $extension = pathinfo(parse_url($this->hemisImagePath, PHP_URL_PATH), PATHINFO_EXTENSION);
 
+                // Generate a unique file name
+                $fileName = 'users/avatar/images/' . uniqid() . '.' . $extension;
+                // Save the file to storage
+                Storage::put('public/'.$fileName, $response->body());
+
+                $image_path = $fileName;
+            }
+        }
+        $inventar = trim($this->inventar_number);
+        $login = $this->email;
+        if ($this->studentId != null) {
+            $login = $this->studentId;
+            $inventar = $this->studentId;
+        }
         $userData = [
             'password' => Hash::make($this->password),
             'status' => $this->isActive,
             'name' => $this->name,
             'email' => $this->email,
-            'login' => $this->email,
+            'login' => $login,
             'inventar_number' => $inventar,
-            'inventar' => $int_inventar,
+            'inventar' => (User::count() + 1),
+            'student_id_number' => $this->studentId,
         ];
+
         DB::beginTransaction();
         try {
             $user = User::create($userData);
@@ -272,21 +305,21 @@ class Usercu extends Component
             throw $e;
         }
     }
-    public function updated($name, $value)
-    {
-        if ($name == 'inventar_number') {
-            $inventar = $this->inventar_number;
-            if ($value[0] == 'f') {
-                $this->inventar_number = $value;
-            } else {
-                $this->inventar_number = 'f' . $value;
-            }
-        }
-    }
+
+//    public function updated($name, $value)
+//    {
+//        if ($name == 'inventar_number') {
+//            $inventar = $this->inventar_number;
+//            if ($value[0] == 'f') {
+//                $this->inventar_number = $value;
+//            } else {
+//                $this->inventar_number = 'f' . $value;
+//            }
+//        }
+//    }
+
     public function update()
     {
-
-
         $this->validate(
             [
                 'name' => 'required',
@@ -302,22 +335,22 @@ class Usercu extends Component
                 'userroles' => 'required'
             ],
             [
-                'name.required' =>  __('The :attribute field is required.'),
-                'organization_id.required' =>  __('The :attribute field is required.'),
-                'branch_id.required' =>  __('The :attribute field is required.'),
-                'department_id.required' =>  __('The :attribute field is required.'),
-                'gender_id.required' =>  __('The :attribute field is required.'),
-                'userType_id.required' =>  __('The :attribute field is required.'),
-                'password.required' =>  __('The :attribute field is required.'),
-                'email.required' =>  __('The :attribute field is required.'),
-                'phone_number.required' =>  __('The :attribute field is required.'),
-                'userroles.required' =>  __('The :attribute field is required.'),
-                'inventar_number.required' =>  __('The :attribute field is required.'),
-                'inventar_number.unique' =>  __('The :attribute has already been taken.'),
-                'password.confirmed' =>  __('The :attribute confirmation does not match.'),
-                'email.unique' =>  __('The :attribute has already been taken.'),
-                'email.email' =>  __('Email must be email'),
-                'phone_number.unique' =>  __('The :attribute has already been taken.'),
+                'name.required' => __('The :attribute field is required.'),
+                'organization_id.required' => __('The :attribute field is required.'),
+                'branch_id.required' => __('The :attribute field is required.'),
+                'department_id.required' => __('The :attribute field is required.'),
+                'gender_id.required' => __('The :attribute field is required.'),
+                'userType_id.required' => __('The :attribute field is required.'),
+                'password.required' => __('The :attribute field is required.'),
+                'email.required' => __('The :attribute field is required.'),
+                'phone_number.required' => __('The :attribute field is required.'),
+                'userroles.required' => __('The :attribute field is required.'),
+                'inventar_number.required' => __('The :attribute field is required.'),
+                'inventar_number.unique' => __('The :attribute has already been taken.'),
+                'password.confirmed' => __('The :attribute confirmation does not match.'),
+                'email.unique' => __('The :attribute has already been taken.'),
+                'email.email' => __('Email must be email'),
+                'phone_number.unique' => __('The :attribute has already been taken.'),
             ],
             [
                 'inventar_number' => __('Bar code'),
@@ -334,7 +367,7 @@ class Usercu extends Component
                 'userroles' => __('Role'),
             ]
         );
-
+//        dd("s");
         $image_path = null;
         if ($this->user_image != null) {
             $image_path = $this->user_image->store('users/avatar/images', 'public');
@@ -346,23 +379,14 @@ class Usercu extends Component
         } else {
             $image_path = $this->user_old_image;
         }
-        $int_inventar = 0;
-        $inventar = trim($this->inventar_number);
-        if ($inventar[0] == 'f') {
-            $inventar = trim($this->inventar_number);
-            $int_inventar = substr($this->inventar_number, 1);
-        } else {
-            $int_inventar = trim($this->inventar_number);
-            $inventar = 'f' . trim($this->inventar_number);
-        }
+
         $userData = [
             'password' => Hash::make($this->password),
             'status' => $this->isActive,
             'name' => $this->name,
             'email' => $this->email,
             'login' => $this->email,
-            'inventar_number' => $inventar,
-            'inventar' => $int_inventar,
+            'inventar_number' => trim($this->inventar_number),
         ];
         if (!empty($this->password)) {
             $this->password = Hash::make($this->password);
@@ -404,6 +428,83 @@ class Usercu extends Component
             DB::rollback();
             // something went wrong
             throw $e;
+        }
+    }
+
+    public function findtudentInfo()
+    {
+        $this->validate(
+            [
+                'studentId' => 'required',
+            ],
+            [
+                'studentId.required' => __('The :attribute field is required.'),
+            ],
+            [
+                'studentId' => __('Student ID'),
+            ]
+        );
+//        $response = Http::get(env('HEMIS_BASE_URL').'/rest/v1/data/student-info?student_id_number='.$this->studentId);
+        $responseData = Http::withHeaders([
+            'Authorization' => 'Bearer ' . env('LOGIN_API_TOKEN')
+        ])->get(env('HEMIS_BASE_URL') . '/rest/v1/data/student-info?student_id_number=' . $this->studentId);
+
+        if ($responseData->getStatusCode() == 200) {
+            $this->alert('success', __('Successfully'));
+            $dataRes = $responseData->json()['data'];
+
+            $faculty = Faculty::createOrUpdateByHemisCode($dataRes['department']);
+            $faculty_id = null;
+            if ($faculty != null && $faculty) {
+                $faculty_id = $faculty->id;
+            }
+
+            $chair = Chair::createOrUpdateByHemisCode($dataRes['specialty'], $dataRes['department']);
+            $chair_id = null;
+            if ($chair != null && $chair) {
+                $chair_id = $chair->id;
+            }
+
+            $group = Group::createOrUpdateByHemisCode($dataRes['group'], $dataRes['specialty'], $dataRes['department']);
+            $group_id = null;
+            if ($group != null && $group) {
+                $group_id = $group->id;
+            }
+
+            $this->name = $dataRes['full_name'];
+            $this->gender_id = ReferenceGender::getGenderIdByHemisCode($dataRes['gender']['code']);
+            $this->course = $dataRes['level']['name'];
+            $this->email = $this->studentId . '@gmail.com';
+            $this->hemisImagePath = $dataRes['image'];
+            $this->faculty_id = $faculty_id;
+            $this->chair_id = $chair_id;
+            $this->group_id = $group_id;
+            $this->date_of_birth = date("d.m.Y", $dataRes['birth_date']);
+            $this->email = $this->studentId . '@gmail.com';
+            $this->inventar_number=$this->studentId;
+            $this->phone_number = $this->studentId;
+            $this->password = $this->studentId;
+            $this->password_confirmation = $this->password;
+
+//            dd($this->date_of_birth);
+
+
+//            $this->course = 'nima gap';
+//            $userData = [
+//                'password' => Hash::make($this->password),
+//                'status' => $this->isActive,
+//                'name' => $this->name,
+//                'email' => $this->email,
+//                'login' => $this->email,
+//                'inventar_number' => $inventar,
+//                'inventar' => $int_inventar,
+//            ];
+
+        } else {
+            $message = $responseData->json()['error'];
+
+            $this->alert('warning', __("$this->studentId, $message"));
+//            $this->studentId = null;
         }
     }
 }

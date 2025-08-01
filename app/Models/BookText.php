@@ -32,12 +32,9 @@ use Illuminate\Support\Facades\DB;
  */
 class BookText extends Model implements TranslatableContract
 {
-    
+
     use Translatable; // 2. To add translation methods
     public $translatedAttributes = ['title', 'locale', 'slug'];
-    
-     
-
 
     /**
      * Attributes that should be mass-assignable.
@@ -54,7 +51,7 @@ class BookText extends Model implements TranslatableContract
     {
         return $this->hasMany('App\Models\BookTextTranslation', 'book_text_id', 'id');
     }
-    
+
      /**
      * @return \Illuminate\Database\Eloquent\Relations\hasMany
      */
@@ -90,7 +87,7 @@ class BookText extends Model implements TranslatableContract
         }
         return 0;
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -137,7 +134,7 @@ class BookText extends Model implements TranslatableContract
                 $data[$k][$val] = $request->input($val . '_' . $k);
             }
         }
-        
+
         $data['isActive'] = $request->input('isActive');
         return $data;
     }
@@ -148,7 +145,7 @@ class BookText extends Model implements TranslatableContract
         }
         return $rules;
     }
-    
+
     public static function GetCountBookByBookTypeByMonthAndId($id = null, $year, $month)
     {
         $from = $year . '-' . $month;
@@ -156,7 +153,7 @@ class BookText extends Model implements TranslatableContract
 
         $startDate = Carbon::createFromFormat('Y-m', $from)->startOfMonth();
         $endDate = Carbon::createFromFormat('Y-m', $to)->endOfMonth();
-       
+
         $cards = DB::select("SELECT SUM(COUNT(DISTINCT bil.book_id)) OVER() as nomda FROM `book_texts` as bt left JOIN books as b on b.book_text_id =bt.id left join book_inventars as bil on bil.book_id=b.id where b.status=1 and bil.isActive=1 and bt.id=$id and DATE(bil.created_at) between '$startDate' and '$endDate' GROUP by bil.book_id  limit 1;");
 
         if (count($cards) > 0) {

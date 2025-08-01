@@ -25,7 +25,7 @@ use Illuminate\Support\Facades\DB;
  *
  * @property BooksTypeTranslation[] $booksTypeTranslations
  * @property User $user
- * @property User $user
+ * @property User $userBy
  * @package App
  * @mixin \Illuminate\Database\Eloquent\Builder
  */
@@ -189,7 +189,7 @@ class BooksType extends Model implements TranslatableContract
 
     public static function GetData(Request $request, BooksType $booksType)
     {
- 
+
         $data = [];
         foreach (config('app.locales') as $k => $locale) {
             $type = new self();
@@ -215,6 +215,7 @@ class BooksType extends Model implements TranslatableContract
 
         return $data;
     }
+
     public static function rules()
     {
         foreach (config('app.locales') as $k => $locale) {
@@ -222,4 +223,5 @@ class BooksType extends Model implements TranslatableContract
         }
         return $rules;
     }
+
 }

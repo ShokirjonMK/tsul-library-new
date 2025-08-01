@@ -21,11 +21,8 @@ class KitobOlishBerish extends Component
         'cartUpdated' => '$refresh'
     ];
 
-
-
     public function getLatitudeForInput($value)
     {
-
         if (!is_null($value)) {
             $this->addToCartProduct($value);
             $this->gtin = $value;
@@ -50,31 +47,32 @@ class KitobOlishBerish extends Component
 
     protected function addToCartProduct($gtin)
     {
-       
+
         $gtin = trim($gtin);
         if ($gtin != null) {
             $type = null;
-            if (strtolower($gtin[0]) == 'f') {
+//            if (strtolower($gtin[0]) == 'f') {
                 $isUser = User::where('inventar_number', '=', $gtin)->first();
-                
+
 
                 if (isset($isUser) & $isUser != null) {
                     $this->user = User::where('inventar_number', '=', $gtin)->first();
                     $this->debtors = Debtor::where('reader_id', '=', $this->user->id)->where('status', '=', Debtor::$GIVEN)->orderBy('return_time',  'ASC')->get();
-                    
+
                     $type = 'user';
                     $this->isUser = true;
                     $this->userProfile = $this->user->profile;
-                } else {
-                    $this->debtors = null;
-                    $this->user = null;
-                    $this->isUser = false;
-                    $this->userProfile = null;
                 }
-            } else {
-                 
+//                else {
+//                    $this->debtors = null;
+//                    $this->user = null;
+//                    $this->isUser = false;
+//                    $this->userProfile = null;
+//                }
+//            } else {
+
                 $this->book = BookInventar::where('bar_code', '=', $gtin)->whereNotNull("book_id")->first();
-                 
+
                 if ($this->book != null && $this->book->isActive == BookInventar::$ACTIVE) {
                     $type = 'book';
                 }
@@ -90,11 +88,11 @@ class KitobOlishBerish extends Component
                     $this->gtin = null;
                     return;
                 }
-            }
+//            }
 
             if ($this->isUser && $type == 'user') {
                 $this->alert('success', __('User has found!'));
-                 
+
                 $this->gtin = null;
             } elseif ($type == 'book') {
                 if ($this->total_in_cart > 0) {
@@ -130,7 +128,9 @@ class KitobOlishBerish extends Component
                 }
                 $this->alert('success', __('Book Added to Cart Successfully!'));
                 $this->gtin = null;
-            } else {
+            }
+
+            if ($this->isUser == false && $this->book == null) {
                 $this->alert('error', __('Item not found!'));
                 $this->gtin = null;
             }
@@ -153,7 +153,7 @@ class KitobOlishBerish extends Component
             }
             foreach ($this->items as $key => $value) {
                 $qaytarish_vaqti = strtotime(date("Y-m-d") . "+ " . $value['quantity'] . " days");
- 
+
                 array_push(
                     $finalArray,
                     array(
@@ -168,7 +168,7 @@ class KitobOlishBerish extends Component
                         'book_inventar_id' => $value['attributes']['book_inventar_id'],
                         'branch_id' => $branch_id,
                         'department_id' => $department_id,
-                        "created_at" =>  \Carbon\Carbon::now(),
+                        'created_at' =>  \Carbon\Carbon::now(),
                         'created_by' =>  auth()->user()->id,
                     )
                 );

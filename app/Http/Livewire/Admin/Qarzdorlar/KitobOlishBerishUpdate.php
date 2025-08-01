@@ -17,7 +17,7 @@ class KitobOlishBerishUpdate extends Component
     ];
     public function mount($item)
     {
-       
+
         $this->cartItems = $item;
 
         $this->quantity = $item['quantity'];
@@ -31,10 +31,10 @@ class KitobOlishBerishUpdate extends Component
             ]
         ]);
         $this->alert('success', __('Item added successfully!'));
-          
-         
+
+
         $this->emit('cartUpdated');
-            
+
     }
     public function render()
     {

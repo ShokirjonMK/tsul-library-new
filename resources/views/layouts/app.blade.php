@@ -17,7 +17,7 @@
     <link href="https://cdn.materialdesignicons.com/4.4.95/css/materialdesignicons.min.css" rel="stylesheet" />
     <link href="{{ asset('material/css/materialdesignicons.min.css') }}" rel="stylesheet" type="text/css" />
     {{-- <link href="{{ asset('material/css/materialdesignicons.min.css') }}" rel="stylesheet" /> --}}
-    
+
     <!-- PLUGINS CSS STYLE -->
     <link href="{{ asset('assets/plugins/daterangepicker/daterangepicker.css') }}" rel="stylesheet">
     <link href="{{ asset('assets/plugins/simplebar/simplebar.css') }}" rel="stylesheet" />
@@ -33,7 +33,7 @@
     {{-- <link href="{{ asset('css/app.css') }}" rel="stylesheet"> --}}
 
     @livewireStyles
-
+    <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
     <link href="{{ asset('assets/css/style.css') }}" rel="stylesheet" />
     <script src="{{ asset('livewire/components/pdf-viewer.js') }}"></script>
     <link href="{{ asset('tagsinput.css') }}" rel="stylesheet" type="text/css">
@@ -45,7 +45,7 @@
 
     <!--  WRAPPER  -->
     <div class="wrapper">
-       
+
 
         <!-- LEFT MAIN SIDEBAR -->
         @include('layouts.partials.sidebar')
@@ -81,8 +81,8 @@
     <script src="{{ asset('assets/plugins/slick/slick.min.js') }}"></script>
 
     <!-- Chart -->
-    <script src="{{ asset('assets/plugins/charts/Chart.min.js') }}"></script>
-    <script src="{{ asset('assets/js/chart.js') }}"></script>
+{{--    <script src="{{ asset('assets/plugins/charts/Chart.min.js') }}"></script>--}}
+{{--    <script src="{{ asset('assets/js/chart.js') }}"></script>--}}
 
     <!-- Google map chart -->
     {{-- <script src="{{ asset('css/app.css') }}assets/plugins/charts/google-map-loader.js"></script>
@@ -111,6 +111,7 @@
     @yield('page-js-script')
     @stack('scripts')
     @livewireScripts
+    @livewireChartsScripts
     <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <x-livewire-alert::scripts />
@@ -209,7 +210,7 @@
         });
     </script>
         <script src="{{ asset('tagsinput.js') }}"></script>
-        
+
 </body>
 
 </html>

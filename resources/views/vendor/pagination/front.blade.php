@@ -6,7 +6,7 @@
                 Showing {{ $paginator->perPage() }} to {{ $paginator->currentPage() }} of
                 {{ $paginator->total() }}
                 entries
-        
+
             @endif
 <nav aria-label="Page navigation example">
     <ul
@@ -27,10 +27,10 @@
 
             </li>
         @endif
-
         {{-- Pagination Elements --}}
         @foreach ($elements as $element)
-            {{-- "Three Dots" Separator --}}
+
+                {{-- "Three Dots" Separator --}}
             @if (is_string($element))
                 <li class="disabled" aria-disabled="true"><span>{{ $element }}</span></li>
             @endif
@@ -38,6 +38,7 @@
             {{-- Array Of Links --}}
             @if (is_array($element))
                 @foreach ($element as $page => $url)
+
                     @if ($page == $paginator->currentPage())
                         <li class="flex-shrink-0 flex-md-shrink-1 page-item page-item active" aria-current="page">
                             <a href="#" aria-controls="responsive-data-table" data-dt-idx="1" tabindex="0"
@@ -72,7 +73,7 @@
                     class="page-link">&rsaquo;</a>
             </li>
         @endif
- 
+
     </ul>
 </nav>
 @endif

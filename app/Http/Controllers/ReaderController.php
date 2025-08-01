@@ -13,13 +13,15 @@ use App\Models\BookSubject;
 use App\Models\BookText;
 use App\Models\BookTextType;
 use App\Models\Debtor;
+use App\Models\ResourceType;
+use App\Models\ScientificPublication;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class ReaderController extends Controller
 {
 
-   
+
    /**
      * Create a new controller instance.
      *
@@ -28,7 +30,7 @@ class ReaderController extends Controller
     public function __construct()
     {
 
-        $this->middleware('auth'); 
+        $this->middleware('auth');
     }
 
      /**
@@ -43,12 +45,12 @@ class ReaderController extends Controller
         $perPage = 20;
         $debtors = Debtor::where('reader_id', '=', $user_id)->where('status', '=', Debtor::$GIVEN)->orderBy('return_time', 'ASC')->paginate($perPage);
         // $debtors = Debtor::whereNull('qaytargan_vaqti')->groupBy('kitobxon_id')->orderBy('qaytarish_vaqti', 'asc')->paginate();
-        
+
         // dd($debtors);groupBy('reader_id')->
         return view('reader.index', compact('debtors'))
             ->with('i', (request()->input('page', 1) - 1) * $debtors->perPage());
     }
-     
+
     /**
      * Display a listing of the resource.
      *
@@ -59,6 +61,56 @@ class ReaderController extends Controller
         return view('reader.user');
     }
 
+    public function dissertation($language, Request $request)
+    {
+        $show_accardion=false;
+
+        $perPage = 20;
+        $keyword = trim($request->get('keyword'));
+        $res_lang_id = trim($request->get('res_lang_id'));
+        $res_type_id = trim($request->get('res_type_id'));
+        $res_field_id = trim($request->get('res_field_id'));
+
+        $q = ScientificPublication::query();
+
+        $resourceFields = ResourceType::with('translations')->orderBy('id', 'desc')->field()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
+        $resourceLanguages = ResourceType::with('translations')->orderBy('id', 'desc')->language()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
+        $resourceTypes = ResourceType::with('translations')->where('code', '=', 'dissertation')->orderBy('id', 'desc')->type()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
+
+        if ($res_lang_id != null && $res_lang_id > 0) {
+            $show_accardion=true;
+
+            $q->where('res_lang_id', '=', $res_lang_id);
+        }
+
+        if ($res_type_id != null && $res_type_id > 0) {
+            $show_accardion=true;
+
+            $q->where('res_type_id', '=', $res_type_id);
+        }
+        if ($res_field_id != null && $res_field_id > 0) {
+            $show_accardion=true;
+
+            $q->where('res_field_id', '=', $res_field_id);
+        }
+
+
+        if ($keyword != null) {
+            $show_accardion=true;
+
+            $q->whereHas('scientificPublicationTranslations', function ($query) use ($keyword) {
+                if ($keyword) {
+                    $query->where('title', 'like', '%' . $keyword . '%')->orWhere('authors', 'like', '%' . $keyword . '%')->orWhere('keywords', 'like', '%' . $keyword . '%');
+                }
+            });
+        }
+//        ->where('key', '=', 'dissertation')
+        $scientificPublications = $q->with('translations')->orderBy('id', 'desc')->paginate($perPage);
+
+
+        return view('reader.dissertation', compact('scientificPublications', 'show_accardion', 'keyword', 'resourceFields', 'resourceLanguages', 'resourceTypes', 'res_lang_id', 'res_type_id', 'res_field_id'))
+            ->with('i', (request()->input('page', 1) - 1) * $scientificPublications->perPage());
+    }
     /**
      * Display a listing of the resource.
      *
@@ -79,7 +131,7 @@ class ReaderController extends Controller
         $book_author_id=trim($request->get('book_author_id'));
         $status=trim($request->get('status'));
         $keyword=trim($request->get('keyword'));
-         
+
         $perPage = 20;
         $sqlBuild='';
         if ($book_bookType_id != null && $book_bookType_id>0)
@@ -118,7 +170,7 @@ class ReaderController extends Controller
             $dc_subjects = \App\Models\BookSubject::GetTitleById($book_subject_id);
             $q->whereJsonContains('dc_subjects', $dc_subjects);
         }
-        
+
         // if ($book_author_id != null && $book_author_id>0)
         // {
         //     $show_accardion=true;
@@ -135,7 +187,7 @@ class ReaderController extends Controller
         }
         if($keyword != null){
             $show_accardion=true;
-            
+
             $q->where(function($query) use($keyword){
                 $query->orWhere('dc_authors', 'LIKE', '%'.$keyword.'%');
             })->orWhere('dc_title', 'LIKE', "%$keyword%")
@@ -157,15 +209,15 @@ class ReaderController extends Controller
         $bookAccessTypes = BookAccessType::active()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
         $bookFileTypes = BookFileType::active()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
         $bookSubjects = BookSubject::active()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
-        
+
         $bookAuthors = Author::active()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
 
-        $books = $q->with('bookInventar')->orderBy('id', 'desc')->paginate($perPage);
-         
+        $books = $q->with('bookInventar')->active()->orderBy('id', 'desc')->paginate($perPage);
+
         return view('reader.books', compact('books','bookSubjects', 'bookAuthors', 'bookTypes', 'bookLanguages', 'bookTexts', 'bookTextTypes', 'bookAccessTypes', 'bookFileTypes', 'book_bookType_id', 'book_bookLanguage_id', 'book_bookText_id', 'book_bookTextType_id', 'book_access_type_id', 'book_file_type_id', 'book_subject_id', 'status', 'keyword', 'show_accardion', 'book_author_id'))
             ->with('i', (request()->input('page', 1) - 1) * $books->perPage());
     }
-    
+
 
      /**
      * Display the specified resource.

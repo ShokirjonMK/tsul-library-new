@@ -2,7 +2,7 @@
 
     @if ($book_information != null && $book_information->count() > 0)
         <div class="row">
- 
+
             <div class="table-responsive">
                 <table class="table table-striped table-hover">
                     <thead class="thead">
@@ -126,11 +126,11 @@
                                                 <div class="col-12 box-footer mt20">
                                                     <button wire:click.prevent="update"
                                                         class="btn btn-primary">{{ __('Update') }}</button>
-                                                        
+
                                                     <button wire:click.prevent="clearPage"
                                                         class="btn btn-success">{{ __('Clear') }}</button>
 
-                                                </div> 
+                                                </div>
                                             </div>
                                         </div>
                                         <hr>
@@ -201,7 +201,7 @@
 
                                                 <div class="col-6 col-sm-6 col-lg-6">
                                                     <div class="form-group">
-                                                         
+
                                                         <label
                                                             for="bar_code{{ $key }}">{{ __('Bar code') }}</label>
                                                         <input type="number" class="form-control"
@@ -280,8 +280,9 @@
                                                                     {!! QrCode::size(100)->generate($book_inventar->bar_code) !!}
                                                                 @else
                                                                     @php
-                                                                        $generator = new Picqer\Barcode\BarcodeGeneratorPNG();
-                                                                        echo '<img src="data:image/png;base64,' . base64_encode($generator->getBarcode($book_inventar->bar_code, $generator::TYPE_CODE_128)) . '">';
+                                                                        $generator = new Picqer\Barcode\BarcodeGeneratorSVG();
+                                                                        echo $generator->getBarcode($book_inventar->bar_code, $generator::TYPE_CODE_128, 2.30);
+
                                                                     @endphp
                                                                 @endif
                                                                 <br>

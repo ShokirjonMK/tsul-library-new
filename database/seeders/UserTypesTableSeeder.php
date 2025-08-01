@@ -19,42 +19,43 @@ class UserTypesTableSeeder extends Seeder
             'isActive' => 1,
             'created_by' => 1,
             'updated_by' => 1,
-            'uz' => ['title' => 'Bakalavr'], 
+            'uz' => ['title' => 'Bakalavr'],
             'en' => ['title' => 'Bachelor'],
         ];
-        UserType::create($data); 
+        UserType::create($data);
         $data = [
             'isActive' => 1,
             'created_by' => 1,
             'updated_by' => 1,
-            'uz' => ['title' => 'Magistr'], 
+            'uz' => ['title' => 'Magistr'],
             'en' => ['title' => 'Masters'],
         ];
-        UserType::create($data); 
+        UserType::create($data);
 
         $data2 = [
             'isActive' => 1,
             'created_by' => 1,
             'updated_by' => 1,
-            'uz' => ['title' => 'Professor-o‘qituvchi'], 
+            'code' => '12',
+            'uz' => ['title' => 'Professor-o‘qituvchi xodim'],
             'en' => ['title' => 'Teachers & Professors'],
         ];
-        UserType::create($data2); 
-        
+        UserType::create($data2);
+
 
         $data = [
             'isActive' => 1,
             'created_by' => 1,
             'updated_by' => 1,
-            'uz' => ['title' => "No ma'lum"], 
+            'uz' => ['title' => "No ma'lum"],
             'en' => ['title' => 'Un known'],
         ];
-        UserType::create($data); 
+        UserType::create($data);
         $data3 = [
             'isActive' => 1,
             'created_by' => 1,
             'updated_by' => 1,
-            'uz' => ['title' => "ARM xodimi"], 
+            'uz' => ['title' => "ARM xodimi"],
             'en' => ['title' => 'IRS employee'],
         ];
         UserType::create($data3);
@@ -63,15 +64,15 @@ class UserTypesTableSeeder extends Seeder
             'isActive' => 1,
             'created_by' => 1,
             'updated_by' => 1,
-            'uz' => ['title' => 'Sirtqi'], 
+            'uz' => ['title' => 'Sirtqi'],
             'en' => ['title' => 'Sirtqi'],
         ];
-        UserType::create($data); 
+        UserType::create($data);
         $data = [
             'isActive' => 1,
             'created_by' => 1,
             'updated_by' => 1,
-            'uz' => ['title' => "Qo‘shma ta'lim"], 
+            'uz' => ['title' => "Qo‘shma ta'lim"],
             'en' => ['title' => "Qo‘shma ta'lim"],
         ];
         UserType::create($data);
@@ -80,25 +81,25 @@ class UserTypesTableSeeder extends Seeder
             'isActive' => 1,
             'created_by' => 1,
             'updated_by' => 1,
-            'uz' => ['title' => 'Doktorant'], 
+            'uz' => ['title' => 'Doktorant'],
             'en' => ['title' => 'Doktorant'],
         ];
-        UserType::create($data); 
-       
+        UserType::create($data);
+
         $data3 = [
             'isActive' => 1,
             'created_by' => 1,
             'updated_by' => 1,
-            'uz' => ['title' => "Labarant"], 
+            'uz' => ['title' => "Labarant"],
             'en' => ['title' => 'Labarant'],
         ];
         UserType::create($data3);
-       
+
         $data3 = [
             'isActive' => 1,
             'created_by' => 1,
             'updated_by' => 1,
-            'uz' => ['title' => "Bakalavr"], 
+            'uz' => ['title' => "Bakalavr"],
             'en' => ['title' => 'Bakalavr'],
         ];
         UserType::create($data3);
@@ -106,17 +107,18 @@ class UserTypesTableSeeder extends Seeder
             'isActive' => 1,
             'created_by' => 1,
             'updated_by' => 1,
-            'uz' => ['title' => "Boshqalar"], 
+            'code' => '10',
+            'uz' => ['title' => "Boshqalar"],
             'en' => ['title' => 'Others'],
         ];
         UserType::create($data3);
-        
-      
+
+
         $data3 = [
             'isActive' => 1,
             'created_by' => 1,
             'updated_by' => 1,
-            'uz' => ['title' => "Dekan"], 
+            'uz' => ['title' => "Dekan"],
             'en' => ['title' => 'Dean'],
         ];
         UserType::create($data3);
@@ -124,7 +126,7 @@ class UserTypesTableSeeder extends Seeder
             'isActive' => 1,
             'created_by' => 1,
             'updated_by' => 1,
-            'uz' => ['title' => "Prorektor"], 
+            'uz' => ['title' => "Prorektor"],
             'en' => ['title' => 'Prorektor'],
         ];
         UserType::create($data3);
@@ -132,7 +134,7 @@ class UserTypesTableSeeder extends Seeder
             'isActive' => 1,
             'created_by' => 1,
             'updated_by' => 1,
-            'uz' => ['title' => "Bo‘lim boshlig‘i"], 
+            'uz' => ['title' => "Bo‘lim boshlig‘i"],
             'en' => ['title' => "Bo‘lim boshlig‘i"],
         ];
         UserType::create($data3);
@@ -140,7 +142,7 @@ class UserTypesTableSeeder extends Seeder
             'isActive' => 1,
             'created_by' => 1,
             'updated_by' => 1,
-            'uz' => ['title' => "Dekan o‘rinbosari"], 
+            'uz' => ['title' => "Dekan o‘rinbosari"],
             'en' => ['title' => "Dekan o‘rinbosari"],
         ];
         UserType::create($data3);
@@ -148,7 +150,7 @@ class UserTypesTableSeeder extends Seeder
             'isActive' => 1,
             'created_by' => 1,
             'updated_by' => 1,
-            'uz' => ['title' => "Kafedra mudiri"], 
+            'uz' => ['title' => "Kafedra mudiri"],
             'en' => ['title' => "Kafedra mudiri"],
         ];
         UserType::create($data3);
@@ -157,7 +159,7 @@ class UserTypesTableSeeder extends Seeder
             'isActive' => 1,
             'created_by' => 1,
             'updated_by' => 1,
-            'uz' => ['title' => "Ishchi xodim"], 
+            'uz' => ['title' => "Ishchi xodim"],
             'en' => ['title' => "Ishchi xodim"],
         ];
         UserType::create($data3);
@@ -166,7 +168,7 @@ class UserTypesTableSeeder extends Seeder
             'isActive' => 1,
             'created_by' => 1,
             'updated_by' => 1,
-            'uz' => ['title' => "Talaba magistir"], 
+            'uz' => ['title' => "Talaba magistir"],
             'en' => ['title' => "Talaba magistir"],
         ];
         UserType::create($data3);
@@ -174,7 +176,7 @@ class UserTypesTableSeeder extends Seeder
             'isActive' => 1,
             'created_by' => 1,
             'updated_by' => 1,
-            'uz' => ['title' => "ARM bo‘lim mudiri"], 
+            'uz' => ['title' => "ARM bo‘lim mudiri"],
             'en' => ['title' => "ARM bo‘lim mudiri"],
         ];
         UserType::create($data3);
@@ -182,10 +184,30 @@ class UserTypesTableSeeder extends Seeder
             'isActive' => 1,
             'created_by' => 1,
             'updated_by' => 1,
-            'uz' => ['title' => "Farrosh"], 
+            'uz' => ['title' => "Farrosh"],
             'en' => ['title' => "Farrosh"],
         ];
         UserType::create($data3);
-        
+
+        $data4 = [
+            'isActive' => 1,
+            'created_by' => 1,
+            'updated_by' => 1,
+            'code' => '11',
+            'uz' => ['title' => "Administrativ-boshqaruv xodim"],
+            'en' => ['title' => "Administrativ-boshqaruv xodim"],
+        ];
+        UserType::create($data4);
+
+        $data5 = [
+            'isActive' => 1,
+            'created_by' => 1,
+            'updated_by' => 1,
+            'code' => '13',
+            'uz' => ['title' => "O‘quv-yordamchi va texnik xodim"],
+            'en' => ['title' => "O‘quv-yordamchi va texnik xodim"],
+        ];
+        UserType::create($data5);
+
     }
 }

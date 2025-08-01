@@ -1,18 +1,18 @@
 <div>
     {{-- Do your work, then step back. --}}
-    
+
     <div class="profile-content-right profile-right-spacing py-5">
         @if (count($errors))
             @foreach ($errors->all() as $error)
                 <p class="alert alert-danger">{{$error}}</p>
             @endforeach
-        @endif  
+        @endif
         <ul class="nav nav-tabs px-3 px-xl-5 nav-style-border" id="myProfileTab" role="tablist">
-            <li class="nav-item" role="presentation">
-                <button class="nav-link " id="profile-tab" data-bs-toggle="tab"
-                    data-bs-target="#profile" type="button" role="tab" aria-controls="profile"
-                    aria-selected="true">{{ __('Profile') }}</button>
-            </li>
+{{--            <li class="nav-item" role="presentation">--}}
+{{--                <button class="nav-link " id="profile-tab" data-bs-toggle="tab"--}}
+{{--                    data-bs-target="#profile" type="button" role="tab" aria-controls="profile"--}}
+{{--                    aria-selected="true">{{ __('Profile') }}</button>--}}
+{{--            </li>--}}
             <li class="nav-item" role="presentation">
                 <button class="nav-link active" id="settings-tab" data-bs-toggle="tab"
                     data-bs-target="#settings" type="button" role="tab" aria-controls="settings"
@@ -80,7 +80,7 @@
                                     <div wire:loading wire:target="user_image">{{ __('Uploading') }}...</div>
 
                                     @if ($user_image)
-                                   
+
                                         {{ __('Photo Preview') }}:
                                         <div class="align-items-left">
                                             <img src="{{ $user_image->temporaryUrl() }}" width="100">
@@ -100,7 +100,7 @@
                                 <select id="gender_id"
                                     class=" form-select form-control {{ $errors->has('gender_id') ? ' is-invalid' : '' }}"
                                     wire:model="gender_id">
-                                    <option value="0">{{ __('Choose') }}</option>
+                                    <option value>{{ __('Choose') }}</option>
                                     @foreach ($genders as $k => $v)
                                         <option value="{{ $k }}">{{ $v }}</option>
                                     @endforeach
@@ -114,7 +114,7 @@
                                 <select id="branch_id"
                                     class=" form-select form-control {{ $errors->has('branch_id') ? ' is-invalid' : '' }}"
                                     wire:model="branch_id">
-                                    <option value="0">{{ __('Choose') }}</option>
+                                    <option value>{{ __('Choose') }}</option>
                                     @foreach ($branches as $k => $v)
                                         <option value="{{ $k }}">{{ $v }}</option>
                                     @endforeach
@@ -128,7 +128,7 @@
                                 <select id="department_id"
                                     class=" form-select form-control {{ $errors->has('department_id') ? ' is-invalid' : '' }}"
                                     wire:model="department_id">
-                                    <option value="0">{{ __('Choose') }}</option>
+                                    <option value>{{ __('Choose') }}</option>
                                     @foreach ($departments as $k => $v)
                                         <option value="{{ $k }}">{{ $v }}</option>
                                     @endforeach
@@ -161,8 +161,8 @@
                                 </div>
                             </div>
                         </div>
-                        
-                        
+
+
                         <div class="row mb-2">
                             <div class="col-lg-6">
                                 <div class="form-group">
@@ -194,7 +194,7 @@
                                 wire:model="course">
                             {!! $errors->first('course', '<div class="invalid-feedback">:message</div>') !!}
                         </div>
-                          
+
                         <div class="form-group mb-4">
                             <label for="old_password">{{ __('Old Password') }}</label>
                             <input type="password"
@@ -220,7 +220,7 @@
                                 id="password_confirmation" wire:model="password_confirmation">
                             {!! $errors->first('password_confirmation', '<div class="invalid-feedback">:message</div>') !!}
                         </div>
-                         
+
 
                         <div class="d-flex justify-content-end mt-5">
                             <button wire:click="update()" class="btn btn-primary mb-2 btn-pill">{{ __('Update') }}</button>
@@ -231,5 +231,5 @@
 
         </div>
     </div>
-    
+
 </div>

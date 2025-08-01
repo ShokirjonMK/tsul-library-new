@@ -45,7 +45,7 @@
                                                 @endphp
                                                 <input type="text" class="form-control "
                                                     name="title_{{ $k }}" id="title_{{ $k }}"
-                                                    placeholder="{{ __('Title') }}" value="{{ $title }}" />
+                                                    placeholder="{{ __('Title') }}" value="{{ old('title_'.$k, $title) }}" />
                                                 @error('title_{{ $k }}')
                                                     <span class="text-danger">{{ $message }}</span>
                                                 @enderror
@@ -81,7 +81,7 @@
                         if ($department->count() > 0 && isset($department->isActive)) {
                             $isActive = $department->isActive;
                         }
-                        
+
                     @endphp
 
                     <div class="form-group">

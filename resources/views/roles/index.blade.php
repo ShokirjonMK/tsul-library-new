@@ -16,9 +16,9 @@
             </p>
         </div>
         <div>
-            <a href="{{ route('roles.create', app()->getLocale()) }}" class="btn btn-primary float-right">
-                {{ __('Create') }}  
-            </a>
+{{--            <a href="{{ route('roles.create', app()->getLocale()) }}" class="btn btn-primary float-right">--}}
+{{--                {{ __('Create') }}--}}
+{{--            </a>--}}
         </div>
     </div>
     <div class="row">
@@ -31,8 +31,8 @@
                             <thead class="thead">
                                 <tr>
                                     <th>No</th>
-                                    
-									<th>{{ __('Title') }}</th> 
+
+									<th>{{ __('Title') }}</th>
 
                                     <th></th>
                                 </tr>
@@ -40,21 +40,21 @@
                             <tbody>
                             @foreach ($data as $key => $role)
                                     <tr>
-                                        
+
                                         <td>{{ $role->id }}</td>
                                         <td>{{ $role->name }}</td>
 
                                         <td>
-                                            <form action="{{ route('roles.destroy',[app()->getLocale(), $role->id]) }}" method="POST">
-                                                <a class="btn btn-sm btn-primary " href="{{ route('roles.show', [app()->getLocale(), $role->id]) }}"> {{ __('Show') }}</a>
-                                                <a class="btn btn-sm btn-success" href="{{ route('roles.edit', [app()->getLocale(), $role->id]) }}"> {{ __('Edit') }}</a>
-                                                @csrf
-                                                @method('DELETE')
+{{--                                            <a class="btn btn-sm btn-primary " href="{{ route('roles.show', [app()->getLocale(), $role->id]) }}"> {{ __('Show') }}</a>--}}
+{{--                                            <form action="{{ route('roles.destroy',[app()->getLocale(), $role->id]) }}" method="POST">--}}
+{{--                                                <a class="btn btn-sm btn-success" href="{{ route('roles.edit', [app()->getLocale(), $role->id]) }}"> {{ __('Edit') }}</a>--}}
+{{--                                                @csrf--}}
+{{--                                                @method('DELETE')--}}
                                                 {{-- <button type="submit" class="btn btn-danger btn-sm">{{ __('Delete') }}</button> --}}
-                                            </form>
+{{--                                            </form>--}}
                                         </td>
                                     </tr>
-                                @endforeach                                    
+                                @endforeach
                             </tbody>
                         </table>
                     </div>

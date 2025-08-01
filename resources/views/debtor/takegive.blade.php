@@ -14,7 +14,7 @@
                 <span><i class="mdi mdi-chevron-right"></i></span>{{ __('Takegive') }}
             </p>
         </div>
-    </div> 
+    </div>
     <livewire:admin.qarzdorlar.kitob-olish-berish />
 </div>
 @endsection

@@ -23,7 +23,7 @@ use Cviebrock\EloquentSluggable\Sluggable;
  */
 class OrganizationTranslation extends Model
 {
-  use Sluggable;
+    use Sluggable;
 
     static $rules = [
 		'locale' => 'required',
@@ -61,7 +61,7 @@ class OrganizationTranslation extends Model
     {
         return $this->hasOne('App\Models\Organization', 'id', 'organization_id');
     }
-    
+
 
 
 }

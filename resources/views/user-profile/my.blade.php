@@ -35,12 +35,18 @@
                                 <div class="form-group">
                                     <strong>{{ __('Inventar Number') }}:</strong>
                                     <div>
-                                        @php
-                                            if ($user->inventar_number) {
-                                                $generator = new Picqer\Barcode\BarcodeGeneratorPNG();
-                                                echo '<img src="data:image/png;base64,' . base64_encode($generator->getBarcode($user->inventar_number, $generator::TYPE_CODE_128)) . '">';
-                                            }
-                                        @endphp
+                                        @if(($user->inventar_number))
+
+                                            @if (env('USER_BAR_CODE_TYPE')=='QRCODE')
+                                                {!! QrCode::size(100)->generate($user->inventar_number); !!}
+                                            @else
+                                                @php
+                                                      $generator = new Picqer\Barcode\BarcodeGeneratorSVG();
+                                                        echo $generator->getBarcode($user->inventar_number, $generator::TYPE_CODE_128, 2.30);
+
+                                                @endphp
+                                            @endif
+                                        @endif
                                         <br>
                                         {{ $user->inventar_number }}
                                     </div>

@@ -16,7 +16,7 @@
                     </tr>
                 </table>
             </div>
-        </div> 
+        </div>
     </div>
     <hr>
     @if ($updateMode)
@@ -90,10 +90,10 @@
 
                                             <button class="btn btn-danger btn-sm"
                                                 wire:click="destroy({{ $item->id }})">{{ __('Delete') }}</button>
-                                            
+
                                         @endif
 
-                                         
+
                                     </div>
                                 </td>
                             </tr>
@@ -118,7 +118,7 @@
             <a href="{{ route('books.inventarByBookId', [app()->getLocale(), '1', 'book_id' => $book_id]) }}"
                 class="btn btn-primary float-right" data-placement="left" target="_blank">
                 <i class="mdi mdi-18px mdi-printer"></i>
-            </a>  | 
+            </a>  |
             <a href="{{ route('books.inventarByBookId', [app()->getLocale(), '0', 'book_id' => $book_id]) }}"
                 class="btn btn-primary float-right" data-placement="left" target="_blank">
                 <i class="mdi mdi-18px mdi-barcode"></i>
@@ -141,6 +141,7 @@
                             <th>{{ __('Reason for shutdown') }}</th>
                             <th class="text-center">{{ __('Inventar Number') }}</th>
                             <th class="text-center">{{ __('Bar code') }}</th>
+                            <th class="text-center">{{ __('is RFID isset?') }}</th>
                             <th></th>
                         </tr>
                     </thead>
@@ -164,14 +165,16 @@
                                 <td class="text-center">
                                     {{ $book_inventar->inventar_number }}
                                 </td>
+
                                 <td class="text-center">
                                     @if ($book_inventar->bar_code)
                                         @if (env('BAR_CODE_TYPE')=='QRCODE')
                                             {!! QrCode::size(100)->generate($book_inventar->bar_code) !!}
                                         @else
                                             @php
-                                                $generator = new Picqer\Barcode\BarcodeGeneratorPNG();
-                                                echo '<img src="data:image/png;base64,' . base64_encode($generator->getBarcode($book_inventar->bar_code, $generator::TYPE_CODE_128)) . '">';
+                                                $generator = new Picqer\Barcode\BarcodeGeneratorSVG();
+                                                echo $generator->getBarcode($book_inventar->bar_code, $generator::TYPE_CODE_128, 2.30);
+
                                             @endphp
                                         @endif
 
@@ -179,14 +182,18 @@
                                     @endif
                                     {{ $book_inventar->bar_code }}
                                 </td>
-
+                                <td>
+                                    {!! $book_inventar->rfid_tag_id != null
+                                    ? '<span class="badge badge-success"><i class="mdi mdi-check-circle"></i></span>'
+                                    : '<span class="badge badge-danger"><i class="mdi mdi-close-circle "></i></span>' !!}
+                                </td>
                                 <td>
                                     <a href="{{ route('books.inventarone', [app()->getLocale(), $book_inventar->id]) }}"
                                         rel="noopener" target="_blank" class="btn-sm btn btn-success "
                                         target="__blank"><i class="mdi mdi-18px mdi-printer"></i></a>
                                     <a href="{{ url(app()->getLocale() . '/admin/books/') }}/{{ $book_id }}/{{ $book_inventar->bookInformation->id }}&{{ $book_inventar->id }}"
                                         class="btn btn-outline-success">{{ __('Edit') }}</a>
-                                    
+
                                     @if (Auth::user()->hasRole('SuperAdmin') || Auth::user()->hasRole('Admin'))
                                         <br>
                                         <form method="GET"

@@ -41,11 +41,11 @@ use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
  */
 class Faculty extends Model implements TranslatableContract
 {
-    
-    use Translatable; // 2. To add translation methods
-    public $translatedAttributes = ['title', 'locale', 'slug'];
-    
 
+    use Translatable;
+
+    // 2. To add translation methods
+    public $translatedAttributes = ['title', 'locale', 'slug'];
 
 
     /**
@@ -53,7 +53,7 @@ class Faculty extends Model implements TranslatableContract
      *
      * @var array
      */
-    protected $fillable = ['organization_id','branch_id','code','isActive','logo','image_path','icon_path','phone','phone2','email','email2','fax','fax2','created_by','updated_by'];
+    protected $fillable = ['organization_id', 'branch_id', 'code', 'isActive', 'logo', 'image_path', 'icon_path', 'phone', 'phone2', 'email', 'email2', 'fax', 'fax2', 'created_by', 'updated_by'];
 
 
     /**
@@ -63,7 +63,7 @@ class Faculty extends Model implements TranslatableContract
     {
         return $this->hasOne('App\Models\Branch', 'id', 'branch_id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -71,6 +71,7 @@ class Faculty extends Model implements TranslatableContract
     {
         return $this->hasMany('App\Models\FacultyTranslation', 'faculty_id', 'id');
     }
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -78,7 +79,7 @@ class Faculty extends Model implements TranslatableContract
     {
         return $this->hasMany('App\Models\UserProfile', 'faculty_id', 'id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -86,8 +87,8 @@ class Faculty extends Model implements TranslatableContract
     {
         return $this->hasOne('App\Models\Organization', 'id', 'organization_id');
     }
-     
-    
+
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -108,17 +109,23 @@ class Faculty extends Model implements TranslatableContract
     {
         return $query->where('isActive', 1);
     }
-    /**
-     * This is model Observer which helps to do the same actions automatically when you creating or updating models
-     *
-     * @var array
-     */
+
     protected static function boot()
     {
         parent::boot();
         static::creating(function ($model) {
             $model->created_by = Auth::id();
             $model->updated_by = Auth::id();
+            if (Auth::user()) {
+                $user = Auth::user()->profile;
+                if ($user != null) {
+                    $model->organization_id = $user->organization_id;
+                    $model->branch_id = $user->branch_id;
+                }
+            }else{
+                $model->organization_id = 1;
+                $model->branch_id = 1;
+            }
         });
         static::updating(function ($model) {
             $model->updated_by = Auth::id();
@@ -134,11 +141,14 @@ class Faculty extends Model implements TranslatableContract
                 $data[$k][$val] = $request->input($val . '_' . $k);
             }
         }
-        $data['organization_id'] = $request->input('organization_id');  
+        $data['organization_id'] = $request->input('organization_id');
         $data['isActive'] = $request->input('isActive');
         $data['branch_id'] = $request->input('branch_id');
+        $data['code'] = $request->input('code');
+
         return $data;
     }
+
     public static function rules()
     {
         $rules = [
@@ -151,6 +161,48 @@ class Faculty extends Model implements TranslatableContract
         return $rules;
     }
 
+    public static function getFacultyByCode($code)
+    {
+        $checkExist = self::where('code', $code)->first();
 
+        if ($checkExist != null) {
+            return $checkExist;
+        } else {
+            return null;
+        }
+    }
+
+    public static function createOrUpdateByHemisCode($data)
+    {
+        $checkExist = self::where('code', $data['code'])->first();
+        if ($checkExist != null) {
+            $newData = [
+                'code' => $data['code'],
+                'uz' => [
+                    "title" => $data['name'],
+                    "locale" => "uz",
+                    "slug" => null
+                ],
+            ];
+            $checkExist->update($newData);
+            return $checkExist;
+        } else {
+            $newData = [
+                'organization_id' => 1,
+                'isActive' => true,
+                'branch_id' => 1,
+                'code' => $data['code'],
+                'uz' => [
+                    "title" => $data['name'],
+                    "locale" => "uz",
+                    "slug" => null
+                ],
+            ];
+
+            $model = Faculty::create($newData);
+            return $model;
+        }
+
+    }
 
 }

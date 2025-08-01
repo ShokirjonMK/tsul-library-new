@@ -71,7 +71,7 @@ use Illuminate\Support\Facades\DB;
  */
 class Book extends Model
 {
-    
+
     use Sluggable;
     static $rules = [
         'dc_title' => 'required',
@@ -198,7 +198,7 @@ class Book extends Model
     {
         return $this->hasOne('App\Models\User', 'id', 'created_by');
     }
- 
+
      /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -206,7 +206,7 @@ class Book extends Model
     {
         return $this->hasMany('App\Models\ExtraAuthorBook', 'book_id', 'id');
     }
-    
+
 
     public function scopeActive($query)
     {
@@ -221,16 +221,16 @@ class Book extends Model
         }
         return 0;
     }
-    
+
     public static function scopeTotalAllPdf()
     {
-        $model = self::where('full_text_path', '<>', "");        
+        $model = self::where('full_text_path', '<>', "");
         return $model->count();
     }
     public static function scopeTotalAllDcSourcePdf()
-    { 
+    {
         $model = self::where('dc_source', '<>', "");
-        
+
         return $model->count();
     }
 
@@ -238,7 +238,7 @@ class Book extends Model
      * This is model Observer which helps to do the same actions automatically when you creating or updating models
      *
      * @var array
-     */ 
+     */
     protected static function boot()
     {
         parent::boot();
@@ -252,6 +252,7 @@ class Book extends Model
                 if($user != null){
                     $model->organization_id = $user->organization_id;
                     $model->branch_id  = $user->branch_id;
+                    $model->deportment_id  = $user->department_id;
                 }
             }
         });
@@ -317,7 +318,7 @@ class Book extends Model
     public static function GetBibliographicById($id)
     {
         $book = self::find($id);
-       
+
         if ($book != null) {
             $bibliographicdata = '';
             $bibliographicdata.=$book->location_index.'&nbsp; '.$book->authors_mark.'&nbsp;';
@@ -355,17 +356,21 @@ class Book extends Model
             if ($book->books_type_id) {
                 $bibliographicdata .= '.<br> <b>' . $book->booksType->title . '</b>.';
             }
- 
+
+            if ($book->book_language_id) {
+                $bibliographicdata .= '.<b>' . $book->bookLanguage->title . '</b>.';
+            }
+
             return $bibliographicdata;
         }
         return null;
     }
-    
+
     public static function GetCountBookByUserByMonth($user_id = null, $year, $month){
-         
+
         $from = $year . '-' . $month;
         $to = $year . '-' . $month;
-        
+
         $startDate = Carbon::createFromFormat('Y-m', $from)->startOfMonth();
         $endDate = Carbon::createFromFormat('Y-m', $to)->endOfMonth();
         if($user_id != null){
@@ -377,7 +382,7 @@ class Book extends Model
         if (count($cards) > 0) {
             return $cards[0]->nomda;
         }
-        return 0; 
+        return 0;
     }
 
     public static function GetBookTopTemplateById($id)
@@ -421,11 +426,11 @@ class Book extends Model
         }else{
             $cards = DB::select("SELECT SUM(COUNT(DISTINCT b.id)) OVER() as nomda FROM `books` as b where b.status=1 and DATE(b.created_at) between '$startDate' and '$endDate' GROUP by b.id  limit 1;");
         }
-        
+
         if (count($cards) > 0) {
             return $cards[0]->nomda;
         }
-        return 0; 
+        return 0;
     }
 
 }

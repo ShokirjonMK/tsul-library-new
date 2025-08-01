@@ -41,11 +41,11 @@
                                                     if (count($contact->contactTranslations) > 0 && isset($contact->contactTranslations[$step]) && $contact->contactTranslations[$step]->locale == $k) {
                                                         $title = $contact->contactTranslations[$step]->title;
                                                     }
-                                                   
+
                                                 @endphp
                                                 <input type="text" class="form-control "
                                                     name="title_{{ $k }}" id="title_{{ $k }}"
-                                                    placeholder="{{ __('Title') }}" value="{{ $title }}" />
+                                                    placeholder="{{ __('Title') }}"  value="{{ old('title_'.$k, $title) }}" />
                                                 @error('title_{{ $k }}')
                                                     <span class="text-danger">{{ $message }}</span>
                                                 @enderror
@@ -59,11 +59,12 @@
                                                     if (count($contact->contactTranslations) > 0 && isset($contact->contactTranslations[$step]) && $contact->contactTranslations[$step]->locale == $k) {
                                                         $street_address = $contact->contactTranslations[$step]->street_address;
                                                     }
-                                                   
+
                                                 @endphp
                                                 <input type="text" class="form-control "
                                                     name="street_address_{{ $k }}" id="street_address_{{ $k }}"
-                                                    placeholder="{{ __('Title') }}" value="{{ $street_address }}" />
+                                                    placeholder="{{ __('Title') }}"
+                                                       value="{{ old('street_address_'.$k, $street_address) }} " />
                                                 @error('street_address_{{ $k }}')
                                                     <span class="text-danger">{{ $message }}</span>
                                                 @enderror
@@ -107,7 +108,7 @@
                         if ($contact->count() > 0 && isset($contact->isActive)) {
                             $isActive = $contact->isActive;
                         }
-                        
+
                     @endphp
 
                     <div class="form-group">

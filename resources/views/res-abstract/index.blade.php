@@ -32,6 +32,36 @@
                                         placeholder="{{ __('Keyword') }}..." value="{{ $keyword }}">
                                 </div>
                             </div>
+                            <div class="row mt-2">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        {{ Form::label(__('Resource language')) }}
+                                        {!! Form::select('res_lang_id', $resourceLanguages, $res_lang_id, [
+                                            'class' => 'form-select ' . ($errors->has('res_lang_id') ? ' is-invalid' : ''), 'placeholder' => __('Choose')
+                                        ]) !!}
+                                        {!! $errors->first('res_lang_id', '<div class="invalid-feedback">:message</div>') !!}
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        {{ Form::label(__('Resource Type')) }}
+                                        {!! Form::select('res_type_id', $resourceTypes, $res_type_id, [
+                                            'class' => 'form-select ' . ($errors->has('res_type_id') ? ' is-invalid' : ''), 'placeholder' => __('Choose')
+                                        ]) !!}
+                                        {!! $errors->first('res_type_id', '<div class="invalid-feedback">:message</div>') !!}
+                                    </div>
+
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        {{ Form::label(__('Resource Field')) }}
+                                        {!! Form::select('res_field_id', $resourceFields, $res_field_id, [
+                                            'class' => 'form-select ' . ($errors->has('res_field_id') ? ' is-invalid' : ''), 'placeholder' => __('Choose')
+                                        ]) !!}
+                                        {!! $errors->first('res_field_id', '<div class="invalid-feedback">:message</div>') !!}
+                                    </div>
+                                </div>
+                            </div>
 
                             <div class="card-footer">
                                 <button type="submit"
@@ -39,7 +69,7 @@
 
                                 <a href="{{ route('res-abstracts.index', app()->getLocale()) }}"
                                     class="btn btn-sm btn-info ">{{ __('Clear') }}</a>
-                                 
+
                             </div>
                         </form>
                         <div class="row">
@@ -59,11 +89,12 @@
                                         <th>{{ __('IsActive') }}</th>
                                         <th>{{ __('Title') }}</th>
                                         <th>{{ __('Published Year') }}</th>
-                                        <th>{{ __('Bar code') }}</th>
+                                        <th class="text-center">{{ __('Bar code') }}</th>
                                         <th>{{ __('Inventar Number') }}</th>
                                         <th>{{ __('Resource language') }}</th>
                                         <th>{{ __('Resource Type') }}</th>
                                         <th>{{ __('Resource Field') }}</th>
+
                                         <th>{{ __('Image') }}</th>
                                         <th>{{ __('Full Text Path') }}</th>
 
@@ -80,7 +111,20 @@
                                                 : '<span class="badge badge-danger"><i class="mdi mdi-close-circle "></i></span>' !!}</td>
                                             <td>{{ $scientificPublication->title }}</td>
                                             <td>{{ $scientificPublication->publication_year }}</td>
-                                            <td>{{ $scientificPublication->barcode }}</td>
+                                            <td class="text-center">
+                                                @if (env('BAR_CODE_TYPE')=='QRCODE')
+                                                    {!! QrCode::size(100)->generate($scientificPublication->barcode) !!}
+                                                @else
+                                                    @php
+
+                                                        $generator = new Picqer\Barcode\BarcodeGeneratorSVG();
+                                                        echo $generator->getBarcode($scientificPublication->barcode, $generator::TYPE_CODE_128, 2.30);
+                                                    @endphp
+                                                @endif
+
+                                                <br>
+                                                {{ $scientificPublication->barcode }}
+                                            </td>
                                             <td>{{ $scientificPublication->inventar_number }}</td>
                                             <td>
                                                 {!! $scientificPublication->resTypeLang ? $scientificPublication->resTypeLang->title : '' !!}
@@ -90,6 +134,10 @@
                                             </td>
                                             <td>
                                                 {!! $scientificPublication->resField ? $scientificPublication->resField->title : '' !!}
+                                            </td>
+                                            <td class="text-center">
+
+                                                {{ $scientificPublication->inventar_number }}
                                             </td>
                                             <td>
                                                 @if ($scientificPublication->image_path)

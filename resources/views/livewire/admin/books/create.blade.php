@@ -31,7 +31,7 @@
                                         placeholder="{{ __("Author's mark") }}" name="authors_mark" id="authors_mark"
                                         wire:model="authors_mark">
                                     {!! $errors->first('authors_mark', '<div class="invalid-feedback">:message</div>') !!}
-                                </div> 
+                                </div>
                                 <div class="form-group">
                                     <label for="dc_published_city">{{ __('Dc Published City') }}</label>
                                     <input type="text"
@@ -49,7 +49,7 @@
                                     {!! $errors->first('dc_publisher', '<div class="invalid-feedback">:message</div>') !!}
                                 </div>
                                 <br>
-                                
+
 
                                 <div class="form-group">
                                     <label for="author-dropdown">{{ __('Dc Authors') }}</label>
@@ -93,7 +93,7 @@
                                     <label for="dc_description">{{ __('Dc Description') }}</label>
                                     <textarea name="dc_description" class="body form-control" id="dc_description" rows="3"
                                         wire:model.defer="dc_description">
-                                        {{ $dc_description }} 
+                                        {{ $dc_description }}
                                     </textarea>
                                     {!! $errors->first('dc_description', '<div class="invalid-feedback">:message</div>') !!}
                                 </div>
@@ -173,7 +173,7 @@
                                     <select id="books_type"
                                         class=" form-select form-control {{ $errors->has('books_type') ? ' is-invalid' : '' }}"
                                         wire:model="books_type">
-                                        <option value="0">{{ __('Choose') }}</option>
+                                        <option value>{{ __('Choose') }}</option>
                                         @foreach ($bookTypes as $k => $v)
                                             <option value="{{ $k }}">{{ $v }}</option>
                                         @endforeach
@@ -187,7 +187,7 @@
                                     <select id="book_language_id"
                                         class=" form-select form-control {{ $errors->has('book_language_id') ? ' is-invalid' : '' }}"
                                         wire:model="book_language">
-                                        <option value="0">{{ __('Choose') }}</option>
+                                        <option value>{{ __('Choose') }}</option>
 
                                         @foreach ($bookLanguages as $k => $v)
                                             <option value="{{ $k }}">{{ $v }}</option>
@@ -202,7 +202,7 @@
                                     <select id="book_text_id"
                                         class=" form-select form-control {{ $errors->has('book_text_id') ? ' is-invalid' : '' }}"
                                         wire:model="book_text">
-                                        <option value="0">{{ __('Choose') }}</option>
+                                        <option value>{{ __('Choose') }}</option>
                                         @foreach ($bookTexts as $k => $v)
                                             <option value="{{ $k }}">{{ $v }}</option>
                                         @endforeach
@@ -216,7 +216,7 @@
                                     <select id="book_text_type_id"
                                         class=" form-select form-control {{ $errors->has('book_text_type_id') ? ' is-invalid' : '' }}"
                                         wire:model="book_text_type">
-                                        <option value="0">{{ __('Choose') }}</option>
+                                        <option value>{{ __('Choose') }}</option>
                                         @foreach ($bookTextTypes as $k => $v)
                                             <option value="{{ $k }}">{{ $v }}</option>
                                         @endforeach
@@ -230,7 +230,7 @@
                                     <select id="book_access_type_id"
                                         class=" form-select form-control {{ $errors->has('book_access_type_id') ? ' is-invalid' : '' }}"
                                         wire:model="book_access_type">
-                                        <option value="0">{{ __('Choose') }}</option>
+                                        <option value>{{ __('Choose') }}</option>
                                         @foreach ($bookAccessTypes as $k => $v)
                                             <option value="{{ $k }}">{{ $v }}</option>
                                         @endforeach

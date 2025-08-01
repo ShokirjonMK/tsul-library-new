@@ -224,6 +224,7 @@
     @yield('page-js-script')
     @stack('scripts')
     @livewireScripts
+    @livewireChartsScripts
 </body>
 
 </html>

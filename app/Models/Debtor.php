@@ -34,8 +34,8 @@ use Illuminate\Support\Facades\DB;
  * @property Branch $branch
  * @property Department $department
  * @property User $user
- * @property User $user
- * @property User $user
+ * @property User $userTo
+ * @property User $userBy
  * @package App
  * @mixin \Illuminate\Database\Eloquent\Builder
  */
@@ -44,7 +44,7 @@ class Debtor extends Model
     public static $DELETED = 0;
     public static $GIVEN = 1;
     public static $TAKEN = 2;
-    
+
     static $rules = [
 		'status' => 'required',
 		'taken_time' => 'required',
@@ -52,7 +52,7 @@ class Debtor extends Model
 		'how_many_days' => 'required',
     ];
 
- 
+
     /**
      * Attributes that should be mass-assignable.
      *
@@ -68,7 +68,7 @@ class Debtor extends Model
     {
         return $this->hasOne('App\Models\Book', 'id', 'book_id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -76,7 +76,7 @@ class Debtor extends Model
     {
         return $this->hasOne('App\Models\BookInformation', 'id', 'book_information_id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -84,7 +84,7 @@ class Debtor extends Model
     {
         return $this->hasOne('App\Models\BookInventar', 'id', 'book_inventar_id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -92,7 +92,7 @@ class Debtor extends Model
     {
         return $this->hasOne('App\Models\Branch', 'id', 'branch_id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -100,7 +100,7 @@ class Debtor extends Model
     {
         return $this->hasOne('App\Models\Department', 'id', 'department_id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -108,8 +108,8 @@ class Debtor extends Model
     {
         return $this->hasOne('App\Models\User', 'id', 'reader_id');
     }
-    
-     
+
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -149,15 +149,15 @@ class Debtor extends Model
     public static function GetStatus($status)
     {
         if($status==self::$GIVEN){
-            return "<span class='btn btn-sm btn-primary'>".__("GIVEN")."</span>"; 
+            return "<span class='btn btn-sm btn-primary'>".__("GIVEN")."</span>";
         }elseif($status==self::$TAKEN){
-            return "<span class='btn btn-sm btn-success'>".__("TAKEN")."</span>"; 
+            return "<span class='btn btn-sm btn-success'>".__("TAKEN")."</span>";
         }elseif($status==self::$DELETED){
             return __("DELETED");
         }
         return __("UNKNOWN");
     }
-    
+
     public static function GetStatusCount($reader_id, $from, $to, $status)
     {
         $statdebtor_by_reader = Debtor::with(['reader', 'reader.profile'])->where('reader_id', '=', $reader_id)->where('status', '=', $status)->whereBetween(DB::raw('DATE(taken_time)'), [$from, $to])->get();

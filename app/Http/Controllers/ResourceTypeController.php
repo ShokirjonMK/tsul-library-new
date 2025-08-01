@@ -45,7 +45,7 @@ class ResourceTypeController extends Controller
     public function store(Request $request)
     {
         request()->validate(ResourceType::rules());
-        
+
         $resourceType = ResourceType::create(ResourceType::GetData($request));
 
         toast(__('Created successfully.'), 'success');
@@ -90,7 +90,7 @@ class ResourceTypeController extends Controller
     {
 
         request()->validate(ResourceType::rules());
-        
+
         $resourceType->update(ResourceType::GetData($request));
         toast(__('Updated successfully.'), 'success');
 

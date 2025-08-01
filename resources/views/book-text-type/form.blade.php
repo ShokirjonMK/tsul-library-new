@@ -21,7 +21,7 @@
 
                         @php
                             $step = 0;
-                            
+
                         @endphp
                         @foreach (config('app.locales') as $k => $locale)
                             <div class="tab-pane fade {{ $k == 'uz' ? 'active show' : '' }}"
@@ -46,7 +46,7 @@
                                                 @endphp
                                                 <input type="text" class="form-control "
                                                     name="title_{{ $k }}" id="title_{{ $k }}"
-                                                    placeholder="{{ __('Title') }}" value="{{ $title }}" />
+                                                    placeholder="{{ __('Title') }}"  value="{{ old('title_'.$k, $title) }}" />
                                                 @error('title_{{ $k }}')
                                                     <span class="text-danger">{{ $message }}</span>
                                                 @enderror
@@ -82,7 +82,7 @@
                         if ($bookTextType->count() > 0 && isset($bookTextType->isActive)) {
                             $isActive = $bookTextType->isActive;
                         }
-                        
+
                     @endphp
 
                     <div class="form-group row">

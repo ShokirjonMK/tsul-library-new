@@ -3,15 +3,41 @@
         ->getRoleNames()
         ->toArray();
 @endphp
+<li class="has-sub {{ \Request::is(app()->getLocale() . '/admin/subject-groups*') ? 'active expand' : ''  || \Request::is(app()->getLocale() . '/admin/education-types*') ? 'active expand' : '' || \Request::is(app()->getLocale() . '/admin/subjects*') ? 'active expand' : '' }}">
+    <a class="sidenav-item-link" href="javascript:void(0)">
+        <i class="mdi mdi-play-protected-content"></i>
+        <span class="nav-text">{{ __('Subjects Group') }}</span> <b class="caret"></b>
+    </a>
+    <div class="collapse {{ \Request::is(app()->getLocale() . '/admin/subject-groups*') ? 'show' : '' || \Request::is(app()->getLocale() . '/admin/education-types*') ? ' show ' : ''   || \Request::is(app()->getLocale() . '/admin/subjects*') ? ' show ' : ''  }}">
+        <ul class="sub-menu" id="vendors" data-parent="#sidebar-menu">
 
+            <li class="{{ \Request::is(app()->getLocale() . '/admin/subject-groups*') ? 'active' : '' }}">
+                <a href="{{ url(app()->getLocale() . '/admin/subject-groups') }}" class="sidenav-item-link ">
+                    <span class="nav-text">{{ __('Subject Group') }}</span>
+                </a>
+            </li>
+            <li class="{{ \Request::is(app()->getLocale() . '/admin/education-types*') ? 'active' : '' }}">
+                <a href="{{ url(app()->getLocale() . '/admin/education-types') }}" class="sidenav-item-link ">
+                    <span class="nav-text">{{ __('Education Type') }}</span>
+                </a>
+            </li>
+            <li class="{{ \Request::is(app()->getLocale() . '/admin/subject*') ? 'active' : '' }}">
+                <a href="{{ url(app()->getLocale() . '/admin/subjects') }}" class="sidenav-item-link ">
+                    <span class="nav-text">{{ __('Subjects') }}</span>
+                </a>
+            </li>
+
+        </ul>
+    </div>
+</li>
 <li
-    class="has-sub {{ \Request::is(app()->getLocale() . '/admin/extra-authors*') || \Request::is(app()->getLocale() . '/admin/depositories*') || \Request::is(app()->getLocale() . '/admin/book-acts*') || \Request::is(app()->getLocale() . '/admin/book*') || \Request::is(app()->getLocale() . '/admin/subjects*') || \Request::is(app()->getLocale() . '/admin/whos*') || \Request::is(app()->getLocale() . '/admin/wheres*') ? 'active expand' : '' }}">
+    class="has-sub {{ \Request::is(app()->getLocale() . '/admin/extra-authors*') || \Request::is(app()->getLocale() . '/admin/depositories*') || \Request::is(app()->getLocale() . '/admin/book-acts*') || \Request::is(app()->getLocale() . '/admin/book*')  || \Request::is(app()->getLocale() . '/admin/whos*') || \Request::is(app()->getLocale() . '/admin/wheres*') ? 'active expand' : '' }}">
     <a class="sidenav-item-link" href="javascript:void(0)">
         <i class="mdi mdi-bookshelf"></i>
-        <span class="nav-text">{{ __('Books') }}</span> <b class="caret"></b>
+        <span class="nav-text">{{ __('Cataloging') }}</span> <b class="caret"></b>
     </a>
     <div
-        class="collapse {{ \Request::is(app()->getLocale() . '/admin/extra-authors*') || \Request::is(app()->getLocale() . '/admin/depositories*') || \Request::is(app()->getLocale() . '/admin/book-acts*') || \Request::is(app()->getLocale() . '/admin/book*') || \Request::is(app()->getLocale() . '/admin/subjects*') || \Request::is(app()->getLocale() . '/admin/whos*') || \Request::is(app()->getLocale() . '/admin/wheres*') ? 'show' : '' }}">
+        class="collapse {{ \Request::is(app()->getLocale() . '/admin/extra-authors*') || \Request::is(app()->getLocale() . '/admin/depositories*') || \Request::is(app()->getLocale() . '/admin/book-acts*') || \Request::is(app()->getLocale() . '/admin/book*') || \Request::is(app()->getLocale() . '/admin/whos*') || \Request::is(app()->getLocale() . '/admin/wheres*') ? 'show' : '' }}">
         <ul class="sub-menu" id="vendors" data-parent="#sidebar-menu">
 
             <li class="{{ \Request::is(app()->getLocale() . '/admin/book-types*') ? 'active' : '' }}">
@@ -45,11 +71,7 @@
                     <span class="nav-text">{{ __('Book Subject') }}</span>
                 </a>
             </li>
-            <li class="{{ \Request::is(app()->getLocale() . '/admin/subject*') ? 'active' : '' }}">
-                <a href="{{ url(app()->getLocale() . '/admin/subjects') }}" class="sidenav-item-link ">
-                    <span class="nav-text">{{ __('Subjects') }}</span>
-                </a>
-            </li>
+
             <li class="{{ \Request::is(app()->getLocale() . '/admin/book-access-types*') ? 'active' : '' }}">
                 <a href="{{ url(app()->getLocale() . '/admin/book-access-types') }}" class="sidenav-item-link ">
                     <span class="nav-text">{{ __('Book Access Type') }}</span>
@@ -75,7 +97,7 @@
 
             <li class="{{ \Request::is(app()->getLocale() . '/admin/books*') ? 'active' : '' }}">
                 <a href="{{ url(app()->getLocale() . '/admin/books') }}" class="sidenav-item-link ">
-                    <span class="nav-text">{{ __('Books') }}</span>
+                    <span class="nav-text">{{ __('Electronic catalog') }}</span>
                 </a>
             </li>
 
@@ -169,11 +191,11 @@
 
 
 <li
-    class="has-sub {{ \Request::is(app()->getLocale() . '/admin/journals*') || \Request::is(app()->getLocale() . '/admin/magazine-issues*') ? 'active expand' : '' }}">
+    class="has-sub {{ \Request::is(app()->getLocale() . '/admin/journal-articles*') || \Request::is(app()->getLocale() . '/admin/journals*') || \Request::is(app()->getLocale() . '/admin/magazine-issues*') ? 'active expand' : '' }}">
     <a class="sidenav-item-link" href="javascript:void(0)">
         <i class="mdi mdi-bookmark-box-multiple"></i>
         <span class="nav-text">{{ __('Periodicals') }}</span> <b class="caret"></b>
-    </a> 
+    </a>
     <div
         class="collapse {{ \Request::is(app()->getLocale() . '/admin/journal-articles*') || \Request::is(app()->getLocale() . '/admin/journals*') || \Request::is(app()->getLocale() . '/admin/magazine-issues*') ? 'show' : '' }}">
         <ul class="sub-menu" id="vendors" data-parent="#sidebar-menu">
@@ -238,11 +260,11 @@
                         <span class="nav-text">{{ __('Roles') }}</span>
                     </a>
                 </li>
-                <li class="{{ \Request::is(app()->getLocale() . '/admin/permissions*') ? 'active' : '' }}">
-                    <a href="{{ url(app()->getLocale() . '/admin/permissions') }}" class="sidenav-item-link ">
-                        <span class="nav-text">{{ __('Permissions') }}</span>
-                    </a>
-                </li>
+{{--                <li class="{{ \Request::is(app()->getLocale() . '/admin/permissions*') ? 'active' : '' }}">--}}
+{{--                    <a href="{{ url(app()->getLocale() . '/admin/permissions') }}" class="sidenav-item-link ">--}}
+{{--                        <span class="nav-text">{{ __('Permissions') }}</span>--}}
+{{--                    </a>--}}
+{{--                </li>--}}
             @endif
             <li class="{{ \Request::is(app()->getLocale() . '/admin/users*') ? 'active' : '' }}">
                 <a href="{{ url(app()->getLocale() . '/admin/users') }}" class="sidenav-item-link ">
@@ -255,13 +277,13 @@
 
 {{-- Statistics --}}
 <li
-    class="has-sub {{ \Request::is(app()->getLocale() . '/admin/employeestat*') ||  \Request::is(app()->getLocale() . '/admin/statbookwhos*') || \Request::is(app()->getLocale() . '/admin/subjects*') || \Request::is(app()->getLocale() . '/admin/statbooktexts*') || \Request::is(app()->getLocale() . '/admin/statbooklangs*') || \Request::is(app()->getLocale() . '/admin/statdebtors*') || \Request::is(app()->getLocale() . '/admin/statbooks*') || \Request::is(app()->getLocale() . '/admin/statbooktypes*') || \Request::is(app()->getLocale() . '/admin/statdebtorsbooktypes*') ? 'active expand' : '' }}">
+    class="has-sub {{ \Request::is(app()->getLocale() . '/admin/employeestat*') ||  \Request::is(app()->getLocale() . '/admin/statbookwhos*') || \Request::is(app()->getLocale() . '/admin/statbooktexts*') || \Request::is(app()->getLocale() . '/admin/statbooklangs*') || \Request::is(app()->getLocale() . '/admin/statdebtors*') || \Request::is(app()->getLocale() . '/admin/statbooks*') || \Request::is(app()->getLocale() . '/admin/statbooktypes*') || \Request::is(app()->getLocale() . '/admin/statdebtorsbooktypes*') ? 'active expand' : '' }}">
     <a class="sidenav-item-link" href="javascript:void(0)">
         <i class="mdi mdi-chart-timeline"></i>
         <span class="nav-text">{{ __('Statistics') }}</span> <b class="caret"></b>
     </a>
-    <div     
-        class="collapse {{ \Request::is(app()->getLocale() . '/admin/employeestat*') || \Request::is(app()->getLocale() . '/admin/statbookwhos*') || \Request::is(app()->getLocale() . '/admin/subjects*') || \Request::is(app()->getLocale() . '/admin/statbooktexts*') || \Request::is(app()->getLocale() . '/admin/statbooklangs*') || \Request::is(app()->getLocale() . '/admin/statdebtors*') || \Request::is(app()->getLocale() . '/admin/statbooks*') || \Request::is(app()->getLocale() . '/admin/statbooktypes*') || \Request::is(app()->getLocale() . '/admin/statdebtorsbooktypes*') ? 'show' : '' }}">
+    <div
+        class="collapse {{ \Request::is(app()->getLocale() . '/admin/employeestat*') || \Request::is(app()->getLocale() . '/admin/statbookwhos*') || \Request::is(app()->getLocale() . '/admin/statbooktexts*') || \Request::is(app()->getLocale() . '/admin/statbooklangs*') || \Request::is(app()->getLocale() . '/admin/statdebtors*') || \Request::is(app()->getLocale() . '/admin/statbooks*') || \Request::is(app()->getLocale() . '/admin/statbooktypes*') || \Request::is(app()->getLocale() . '/admin/statdebtorsbooktypes*') ? 'show' : '' }}">
         <ul class="sub-menu" id="users" data-parent="#sidebar-menu">
 
             <li class="{{ \Request::is(app()->getLocale() . '/admin/employeestat*') ? 'active' : '' }}">
@@ -321,7 +343,7 @@
                 <a href="{{ url(app()->getLocale() . '/admin/users') }}" class="sidenav-item-link ">
                     <span class="nav-text">{{ __('User list') }}</span>
                 </a>
-            </li> 
+            </li>
              --}}
         </ul>
     </div>
@@ -334,6 +356,13 @@
     <a href="{{ url(app()->getLocale() . '/admin/imports') }}" class="sidenav-item-link ">
         <i class="mdi mdi-refresh"></i>
         <span class="nav-text">{{ __('Import') }}</span>
+    </a>
+</li>
+
+<li class="{{ \Request::is(app()->getLocale() . '/admin/unilibrary*') ? 'active' : '' }}">
+    <a href="{{ url(app()->getLocale() . '/admin/unilibrary') }}" class="sidenav-item-link ">
+        <i class="mdi mdi-refresh"></i>
+        <span class="nav-text">{{ __('Unilibrary') }}</span>
     </a>
 </li>
 
@@ -376,7 +405,7 @@
         <span class="nav-text">{{ __('Groups') }}</span>
     </a>
 </li>
-{{-- 
+{{--
 <li class="{{ \Request::is(app()->getLocale() . '/admin/udcs*') ? 'active' : '' }}">
     <a href="{{ url(app()->getLocale() . '/admin/udcs') }}" class="sidenav-item-link ">
         <i class="mdi mdi-format-list-numbered"></i>

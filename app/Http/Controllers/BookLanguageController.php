@@ -45,21 +45,21 @@ class BookLanguageController extends Controller
         $keyword=trim($request->get('keyword'));
         $q = BookLanguage::query();
         $perPage = 20;
-        if($keyword != null){ 
+        if($keyword != null){
             $q->whereHas('translations', function ($query) use ($keyword) {
                 if($keyword) {
                     $query->where('title', 'like', '%'.$keyword.'%');
                 }
-            }); 
+            });
         }
 
-        $bookLanguages = $q->withCount('books')->with('translations')->paginate($perPage);
+        $bookLanguages = $q->withCount('books')->with('translations')->orderBy('id', 'desc')->paginate($perPage);
 
         return view('book-language.index', compact('bookLanguages', 'keyword'))
             ->with('i', (request()->input('page', 1) - 1) * $bookLanguages->perPage());
     }
 
-    
+
     public function export($language, Request $request){
         $file_name = 'book-language_'.date('Y_m_d_H_i_s').'.xlsx';
         $keyword=trim($request->get('keyword'));
@@ -194,7 +194,7 @@ class BookLanguageController extends Controller
             // $booksType->isActive=false;
             // $booksType->Save();
             toast(__('Deleted successfully.'), 'info');
-            return back();    
+            return back();
         }else{
             return view('book-languages.show', compact('bookLanguage'));
         }

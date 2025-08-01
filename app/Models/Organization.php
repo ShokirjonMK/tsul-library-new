@@ -37,11 +37,9 @@ use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
  */
 class Organization extends Model implements TranslatableContract
 {
-    
+
     use Translatable; // 2. To add translation methods
     public $translatedAttributes = ['title', 'address', 'locale', 'slug'];
-    
-
 
     /**
      * Attributes that should be mass-assignable.
@@ -58,8 +56,8 @@ class Organization extends Model implements TranslatableContract
     {
         return $this->hasMany('App\Models\OrganizationTranslation', 'organization_id', 'id');
     }
-    
-    
+
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -112,11 +110,12 @@ class Organization extends Model implements TranslatableContract
             $filePath = $request->file('file')->storeAs('organizations/photo', $journal_coverage_image_name, 'public');
             $data['image_path'] = $journal_coverage_image_name;
         }
- 
+
         $data['isActive'] = $request->input('isActive');
-         
+
         return $data;
     }
+
     public static function rules()
     {
         foreach (config('app.locales') as $k => $locale) {
@@ -139,6 +138,5 @@ class Organization extends Model implements TranslatableContract
     {
         return $this->hasMany('App\Models\Book', 'organization_id', 'id');
     }
-    
 
 }

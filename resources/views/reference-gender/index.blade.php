@@ -23,6 +23,24 @@
         <div class="row">
             <div class="col-12">
                 <div class="ec-vendor-list card card-default">
+                    <div class="card-header">
+
+                        <div class="row">
+                            <div class="col">
+                                <br>
+
+                                {!! __('Number of records is :attribute', ['attribute' => $referenceGenders->total()]) !!}
+
+                            </div>
+{{--                            <div class="col-md-4">--}}
+
+{{--                                @if (env('LOGIN_WITH_HEMIS')==true)--}}
+{{--                                    <livewire:admin.hemis.get-references-component :referenceType="'gender'" />--}}
+{{--                                @endif--}}
+{{--                            </div>--}}
+                        </div>
+                    </div>
+
                     <div class="card-body">
                         <div class="table-responsive">
 
@@ -33,6 +51,7 @@
 
                                         <th>{{ __('Title') }}</th>
                                         <th>{{ __('IsActive') }}</th>
+                                        <th>{{ __('HEMIS Code') }}</th>
                                         <th>{{ __('User count') }}</th>
 
 
@@ -49,6 +68,7 @@
                                             <td>{!! $referenceGender->isActive == 1
                                                 ? '<span class="badge badge-success"><i class="mdi mdi-check-circle"></i></span>'
                                                 : '<span class="badge badge-danger"><i class="mdi mdi-close-circle "></i></span>' !!}</td>
+                                            <td>{{ $referenceGender->code }}</td>
                                             <td>{{ $referenceGender->users_count }}</td>
 
 

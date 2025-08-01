@@ -16,7 +16,7 @@
         </div>
         <div>
             <a href="{{ route('user-types.create', app()->getLocale()) }}" class="btn btn-primary float-right">
-                {{ __('Create') }}  
+                {{ __('Create') }}
             </a>
         </div>
     </div>
@@ -30,9 +30,11 @@
                             <thead class="thead">
                                 <tr>
                                     <th>No</th>
-                                    
+
 									<th>{{ __('Title') }}</th>
-									<th>{{ __('IsActive') }}</th> 
+                                    <th>{{ __('HEMIS Code') }}</th>
+
+                                    <th>{{ __('IsActive') }}</th>
 									<th>{{ __('User count') }}</th>
 
                                     <th></th>
@@ -43,6 +45,8 @@
                                     <tr>
                                         <td>{{ $userType->id }}</td>
                                         <td>{{ $userType->title }}</td>
+                                        <td>{{ $userType->code }}</td>
+
                                         <td>{!! $userType->isActive == 1 ? '<span class="badge badge-success"><i class="mdi mdi-check-circle"></i></span>' : '<span class="badge badge-danger"><i class="mdi mdi-close-circle "></i></span>' !!}</td>
                                         <td>{{ $userType->users_count }}</td>
 
@@ -56,10 +60,10 @@
                                             </form>
                                         </td>
                                     </tr>
-                                @endforeach                                    
+                                @endforeach
                             </tbody>
                         </table>
-                        
+
                     </div>
                     @if ($userTypes->count() > 0)
                         {!! $userTypes->appends(Request::all())->links('vendor.pagination.default') !!}

@@ -26,5 +26,8 @@
   "bugs": {
     "url": "https://github.com/Templarian/MaterialDesign/issues"
   },
-  "homepage": "https://materialdesignicons.com"
+  "homepage": "https://materialdesignicons.com",
+  "dependencies": {
+    "@mdi/font": "file:"
+  }
 }

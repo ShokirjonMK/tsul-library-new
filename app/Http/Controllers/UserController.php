@@ -4,8 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Charts\GenderChart;
 use App\Exports\UsersExport;
-use App\Imports\UsersImport;
-use App\Jobs\ProcessImportUsers;
 use App\Models\BooksType;
 use App\Models\Branch;
 use App\Models\Department;
@@ -19,7 +17,6 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Models\Role;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
 
 class UserController extends Controller
@@ -32,6 +29,8 @@ class UserController extends Controller
     function __construct()
     {
         $this->middleware(['role:SuperAdmin|Admin|Manager']);
+//        $this->middleware(['role:Admin|Manager'])->except(['delete', 'edit']); // Restricted actions
+
     }
 
 
@@ -42,7 +41,6 @@ class UserController extends Controller
      */
     public function index($language, Request $request)
     {
-        
         $data = UserProfile::select('gender_id', \DB::raw("count(gender_id) as count"))->whereNotNull('gender_id')->groupBy('gender_id')
             ->get();
         $chart = new GenderChart;
@@ -86,6 +84,7 @@ class UserController extends Controller
         $faculty_id = trim($request->get('faculty_id'));
         $chair_id = trim($request->get('chair_id'));
         $group_id = trim($request->get('group_id'));
+        $id = trim($request->get('id'));
 
         $roles = Role::all();
 
@@ -116,6 +115,9 @@ class UserController extends Controller
             $show_accardion = true;
 
             $q->orWhere('inventar', '=', $to);
+        }
+        if (!empty($id)) {
+            $q->orWhere('id', '=', $id);
         }
 
         if ($name != null) {
@@ -191,7 +193,7 @@ class UserController extends Controller
         $data = $q->with('roles')->orderBy('id', 'desc')->paginate(20);
 
 
-        return view('users.index', compact('chart', 'data', 'name', 'email', 'roles', 'role_id', 'inventar_number', 'show_accardion', 'keyword', 'organizations', 'branches', 'departments', 'department_id', 'organization_id', 'branch_id', 'faculty_id', 'chair_id', 'group_id', 'page', 'from', 'to', 'request'));
+        return view('users.index', compact('chart', 'data', 'name', 'email', 'roles', 'role_id', 'inventar_number', 'show_accardion', 'keyword', 'organizations', 'branches', 'departments', 'department_id', 'organization_id', 'branch_id', 'faculty_id', 'chair_id', 'group_id', 'page', 'from', 'to', 'request', 'id'));
     }
 
     public function export($language, Request $request)
@@ -204,10 +206,10 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function printinventar($language, $id,  Request $request)
+    public function printinventar($language, $id, Request $request)
     {
         $from = trim($request->get('from'));
         $to = trim($request->get('to'));
@@ -217,7 +219,7 @@ class UserController extends Controller
                 ->get();
             // $customPaper = array(0,0,720,1440);
 
-            // $pdf = Pdf::loadView('pdf.inventarall', compact('bookInventars'));     
+            // $pdf = Pdf::loadView('pdf.inventarall', compact('bookInventars'));
             // return $pdf->download('invoices.pdf');
             return view('pdf.inventaruserall', compact('bookInventars'));
         } else {
@@ -232,6 +234,7 @@ class UserController extends Controller
             }
         }
     }
+
     /**
      * Show the form for creating a new resource.
      *
@@ -249,7 +252,7 @@ class UserController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -264,14 +267,14 @@ class UserController extends Controller
                 'roles' => 'required'
             ],
             [
-                'name.required' =>  __('The :attribute field is required.'),
-                'password.required' =>  __('The :attribute field is required.'),
-                'email.required' =>  __('The :attribute field is required.'),
-                'roles.required' =>  __('The :attribute field is required.'),
-                'inventar_number.required' =>  __('The :attribute field is required.'),
-                'inventar_number.unique' =>  __('The :attribute has already been taken.'),
-                'password.confirmed' =>  __('The :attribute confirmation does not match.'),
-                'email.unique' =>  __('The :attribute has already been taken.'),
+                'name.required' => __('The :attribute field is required.'),
+                'password.required' => __('The :attribute field is required.'),
+                'email.required' => __('The :attribute field is required.'),
+                'roles.required' => __('The :attribute field is required.'),
+                'inventar_number.required' => __('The :attribute field is required.'),
+                'inventar_number.unique' => __('The :attribute has already been taken.'),
+                'password.confirmed' => __('The :attribute confirmation does not match.'),
+                'email.unique' => __('The :attribute has already been taken.'),
             ],
             [
                 'inventar_number' => __('Inventar Number'),
@@ -296,36 +299,47 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show($language, $id, Request $request)
     {
         $user = User::find($id);
-        $year = (trim($request->get('year'))) ? trim($request->get('year')) : date('Y');
-        if (!is_numeric($year) || $year < 2022) {
-            $year = date('Y');
+        $role = $user->getRoleNames()->toArray();
+        if ((in_array('SuperAdmin', $role) || in_array('Admin', $role) || in_array('Manager', $role)) && !Auth::user()->hasRole('SuperAdmin')) {
+            toast(__("You don't have access"), 'warning');
+//            return back(302)->with('error', 'Something went wrong!');
+            return redirect()->route('users.index', app()->getLocale())
+                ->with('error', "You don't have access");
+        } else {
+            $year = (trim($request->get('year'))) ? trim($request->get('year')) : date('Y');
+            if (!is_numeric($year) || $year < 2022) {
+                $year = date('Y');
+            }
+            $months = BooksType::getMonths();
+            $years = range(2022, strftime("%Y", time()));
+            return view('users.show', compact('user', 'year', 'years', 'months'));
         }
-        $months = BooksType::getMonths();
-        $years = range(2022, strftime("%Y", time()));
-        return view('users.show', compact('user', 'year', 'years', 'months'));
+
+
     }
+
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function card($language, Request $request)
     {
         $id = trim($request->get('userid'));
 
-
-        $keyword = trim($request->get('keyword'));
-        $inventar_number = trim($request->get('inventar_number'));
-
         $from = trim($request->get('from'));
         $to = trim($request->get('to'));
+
+        $page = trim($request->get('page'));
+        $keyword = trim($request->get('keyword'));
+        $inventar_number = trim($request->get('inventar_number'));
         $name = trim($request->get('name'));
         $email = trim($request->get('email'));
         $role_id = trim($request->get('role_id'));
@@ -336,20 +350,31 @@ class UserController extends Controller
         $chair_id = trim($request->get('chair_id'));
         $group_id = trim($request->get('group_id'));
 
-        // $data = User::orderBy('id', 'desc')->paginate(20);
+
         $q = User::query();
 
-
+        if (!empty($id)) {
+            // $users = User::take(61)->get();
+            // $user = User::find($id);
+            $q->orWhere('id', '=', $id);
+        }
         if (!empty($from) && !empty($to)) {
             // intval(substr('' . trim($request->get('from'))
             $q->orWhereBetween('inventar', [$from, $to]);
+            // $q->orWhere(function($query) use ($from, $to){
+            //     $query->whereBetween('id', [intval($from),intval($to)])
+            //           ->orWhereBetween('id', [intval($from),intval($to)]);
+            //   });
+            $show_accardion = true;
         }
 
         if (!empty($from)) {
+            $show_accardion = true;
 
             $q->orWhere('inventar', '=', $from);
         }
         if (!empty($to)) {
+            $show_accardion = true;
 
             $q->orWhere('inventar', '=', $to);
         }
@@ -373,7 +398,6 @@ class UserController extends Controller
             $users = $q->whereIn('id', $user_id);
         }
         if ($keyword != null) {
-            $show_accardion = true;
             $q->where('inventar_number', 'LIKE', "%$keyword%")
                 ->orWhere('email', 'LIKE', "%$keyword%")
                 ->orWhere('name', 'LIKE', "%$keyword%");
@@ -416,46 +440,51 @@ class UserController extends Controller
                     $query->where('group_id', '=', $group_id);
                 });
         }
-
-        if (!empty($id)) {
-
-            // $users = User::take(61)->get();
-            // $user = User::find($id);
-            $q->orWhere('id', '=', $id);
-        }
         $users = $q->orderBy('id', 'desc')->paginate(20);
-
-        //  $pdf = PDF::loadView('pdf.cards', array('users' => $users));
-
-        // return $pdf->download('itsolutionstuff.pdf');
-
-        // $pdf = Pdf::loadView('pdf.cards', compact('users'));
-
-        // return $pdf->download('cards.pdf');
-
+        if ($users != null && count($users) == 1) {
+            return view('pdf.usercard', array('users' => $users));
+        }
         return view('pdf.cards', array('users' => $users));
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($language, $id)
     {
         $user = User::find($id);
-        $roles = Role::pluck('name', 'name')->all();
-        $userRole = $user->roles->pluck('name', 'name')->all();
+        $role = $user->getRoleNames()->toArray();
+        if ((in_array('SuperAdmin', $role) || in_array('Admin', $role) || in_array('Manager', $role)) && !Auth::user()->hasRole('SuperAdmin')) {
+            toast(__("You don't have access"), 'warning');
+            return back(302)->with('error', 'Something went wrong!');
+        } else {
+            $roles = Role::pluck('name', 'name')->all();
+            $userRole = $user->roles->pluck('name', 'name')->all();
+            return view('users.edit', compact('user', 'roles', 'userRole'));
+        }
+    }
 
-        return view('users.edit', compact('user', 'roles', 'userRole'));
+    public function rfidshow($language, $rfid_tag_id, Request $request)
+    {
+        $q = User::query();
+
+
+        if ($rfid_tag_id != "") {
+            $q->where('rfid_tag_id', '=', $rfid_tag_id);
+        }
+        $user = $q->first();
+
+        return view('users.rfidshow', compact('user', 'rfid_tag_id'));
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param \Illuminate\Http\Request $request
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function update($language, Request $request, User $user)
@@ -489,12 +518,11 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($language, $id)
     {
-        // User::find($id)->delete();
         $user = User::find($id);
         $user->status = 0;
         $user->save();
@@ -503,6 +531,7 @@ class UserController extends Controller
         return redirect()->route('users.index', app()->getLocale())
             ->with('success', 'User deleted successfully.');
     }
+
     /**
      * Write code on Method
      *

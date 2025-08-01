@@ -75,10 +75,11 @@ class Kernel extends HttpKernel
         'Reader' => \App\Http\Middleware\Reader::class,
         'Author' => \App\Http\Middleware\Author::class,
         'User' => \App\Http\Middleware\User::class,
-        
+
         'role' => \Spatie\Permission\Middlewares\RoleMiddleware::class,
         'permission' => \Spatie\Permission\Middlewares\PermissionMiddleware::class,
         'role_or_permission' => \Spatie\Permission\Middlewares\RoleOrPermissionMiddleware::class,
+        'basic.custom' => \App\Http\Middleware\BasicAuthMiddleware::class,
 
         // 'json.response' => \App\Http\Middleware\ForceJsonResponse::class,
         // 'cors' => \App\Http\Middleware\Cors::class,

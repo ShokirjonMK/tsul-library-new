@@ -49,8 +49,8 @@
                                     {!! QrCode::size(100)->generate($depository->bar_code) !!}
                                 @else
                                     @php
-                                        $generator = new Picqer\Barcode\BarcodeGeneratorPNG();
-                                        echo '<img src="data:image/png;base64,' . base64_encode($generator->getBarcode($depository->bar_code, $generator::TYPE_CODE_128)) . '">';
+                                        $generator = new Picqer\Barcode\BarcodeGeneratorSVG();
+                                        echo $generator->getBarcode($depository->bar_code, $generator::TYPE_CODE_128, 2.30);
                                     @endphp
                                 @endif
 

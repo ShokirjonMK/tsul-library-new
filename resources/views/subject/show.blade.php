@@ -19,21 +19,25 @@
         <a href="{{ url(app()->getLocale() . '/admin/subjects') }}"  class="btn btn-primary" >{{ __('Back') }}</a>
         </div>
     </div>
-    
+
     <div class="row">
         <div class="col-xl-12 col-lg-12">
             <div class="ec-cat-list card card-default">
                 <div class="card">
                     <div class="card-body">
-                        
+
                         <div class="form-group">
                             <strong>{{ __('IsActive') }}:</strong>
                             {!! $subject->isActive == 1 ? '<span class="badge badge-success"><i class="mdi mdi-check-circle"></i></span>' : '<span class="badge badge-danger"><i class="mdi mdi-close-circle "></i></span>' !!}
                         </div>
-                        
+
                         <div class="form-group">
                             <strong>{{ __('Title') }}:</strong>
                             {{ $subject->title }}
+                        </div>
+                        <div class="form-group">
+                            <strong>{{ __('HEMIS Code') }}:</strong>
+                            {{ $subject->code }}
                         </div>
 
                         <div class="form-group">
@@ -48,8 +52,8 @@
                             <strong>{{ __('Books in Copy') }}:</strong>
                             {!! \App\Models\Subject::GetCountBookCopiesByBookTypeId($subject->id) !!}
                         </div>
- 
-                        
+
+
                         <div class="form-group">
                             <strong>{{ __('Created By') }}:</strong>
                             {!! $subject->created_by ? $subject->createdBy->name : '' !!}

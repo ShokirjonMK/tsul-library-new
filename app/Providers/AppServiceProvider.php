@@ -5,11 +5,10 @@ namespace App\Providers;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Facades\URL;
 
 class AppServiceProvider extends ServiceProvider
 {
-    
+
     /**
      * Register any application services.
      *
@@ -17,7 +16,12 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        \Illuminate\Http\Request::macro('hasValidSignature', function ($absolute = true) {
+            if('livewire/upload-file' == request()->path() || 'livewire/preview-file' == request()->path() ) {
+                return true;
+            }
+            return \Illuminate\Support\Facades\URL::hasValidSignature($this, $absolute);
+        });
     }
 
     /**
@@ -27,11 +31,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        
+        if(config('app.env') === 'production') {
+            \URL::forceScheme('https');
+        }
         // Model::preventLazyLoading(! app()->isProduction());
-	//if (env('APP_ENV') === 'production') {
-        	URL::forceScheme('https');
-    	//}
-         
-     }
+    }
+
 }

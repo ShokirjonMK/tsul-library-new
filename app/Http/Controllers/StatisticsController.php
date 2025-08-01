@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\ExportSubjects;
+use App\Exports\ExportSubjectsMonthly;
 use App\Models\Book;
 use App\Models\BookLanguage;
 use App\Models\BooksType;
@@ -11,10 +13,11 @@ use App\Models\Subject;
 use App\Models\User;
 use App\Models\Where;
 use App\Models\Who;
-use Carbon\Carbon; 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
- 
+use Maatwebsite\Excel\Facades\Excel;
+
 class StatisticsController extends Controller
 {
     /**
@@ -24,17 +27,17 @@ class StatisticsController extends Controller
      */
     public function statdebtors($language, Request $request)
     {
-        $from = (trim($request->get('from')))?trim($request->get('from')):date('Y-m-d');
-        $to = (trim($request->get('to')))?trim($request->get('to')):date('Y-m-d');
+        $from = (trim($request->get('from'))) ? trim($request->get('from')) : date('Y-m-d');
+        $to = (trim($request->get('to'))) ? trim($request->get('to')) : date('Y-m-d');
         $startDate = Carbon::createFromFormat('Y-m-d', $from)->startOfDay();
         $endDate = Carbon::createFromFormat('Y-m-d', $to);
         $statdebtors = Debtor::whereBetween(DB::raw('DATE(taken_time)'), [$startDate, $endDate])->get();
-        
+
         $counts = $statdebtors->countBy(function ($item) {
             return $item['status'];
         });
-        
-        $statdebtor_by_readers = Debtor::with(['reader', 'reader.profile'])->whereBetween(DB::raw('DATE(taken_time)'), [$startDate, $endDate])->distinct()->paginate(20,['reader_id']);
+
+        $statdebtor_by_readers = Debtor::with(['reader', 'reader.profile'])->whereBetween(DB::raw('DATE(taken_time)'), [$startDate, $endDate])->distinct()->paginate(20, ['reader_id']);
 
         // $counts_by_readers = $statdebtor_by_readers->countBy(function ($item) {
         //     return $item['reader_id'];
@@ -51,52 +54,55 @@ class StatisticsController extends Controller
     public function employeestat($language, Request $request)
     {
         $usersEmps = \DB::select("SELECT u.id, u.name, u.email, u.inventar_number FROM `model_has_roles` as mhr left JOIN users as u on u.id=mhr.model_id WHERE mhr.role_id in (1,2,3)");
-                
+
         $months = BooksType::getMonths();
 
-        $from = (trim($request->get('from')))?trim($request->get('from')):date('Y-m-d');
-        $to = (trim($request->get('to')))?trim($request->get('to')):date('Y-m-d');
+        $from = (trim($request->get('from'))) ? trim($request->get('from')) : date('Y-m-d');
+        $to = (trim($request->get('to'))) ? trim($request->get('to')) : date('Y-m-d');
 
         $startMonth = Carbon::createFromFormat('Y-m-d', $from);
         $endMonth = Carbon::createFromFormat('Y-m-d', $to);
 
         // $statdebtors = Debtor::whereBetween(DB::raw('DATE(taken_time)'), [$startDate, $endDate])->get();
-        
+
         // $counts = $statdebtors->countBy(function ($item) {
         //     return $item['status'];
         // });
-        
+
 
         // $counts_by_readers = $statdebtor_by_readers->countBy(function ($item) {
         //     return $item['reader_id'];
         // });
         // dd($statdebtor_by_readers);
-        return view('statistics.employeestat', compact('from', 'startMonth', 'endMonth',  'to',  'usersEmps'));
+        return view('statistics.employeestat', compact('from', 'startMonth', 'endMonth', 'to', 'usersEmps'));
     }
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function debtorsshow($language, $reader_id, Request $request){
+    public function debtorsshow($language, $reader_id, Request $request)
+    {
 
-        $from = (trim($request->get('from')))?trim($request->get('from')):date('Y-m-d');
-        $to = (trim($request->get('to')))?trim($request->get('to')):date('Y-m-d');
+        $from = (trim($request->get('from'))) ? trim($request->get('from')) : date('Y-m-d');
+        $to = (trim($request->get('to'))) ? trim($request->get('to')) : date('Y-m-d');
         $statdebtor_by_readers = Debtor::with(['reader', 'reader.profile'])->where('reader_id', '=', $reader_id)->whereBetween(DB::raw('DATE(taken_time)'), [$from, $to])->paginate(10);
         $user = User::find($reader_id);
-        
+
 
         return view('statistics.debtorsshow', compact('statdebtor_by_readers', 'from', 'to', 'user'));
     }
 
-    public function statisticsByMonth($language, Request $request){
+    public function statisticsByMonth($language, Request $request)
+    {
 
         $month = $request->get('month');
-        
-    //    $startDate = Carbon::createFromFormat('Y-m', $from)->startOfMonth();
-    //    $endDate = Carbon::createFromFormat('Y-m', $to)->endOfMonth();
+
+        //    $startDate = Carbon::createFromFormat('Y-m', $from)->startOfMonth();
+        //    $endDate = Carbon::createFromFormat('Y-m', $to)->endOfMonth();
         // dd($from);
-         //     $statbooks = Book::whereBetween('created_at', [$startDate, $endDate])->get();
+        //     $statbooks = Book::whereBetween('created_at', [$startDate, $endDate])->get();
 
 
         return view('statistics.statisticsByMonth', compact('month'));
@@ -114,7 +120,7 @@ class StatisticsController extends Controller
 
     //     $startDate = Carbon::createFromFormat('Y-m', $from)->startOfMonth();
     //     $endDate = Carbon::createFromFormat('Y-m', $to)->endOfMonth();
-        
+
     //     $statbooks = Book::whereBetween('created_at', [$startDate, $endDate])->get();
 
     //     dd($statbooks);
@@ -131,27 +137,28 @@ class StatisticsController extends Controller
     public function statbooks($language, Request $request)
     {
 
-        $year = (trim($request->get('year')))?trim($request->get('year')):date('Y');
-        $years = range(2022, strftime("%Y", time())); 
-        
+        $year = (trim($request->get('year'))) ? trim($request->get('year')) : date('Y');
+        $years = range(2022, strftime("%Y", time()));
+
         $months = BooksType::getMonths();
         $booksTypes = BooksType::with('translations')->withCount(['books', 'journals'])->paginate(20);
- 
+
         return view('statistics.books.statbooks', compact('booksTypes', 'year', 'months', 'years'));
     }
-    
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function booksshow($language, $reader_id, Request $request){
+    public function booksshow($language, $reader_id, Request $request)
+    {
 
-        $from = (trim($request->get('from')))?trim($request->get('from')):date('Y-m-d');
-        $to = (trim($request->get('to')))?trim($request->get('to')):date('Y-m-d');
+        $from = (trim($request->get('from'))) ? trim($request->get('from')) : date('Y-m-d');
+        $to = (trim($request->get('to'))) ? trim($request->get('to')) : date('Y-m-d');
         $statdebtor_by_readers = Debtor::with(['reader', 'reader.profile'])->where('reader_id', '=', $reader_id)->whereBetween(DB::raw('DATE(taken_time)'), [$from, $to])->paginate(10);
         $user = User::find($reader_id);
-        
+
 
         return view('statistics.booksshow', compact('statdebtor_by_readers', 'from', 'to', 'user'));
     }
@@ -159,83 +166,125 @@ class StatisticsController extends Controller
     public function statbooktypes($language, Request $request)
     {
 
-        $year = (trim($request->get('year')))?trim($request->get('year')):date('Y');
-        $years = range(2022, strftime("%Y", time())); 
-        
+        $year = (trim($request->get('year'))) ? trim($request->get('year')) : date('Y');
+        $years = range(2022, strftime("%Y", time()));
+
         $booksTypes = BooksType::with('translations')->withCount(['books', 'journals'])->paginate(20);
         $months = BooksType::getMonths();
- 
+
         return view('statistics.statbooktypes', compact('booksTypes', 'year', 'months', 'years'));
     }
 
     public function statbooktexts($language, Request $request)
     {
 
-        $year = (trim($request->get('year')))?trim($request->get('year')):date('Y');
-        $years = range(2022, strftime("%Y", time())); 
-        
+        $year = (trim($request->get('year'))) ? trim($request->get('year')) : date('Y');
+        $years = range(2022, strftime("%Y", time()));
+
         $booksTypes = BookText::with('translations')->withCount(['books', 'journals'])->paginate(20);
         $months = BooksType::getMonths();
- 
+
         return view('statistics.statbooktexts', compact('booksTypes', 'year', 'months', 'years'));
     }
+
     public function statbooksubjects($language, Request $request)
     {
+        $year = $request->input('year', date('Y')); // Default to the current year
+        $months = [
+            1 => __('January'), 2 => __('February'), 3 => __('March'), 4 => __('April'),
+            5 => __('May'), 6 => __('June'), 7 => __('July'), 8 => __('August'),
+            9 => __('September'), 10 => __('October'), 11 => __('November'), 12 => __('December')
+        ];
 
-        $year = (trim($request->get('year')))?trim($request->get('year')):date('Y');
-        $years = range(2022, strftime("%Y", time())); 
-        
-        $booksTypes = Subject::with('translations')->withCount(['books'])->paginate(20);
-        $months = BooksType::getMonths();
- 
-        return view('statistics.statbooksubjects', compact('booksTypes', 'year', 'months', 'years'));
+        $years = range(2022, strftime("%Y", time()));
+        $keyword=trim($request->get('keyword'));
+
+        $exportToExel = $request->get('excel');
+        if ($exportToExel != null && $exportToExel == 1) {
+
+            $file_name = 'subjects_'.date('Y_m_d_H_i_s').'.xlsx';
+
+            return Excel::download(new ExportSubjectsMonthly($year), $file_name);
+        } else {
+            $q = Subject::query();
+
+            if($keyword != null){
+                $q->whereHas('translations', function ($query) use ($keyword) {
+                    if($keyword) {
+                        $query->where('title', 'like', '%'.$keyword.'%');
+                    }
+                });
+            }
+            $booksTypes = $q->with('translations')->withCount('books')->paginate(20);
+
+
+            $subjectCounts = DB::table('books as b')
+                ->leftJoin('book_inventars as bil', function ($join) {
+                    $join->on('bil.book_id', '=', 'b.id');
+                })
+                ->where('b.status', 1)
+                ->whereYear('bil.created_at', $year)
+                ->groupBy('b.subject_id', DB::raw('MONTH(bil.created_at)'))
+                ->select(
+                    'b.subject_id',
+                    DB::raw('MONTH(bil.created_at) as month'),
+                    DB::raw('(SELECT COUNT(*) FROM books WHERE subject_id = b.subject_id AND status = 1) as book_count'),
+                    DB::raw('COUNT(bil.id) as copy_count')
+                )
+                ->get()
+                ->groupBy('subject_id');
+
+            return view('statistics.statbooksubjects', compact('booksTypes', 'year', 'months', 'years', 'subjectCounts', 'keyword'));
+        }
+
+
     }
-  
+
     public function statbookwhos($language, Request $request)
     {
 
-        $year = (trim($request->get('year')))?trim($request->get('year')):date('Y');
-        $years = range(2022, strftime("%Y", time())); 
-        
+        $year = (trim($request->get('year'))) ? trim($request->get('year')) : date('Y');
+        $years = range(2022, strftime("%Y", time()));
+
         $booksTypes = Who::with('translations')->withCount(['books'])->paginate(20);
         $months = BooksType::getMonths();
-        
+
         return view('statistics.statbookwhos', compact('booksTypes', 'year', 'months', 'years'));
     }
-  
+
     public function statbookwhere($language, Request $request)
     {
 
-        $year = (trim($request->get('year')))?trim($request->get('year')):date('Y');
-        $years = range(2022, strftime("%Y", time())); 
-        
+        $year = (trim($request->get('year'))) ? trim($request->get('year')) : date('Y');
+        $years = range(2022, strftime("%Y", time()));
+
         $booksTypes = Where::with('translations')->withCount(['books'])->paginate(20);
         $months = BooksType::getMonths();
-        
+
         return view('statistics.statbookwhere', compact('booksTypes', 'year', 'months', 'years'));
     }
-  
+
     public function statbooklangs($language, Request $request)
     {
 
-        $year = (trim($request->get('year')))?trim($request->get('year')):date('Y');
-        $years = range(2022, strftime("%Y", time())); 
-        
+        $year = (trim($request->get('year'))) ? trim($request->get('year')) : date('Y');
+        $years = range(2022, strftime("%Y", time()));
+
         $bookLanguages = BookLanguage::with('translations')->withCount(['books'])->paginate(20);
         $months = BooksType::getMonths();
-        
+
         return view('statistics.statbooklangs', compact('bookLanguages', 'year', 'months', 'years'));
     }
 
     public function statdebtorsbooktypes($language, Request $request)
     {
 
-        $year = (trim($request->get('year')))?trim($request->get('year')):date('Y');
-        $years = range(2022, strftime("%Y", time())); 
-        
+        $year = (trim($request->get('year'))) ? trim($request->get('year')) : date('Y');
+        $years = range(2022, strftime("%Y", time()));
+
         $booksTypes = BooksType::with('translations')->withCount(['books', 'journals'])->paginate(20);
         $months = BooksType::getMonths();
- 
+
         return view('statistics.statdebtorsbooktypes', compact('booksTypes', 'year', 'months', 'years'));
     }
 

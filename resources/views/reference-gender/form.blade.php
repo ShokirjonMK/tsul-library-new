@@ -18,7 +18,7 @@
 
                     </ul>
                     <div class="tab-content px-3 px-xl-5" id="myTabContent">
- 
+
                         @php
                             $step = 0;
                         @endphp
@@ -44,7 +44,7 @@
                                                 @endphp
                                                 <input type="text" class="form-control " name="title_{{ $k }}"
                                                     id="title_{{ $k }}" placeholder="{{ __('Title') }}"
-                                                    value="{{ $title }}" />
+                                                       value="{{ old('title_'.$k, $title) }}" />
                                                 @error('title_{{ $k }}')
                                                     <span class="text-danger">{{ $message }}</span>
                                                 @enderror
@@ -82,7 +82,7 @@
                         }
 
                     @endphp
-                   
+
                     <div class="form-group row">
 
                         <label for="isActive" class="form-label">{{ __('isActive') }}</label>
@@ -94,6 +94,12 @@
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
+                    <div class="form-group row">
+                        {{ Form::label('HEMIS Code') }}
+                        {{ Form::text('code', $referenceGender->code, ['class' => 'form-control' . ($errors->has('code') ? ' is-invalid' : ''), 'placeholder' => 'Code']) }}
+                        {!! $errors->first('code', '<div class="invalid-feedback">:message</div>') !!}
+                    </div>
+
                     <div class="row">
                         <div class="col-12">
                             <button type="submit" class="btn btn-primary">{{ __('Save') }}</button>
@@ -105,4 +111,3 @@
     </div>
 
 </div>
- 

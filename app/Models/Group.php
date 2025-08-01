@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\Auth;
 use Cviebrock\EloquentSluggable\Sluggable;
 
 
-
 /**
  * Class Group
  *
@@ -42,13 +41,13 @@ class Group extends Model
     use Sluggable;
 
 
-
     /**
      * Attributes that should be mass-assignable.
      *
      * @var array
      */
     protected $fillable = ['code', 'isActive', 'organization_id', 'branch_id', 'department_id', 'faculty_id', 'chair_id', 'title', 'slug', 'created_by', 'updated_by'];
+
     /**
      * Return the sluggable configuration array for this model.
      *
@@ -87,7 +86,7 @@ class Group extends Model
         return $this->hasOne('App\Models\Department', 'id', 'department_id');
     }
 
-      /**
+    /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
     public function profiles()
@@ -131,23 +130,28 @@ class Group extends Model
     {
         return $query->where('isActive', 1);
     }
-    /**
-     * This is model Observer which helps to do the same actions automatically when you creating or updating models
-     *
-     * @var array
-     */
+
     protected static function boot()
     {
         parent::boot();
         static::creating(function ($model) {
             $model->created_by = Auth::id();
             $model->updated_by = Auth::id();
+            if (Auth::user()) {
+                $user = Auth::user()->profile;
+                if ($user != null) {
+                    $model->organization_id = $user->organization_id;
+                    $model->branch_id = $user->branch_id;
+                }
+            }else{
+                $model->organization_id = 1;
+                $model->branch_id = 1;
+            }
         });
         static::updating(function ($model) {
             $model->updated_by = Auth::id();
         });
     }
-
     public static function GetData(Request $request)
     {
         $data = [];
@@ -163,10 +167,12 @@ class Group extends Model
         $data['department_id'] = $request->input('department_id');
         $data['faculty_id'] = $request->input('faculty_id');
         $data['chair_id'] = $request->input('chair_id');
-
         $data['isActive'] = $request->input('isActive');
-         return $data;
+        $data['code'] = $request->input('code');
+
+        return $data;
     }
+
     public static function rules()
     {
         $rules = [
@@ -176,7 +182,46 @@ class Group extends Model
             'chair_id' => 'required',
             'title' => 'required',
         ];
-         
+
         return $rules;
+    }
+
+    public static function createOrUpdateByHemisCode($data, $specialty, $department)
+    {
+
+        $checkExist = self::where('code', $data['id'])->first();
+        $faculty = Faculty::createOrUpdateByHemisCode($department);
+        $faculty_id = null;
+        if ($faculty != null && $faculty) {
+            $faculty_id = $faculty->id;
+        }
+
+        $chair = Chair::createOrUpdateByHemisCode($specialty, $department);
+        $chair_id = null;
+        if ($chair != null && $chair) {
+            $chair_id = $chair->id;
+        }
+
+
+        if ($checkExist != null) {
+            $newData = [
+                'code' => $data['id'],
+                'faculty_id' => $faculty_id,
+                'chair_id' => $chair_id,
+                'title' => $data['name']
+            ];
+            $checkExist->update($newData);
+            return $checkExist;
+        } else {
+            $newData = [
+                'isActive' => true,
+                'faculty_id' => $faculty_id,
+                'chair_id' => $chair_id,
+                'code' => $data['id'],
+                'title' => $data['name']
+            ];
+           $model  = Group::create($newData);
+           return $model;
+        }
     }
 }

@@ -46,7 +46,8 @@
                                                 @endphp
                                                 <input type="text" class="form-control "
                                                     name="title_{{ $k }}" id="title_{{ $k }}"
-                                                    placeholder="{{ __('Title') }}" value="{{ $title }}" />
+                                                    placeholder="{{ __('Title') }}"
+                                                       value="{{ old('title_'.$k, $title) }}" />
                                                 @error('title_{{ $k }}')
                                                     <span class="text-danger">{{ $message }}</span>
                                                 @enderror
@@ -78,11 +79,11 @@
             <div class="card-body">
                 <div class="ec-cat-form">
                     @php
-                        $isActive = 1; 
+                        $isActive = 1;
                         if ($extraAuthor->count() > 0 && isset($extraAuthor->isActive)) {
                             $isActive = $extraAuthor->isActive;
                         }
-                        
+
                     @endphp
 
                     <div class="form-group">
@@ -95,7 +96,7 @@
                         @error('isActive')
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
-                    </div> 
+                    </div>
 
                     <div class="row">
                         <div class="col-12">
@@ -108,5 +109,4 @@
     </div>
 
 </div>
-  
- 
+

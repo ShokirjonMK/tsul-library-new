@@ -47,10 +47,10 @@ use Astrotomic\Translatable\Contracts\Translatable as TranslatableContract;
  */
 class ScientificPublication extends Model  implements TranslatableContract
 {
-    
+
     use Translatable; // 2. To add translation methods
     public $translatedAttributes = ['title', 'locale', 'slug', 'sub_title', 'country', 'inst_nome_address', 'authors', 'keywords', 'place_protection', 'content', 'description'];
-    
+
 
     /**
      * Attributes that should be mass-assignable.
@@ -67,7 +67,7 @@ class ScientificPublication extends Model  implements TranslatableContract
     {
         return $this->hasOne('App\Models\Journal', 'id', 'journal_id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -75,7 +75,7 @@ class ScientificPublication extends Model  implements TranslatableContract
     {
         return $this->hasOne('App\Models\MagazineIssue', 'id', 'magazine_issue_id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -83,7 +83,7 @@ class ScientificPublication extends Model  implements TranslatableContract
     {
         return $this->hasOne('App\Models\ResourceType', 'id', 'res_lang_id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -91,7 +91,7 @@ class ScientificPublication extends Model  implements TranslatableContract
     {
         return $this->hasOne('App\Models\ResourceType', 'id', 'res_type_id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -99,7 +99,7 @@ class ScientificPublication extends Model  implements TranslatableContract
     {
         return $this->hasOne('App\Models\ResourceType', 'id', 'res_field_id');
     }
-    
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -107,7 +107,7 @@ class ScientificPublication extends Model  implements TranslatableContract
     {
         return $this->hasMany('App\Models\ScientificPublicationTranslation', 'scientific_publication_id', 'id');
     }
-  
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
@@ -193,7 +193,7 @@ class ScientificPublication extends Model  implements TranslatableContract
         $data['inventar_number'] = $request->input('inventar_number');
         $data['journal_id'] = $request->input('journal_id');
         $data['magazine_issue_id'] = $request->input('magazine_issue_id');
-        
+
         return $data;
     }
     public static function rules()

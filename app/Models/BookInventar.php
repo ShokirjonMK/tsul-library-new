@@ -29,7 +29,7 @@ use Illuminate\Support\Facades\DB;
  * @property Branch $branch
  * @property Department $department
  * @property User $user
- * @property User $user
+ * @property User $updatedBy
  * @package App
  * @mixin \Illuminate\Database\Eloquent\Builder
  */
@@ -38,6 +38,7 @@ class BookInventar extends Model
     public static $DELETED = 0;
     public static $ACTIVE = 1;
     public static $GIVEN = 2;
+
     // depozitoriyaga depozitariyga
     public static $WAREHOUSE = 3;
 
@@ -58,7 +59,7 @@ class BookInventar extends Model
      *
      * @var array
      */
-    protected $fillable = ['isActive', 'comment', 'inventar_number', 'book_id', 'book_information_id', 'organization_id', 'branch_id', 'deportmetn_id', 'created_by', 'updated_by', 'key', 'bar_code', 'inventar'];
+    protected $fillable = ['isActive', 'comment', 'inventar_number', 'book_id', 'book_information_id', 'organization_id', 'branch_id', 'deportmetn_id', 'created_by', 'updated_by', 'key', 'bar_code', 'inventar', 'rfid_tag_id'];
 
 
     /**
@@ -120,6 +121,11 @@ class BookInventar extends Model
     {
         return $query->where('isActive', 1);
     }
+
+    public function scopeBookActive($query)
+    {
+        return $query->whereNotNull('book_id');
+    }
     /**
      * This is model Observer which helps to do the same actions automatically when you creating or updating models
      *
@@ -148,45 +154,49 @@ class BookInventar extends Model
 
     public static function generateInventars($book_id, $book_information_id, $branch_id, $deportmetn_id, $organization_id, $copies = 0)
     {
+
         $current_roles = Auth::user()->getRoleNames()->toArray();
         $current_user = Auth::user()->profile;
-         
+
         if ($copies > 0) {
-            
-            $last = self::orderByRaw('bar_code * 1 desc')->where('organization_id', '=', $current_user->organization_id)->whereNotNull('book_id')->limit(1)->first();
 
-            $lN =0;
-            if($last != null){
-                $lN =filter_var($last->bar_code, FILTER_SANITIZE_NUMBER_INT);
+            DB::transaction(function () use ($copies, $book_id, $book_information_id, $organization_id, $branch_id, $deportmetn_id, $current_user) {
 
-            }
-            for($i=1; $i<=$copies; $i++){
-                $lN +=1;
+                // Jadvalni bloklab, eng katta bar_code ni olish
+                $last = BookInventar::where('organization_id', $current_user->organization_id)
+                    ->whereNotNull('book_id')
+                    ->orderByRaw('bar_code * 1 desc')
+                    ->lockForUpdate()
+                    ->first();
 
-                $generatedBarcode = self::generateNumber($lN);
- 
-                $inventarData = [
-                    'isActive' => true,
-                    'book_id' => $book_id,
-                    'book_information_id' => $book_information_id,
-                    'organization_id' => $organization_id,
-                    'branch_id' => $branch_id,
-                    'deportmetn_id' => $deportmetn_id,
-                    'key' => null,
-                    'bar_code' => $generatedBarcode,
-                    'inventar_number' => $lN,
-                    'inventar' => $lN,
-                ];
-                 
-                $bookInventar = BookInventar::where('organization_id', '=', $current_user->organization_id)->where('bar_code', '=', $generatedBarcode)->whereNotNull('book_id')->first();
-
-                if ($bookInventar == null) {
-                    $bookInventar = BookInventar::create($inventarData);
+                $lN = 0;
+                if ($last != null) {
+                    $lN = filter_var($last->bar_code, FILTER_SANITIZE_NUMBER_INT);
                 }
 
-            }
+                for ($i = 1; $i <= $copies; $i++) {
+                    $lN += 1;
+                    $generatedBarcode = self::generateNumber($lN);
+
+                    $inventarData = [
+                        'isActive' => true,
+                        'book_id' => $book_id,
+                        'book_information_id' => $book_information_id,
+                        'organization_id' => $organization_id,
+                        'branch_id' => $branch_id,
+                        'deportmetn_id' => $deportmetn_id,
+                        'key' => null,
+                        'bar_code' => $generatedBarcode,
+                        'inventar_number' => $lN,
+                        'inventar' => $lN,
+                    ];
+
+                    BookInventar::create($inventarData);
+                }
+            });
         }
-    } 
+    }
+
     public static function generateNumber($digit=null){
         if($digit != null){
             return sprintf("%04d", $digit);
@@ -211,11 +221,11 @@ class BookInventar extends Model
     }
 
 
-    
+
     public static function GetInventarsByBookId($id)
     {
         $inventars = self::where('book_id', '=', $id)->get();
-        
+
         if ($inventars != null) {
             $data="";
             foreach($inventars as $k=>$inventar){
@@ -224,20 +234,29 @@ class BookInventar extends Model
             return rtrim($data, ', ');
         }
         return null;
-    } 
+    }
+    public static function GetAvailablesByBookId($id)
+    {
+        $books = self::where('book_id', '=', $id)->where('isActive', self::$ACTIVE)->get();
+
+        if ($books != null) {
+            return $books->count();
+        }
+        return null;
+    }
     public static function GetInventarsCountByBookId($id)
     {
         $inventars = self::where('book_id', '=', $id)->get();
-        
-        
+
+
         return $inventars->count();
     }
 
     public static function GetCountBookCopyByUserByMonth($user_id = null, $year, $month){
-         
+
         $from = $year . '-' . $month;
         $to = $year . '-' . $month;
-        
+
         $startDate = Carbon::createFromFormat('Y-m', $from)->startOfMonth();
         $endDate = Carbon::createFromFormat('Y-m', $to)->endOfMonth();
         if($user_id != null){
@@ -245,25 +264,25 @@ class BookInventar extends Model
         }else{
             $cards = DB::select("SELECT SUM(COUNT(DISTINCT b.id)) OVER() as nomda FROM `book_inventars` as b where b.isActive=1 and DATE(b.created_at) between '$startDate' and '$endDate' GROUP by b.id  limit 1;");
         }
-        
+
         if (count($cards) > 0) {
             return $cards[0]->nomda;
         }
-        return 0; 
+        return 0;
     }
-    
+
     public static function GetCountBookCopyByUserByTwoMonth($user_id = null, $startDate, $endDate){
-          
-        
+
+
         if($user_id != null){
             $cards = DB::select("SELECT SUM(COUNT(DISTINCT b.id)) OVER() as nomda FROM `book_inventars` as b where b.isActive=1 and b.`created_by`=$user_id and DATE(b.created_at) between '$startDate' and '$endDate' GROUP by b.id  limit 1;");
         }else{
             $cards = DB::select("SELECT SUM(COUNT(DISTINCT b.id)) OVER() as nomda FROM `book_inventars` as b where b.isActive=1 and DATE(b.created_at) between '$startDate' and '$endDate' GROUP by b.id  limit 1;");
         }
-        
+
         if (count($cards) > 0) {
             return $cards[0]->nomda;
         }
-        return 0; 
+        return 0;
     }
 }

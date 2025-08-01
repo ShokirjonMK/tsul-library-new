@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Spatie\Permission\Models\Role;
 
 class HomeController extends Controller
 {
@@ -34,6 +35,9 @@ class HomeController extends Controller
             return redirect()->route('welcome', app()->getLocale());
 
         if (in_array("SuperAdmin", $roles) || in_array("Admin", $roles) || in_array("Manager", $roles) || in_array("Accountant", $roles)) {
+
+            $rolesWithUsersCount = Role::withCount('users')->get();
+
             $new_users = User::orderBy('id', 'desc')->with('profile')->limit(6)->get();
             $new_books = Book::active()->orderBy('id', 'desc')->with('BooksType')->with('BooksType.translations')->limit(3)->get();
             $new_orders = Order::active()->orderBy('id', 'desc')->limit(5)->get();
@@ -45,7 +49,7 @@ class HomeController extends Controller
 
             $months = BooksType::getMonths();
             $years = range(2022, strftime("%Y", time()));
-            return view('home', compact('new_users', 'new_books', 'new_orders', 'months', 'years', 'year'));
+            return view('home', compact('new_users', 'new_books', 'new_orders', 'months', 'years', 'year', 'rolesWithUsersCount'));
         } elseif (in_array("Author", $roles)) {
             return app()->getLocale() . '/admin/sisauthor';
         } elseif (in_array("Reader", $roles)) {

@@ -46,15 +46,16 @@ class BooksTypeController extends Controller
         $keyword=trim($request->get('keyword'));
         $q = BooksType::query();
         $perPage = 20;
-        if($keyword != null){ 
+        if($keyword != null){
             $q->whereHas('translations', function ($query) use ($keyword) {
                 if($keyword) {
                     $query->where('title', 'like', '%'.$keyword.'%');
                 }
-            }); 
+            });
         }
-        
-        $booksTypes = $q->with('translations')->withCount(['books', 'journals'])->paginate($perPage);
+
+        $booksTypes = $q->with('translations')->withCount(['books', 'journals'])->orderBy('id', 'desc')->paginate($perPage);
+
 
         return view('book-types.index', compact('booksTypes', 'keyword'))
             ->with('i', (request()->input('page', 1) - 1) * $booksTypes->perPage());
@@ -99,7 +100,7 @@ class BooksTypeController extends Controller
             ]
         );
         $booksTypeOld = new BooksType();
- 
+
         $booksType = BooksType::create(BooksType::GetData($request, $booksTypeOld));
 
         toast(__('Created successfully.'), 'success');
@@ -165,11 +166,11 @@ class BooksTypeController extends Controller
      * @throws \Exception
      */
     public function destroy($language, $id, Request $request)
-    { 
+    {
         $booksType = BooksType::find($id);
         $booksType->isActive = false;
         $booksType->Save();
-        
+
 
         // ->delete()
         toast(__('Deleted successfully.'), 'info');
@@ -193,7 +194,7 @@ class BooksTypeController extends Controller
             // $booksType->isActive=false;
             // $booksType->Save();
             toast(__('Deleted successfully.'), 'info');
-            return back();    
+            return back();
         }else{
             return view('book-types.show', compact('booksType'));
         }

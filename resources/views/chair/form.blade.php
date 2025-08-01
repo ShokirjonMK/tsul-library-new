@@ -45,7 +45,7 @@
                                                 @endphp
                                                 <input type="text" class="form-control "
                                                     name="title_{{ $k }}" id="title_{{ $k }}"
-                                                    placeholder="{{ __('Title') }}" value="{{ $title }}" />
+                                                    placeholder="{{ __('Title') }}"  value="{{ old('title_'.$k, $title) }}" />
                                                 @error('title_{{ $k }}')
                                                     <span class="text-danger">{{ $message }}</span>
                                                 @enderror
@@ -76,12 +76,17 @@
         <div class="ec-cat-list card card-default mb-24px">
             <div class="card-body">
                 <div class="ec-cat-form">
+                    <div class="form-group row">
+                        {{ Form::label('HEMIS Code') }}
+                        {{ Form::text('code', $chair->code, ['class' => 'form-control' . ($errors->has('code') ? ' is-invalid' : ''), 'placeholder' => 'Code']) }}
+                        {!! $errors->first('code', '<div class="invalid-feedback">:message</div>') !!}
+                    </div>
                     @php
                         $isActive = 1;
                         if ($chair->count() > 0 && isset($chair->isActive)) {
                             $isActive = $chair->isActive;
                         }
-                        
+
                     @endphp
 
                     <div class="form-group">
@@ -112,4 +117,3 @@
     </div>
 
 </div>
-  

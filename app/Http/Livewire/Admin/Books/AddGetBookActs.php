@@ -25,9 +25,9 @@ class AddGetBookActs extends Component
         $this->book_id = $book_id;
         $this->book = Book::find($book_id);
         $this->roles = Auth::user()->getRoleNames()->toArray();
-        if(count($this->roles)>0){ 
+        if(count($this->roles)>0){
             $user = Auth::user()->profile;
-            
+
             if($user != null){
                 $this->organization_id = $user->organization_id;
                 $this->branch_id = $user->branch_id;
@@ -44,7 +44,7 @@ class AddGetBookActs extends Component
         }else{
             $this->book_acts = BookAct::with(['wheres', 'wheres.translation'])->where('book_id', '=', $this->book_id)->where('organization_id', $this->organization_id)->get();
         }
-      
+
         return view('livewire.admin.books.add-get-book-acts');
     }
 
@@ -54,12 +54,13 @@ class AddGetBookActs extends Component
         $this->where_id = null;
         $this->price = 0;
         $this->summarka_raqam = null;
-        $this->arrived_date = null; 
+        $this->arrived_date = null;
 
     }
+
     public function store()
     {
-         
+
         $this->validate([
             'summarka_raqam' => 'required',
             'where_id' => 'required',
@@ -89,7 +90,7 @@ class AddGetBookActs extends Component
             'branch_id' => $this->branch_id,
             'department_id' => $this->department_id,
         ];
- 
+
         BookAct::create($data);
         $this->resetInput();
         $this->alert('success',  __('Successfully saved'));
@@ -97,7 +98,7 @@ class AddGetBookActs extends Component
     }
     public function edit($id)
     {
-        $record = BookAct::findOrFail($id); 
+        $record = BookAct::findOrFail($id);
         $this->selected_id = $id;
         $this->where_id = $record->where_id;
         $this->summarka_raqam = $record->summarka_raqam;
@@ -139,7 +140,7 @@ class AddGetBookActs extends Component
                 'book_id' => $this->book_id,
                 'organization_id' => $this->organization_id,
                 'branch_id' => $this->branch_id,
-                'department_id' => $this->department_id,    
+                'department_id' => $this->department_id,
             ]);
             $this->resetInput();
             $this->updateMode = false;
@@ -151,14 +152,14 @@ class AddGetBookActs extends Component
     {
         if ($id) {
             if (in_array('SuperAdmin', $this->roles)){
-    
+
                 $record = BookAct::where('id', $id);
                 $record->delete();
                 $this->alert('success',  __('Successfully deleted'));
             }else{
                 $this->alert('warning',  __('You do not have the super admin role and you cannot delete it!'));
             }
- 
+
         }
     }
 

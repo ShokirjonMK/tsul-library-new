@@ -12,7 +12,7 @@ use Illuminate\Http\Request;
  */
 class ResDissertationsController extends Controller
 {
-         /**
+    /**
      * create a new instance of the class
      *
      * @return void
@@ -22,6 +22,7 @@ class ResDissertationsController extends Controller
         $this->middleware(['role:SuperAdmin|Admin|Manager']);
 
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -30,18 +31,42 @@ class ResDissertationsController extends Controller
     public function index($language, Request $request)
     {
         $perPage = 20;
-        $keyword=trim($request->get('keyword'));
-        $q = ScientificPublication::query();
-        if($keyword != null){ 
-            $q->whereHas('translations', function ($query) use ($keyword) {
-                if($keyword) {
-                    $query->where('title', 'like', '%'.$keyword.'%')->orWhere('keywords', 'like', '%'.$keyword.'%');
-                }
-            }); 
-        }
-        $scientificPublications = $q->with('translations')->where('key', '=', 'dissertation')->orderBy('id', 'desc')->paginate($perPage);
+        $keyword = trim($request->get('keyword'));
+        $res_lang_id = trim($request->get('res_lang_id'));
+        $res_type_id = trim($request->get('res_type_id'));
+        $res_field_id = trim($request->get('res_field_id'));
 
-        return view('res-dissertation.index', compact('scientificPublications', 'keyword'))
+        $q = ScientificPublication::query();
+
+        $resourceFields = ResourceType::with('translations')->orderBy('id', 'desc')->field()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
+        $resourceLanguages = ResourceType::with('translations')->orderBy('id', 'desc')->language()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
+        $resourceTypes = ResourceType::with('translations')->where('code', '=', 'dissertation')->orderBy('id', 'desc')->type()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
+
+        $q->when($res_lang_id > 0, function ($query) use ($res_lang_id) {
+            $query->where('res_lang_id', $res_lang_id);
+        })
+            ->when($res_type_id > 0, function ($query) use ($res_type_id) {
+                $query->where('res_type_id', $res_type_id);
+            })
+            ->when($res_field_id > 0, function ($query) use ($res_field_id) {
+                $query->where('res_field_id', $res_field_id);
+            })
+            ->when($keyword, function ($query) use ($keyword) {
+                $query->whereHas('scientificPublicationTranslations', function ($subQuery) use ($keyword) {
+                    $subQuery->where(function ($q) use ($keyword) {
+                        $q->where('title', 'like', '%' . $keyword . '%')
+                            ->orWhere('authors', 'like', '%' . $keyword . '%')
+                            ->orWhere('publication_year', '=', $keyword )
+                            ->orWhere('barcode', '=', $keyword )
+                            ->orWhere('inventar_number', '=', $keyword )
+                            ->orWhere('keywords', 'like', '%' . $keyword . '%');
+                    });
+                });
+            });
+
+        $scientificPublications = $q->with(['translations', 'resTypeLang', 'resType', 'resType.translations', 'resField'])->where('key', '=', 'dissertation')->orderBy('id', 'desc')->paginate($perPage);
+
+        return view('res-dissertation.index', compact('scientificPublications', 'keyword', 'resourceFields', 'resourceLanguages', 'resourceTypes', 'res_lang_id', 'res_type_id', 'res_field_id'))
             ->with('i', (request()->input('page', 1) - 1) * $scientificPublications->perPage());
     }
 
@@ -56,27 +81,37 @@ class ResDissertationsController extends Controller
         $resourceFields = ResourceType::with('translations')->orderBy('id', 'desc')->field()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
         $resourceLanguages = ResourceType::with('translations')->orderBy('id', 'desc')->language()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
         $resourceTypes = ResourceType::with('translations')->where('code', '=', 'dissertation')->orderBy('id', 'desc')->type()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
-        
+
         return view('res-dissertation.create', compact('scientificPublication', 'resourceFields', 'resourceLanguages', 'resourceTypes'));
     }
 
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        request()->validate(ScientificPublication::rules(),
-        [
-            'title_uz.required' =>  __('The :attribute field is required.'),
-            'published_year.required' =>  __('The :attribute field is required.'),
-        ],
-        [
-            'published_year' => __('Published Year'),
-            'title_uz' => __('Title UZ'),
-        ]);
+        $this->validate(
+            $request,
+            [
+                'title_uz' => 'required',
+                'barcode' => 'required|unique:scientific_publications,barcode',
+                'publication_year' => 'required'
+            ],
+            [
+                'title_uz.required' => __('The :attribute field is required.'),
+                'barcode.required' => __('The :attribute field is required.'),
+                'barcode.unique' => __('The :attribute has already been taken.'),
+                'published_year.required' => __('The :attribute field is required.'),
+            ],
+            [
+                'published_year' => __('Published Year'),
+                'title_uz' => __('Title UZ'),
+            ]
+        );
+
         $scientificPublication = new ScientificPublication();
 
         $scientificPublications = ScientificPublication::create(ScientificPublication::GetData($request, $scientificPublication));
@@ -89,7 +124,7 @@ class ResDissertationsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show($language, $id)
@@ -102,7 +137,7 @@ class ResDissertationsController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($language, $id)
@@ -111,7 +146,7 @@ class ResDissertationsController extends Controller
         $resourceFields = ResourceType::with('translations')->orderBy('id', 'desc')->field()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
         $resourceLanguages = ResourceType::with('translations')->orderBy('id', 'desc')->language()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
         $resourceTypes = ResourceType::with('translations')->where('code', '=', 'dissertation')->orderBy('id', 'desc')->type()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
-        
+
         return view('res-dissertation.edit', compact('scientificPublication', 'resourceFields', 'resourceLanguages', 'resourceTypes'));
 
     }
@@ -119,19 +154,38 @@ class ResDissertationsController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param  ScientificPublication $scientificPublication
+     * @param \Illuminate\Http\Request $request
+     * @param ScientificPublication $scientificPublication
      * @return \Illuminate\Http\Response
      */
     public function update($language, Request $request, ScientificPublication $resDissertation)
     {
+        $this->validate(
+            $request,
+            [
+                'title_uz' => 'required',
+                'barcode' => 'required|unique:scientific_publications,barcode,' . $resDissertation->id,
+                'publication_year' => 'required'
+            ],
+            [
+                'title_uz.required' => __('The :attribute field is required.'),
+                'barcode.required' => __('The :attribute field is required.'),
+                'barcode.unique' => __('The :attribute has already been taken.'),
+                'publication_year.required' => __('The :attribute field is required.'),
+            ],
+            [
+                'publication_year' => __('Published Year'),
+                'title_uz' => __('Title UZ'),
+                'barcode' => __('Barcode'),
+            ]
+        );
 
-        request()->validate(ScientificPublication::rules());
         $resDissertation->update(ScientificPublication::GetData($request, $resDissertation));
         toast(__('Updated successfully.'), 'success');
 
         return redirect()->route('res-dissertations.index', app()->getLocale());
     }
+
 
     /**
      * @param int $id

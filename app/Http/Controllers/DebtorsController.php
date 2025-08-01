@@ -30,4 +30,12 @@ class DebtorsController extends Controller
 
         return view('debtor.takegive');
     }
+
+    public function takegiverfid()
+    {
+        $perPage = 20;
+        // $departments = Department::orderBy('id', 'desc')->paginate($perPage);
+
+        return view('debtor.takegiverfid');
+    }
 }

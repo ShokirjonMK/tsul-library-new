@@ -26,9 +26,9 @@ class BooksByCategory extends Component
     public function getBooks($book_type_id)
     {
         $this->book_type_id=(int)$book_type_id;
-       
-        $this->books = Book::with('booksType')->where('books_type_id', '=', $book_type_id)->active()->latest()->limit(12)->get();
-        
+
+        $this->books = Book::with('booksType', 'booksType.translations')->where('books_type_id', '=', $book_type_id)->active()->latest()->limit(12)->get();
+
 
 
     }

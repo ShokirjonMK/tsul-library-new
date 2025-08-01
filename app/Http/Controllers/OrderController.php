@@ -33,6 +33,7 @@ class OrderController extends Controller
         //  $this->middleware('permission:deletedb', ['only' => ['destroyDB']]);
 
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -79,7 +80,7 @@ class OrderController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -96,7 +97,7 @@ class OrderController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function change(Request $request)
@@ -107,11 +108,10 @@ class OrderController extends Controller
                 'status' => 'required',
             ],
             [
-                'detail_id.required' =>  __('The :attribute field is required.'),
-                'status.required' =>  __('The :attribute field is required.'),
+                'detail_id.required' => __('The :attribute field is required.'),
+                'status.required' => __('The :attribute field is required.'),
             ],
             [
-
                 'detail_id' => __('Order'),
                 'status' => __('Status'),
             ]
@@ -120,29 +120,37 @@ class OrderController extends Controller
         $orderDetailId = $request->input('detail_id');
         $status = $request->input('status');
         $type = $request->input('type');
-        if($type=='detail'){
-            $orderDetailModel=OrderDetail::find($orderDetailId);
-            $orderDetailModel->status=$status;
-            $orderDetailModel->save();    
+
+        if ($type == 'detail') {
+            $orderDetailModel = OrderDetail::find($orderDetailId);
+            $orderDetailModel->status = $status;
+            $orderDetailModel->save();
         }
-        if($type=='detail'){
-            $orderModel=Order::find($orderDetailId);
-             
-            $orderModel->status=$status;
-            $orderModel->save();    
+
+        if ($type == 'accept_detail') {
+            $orderModel = Order::find($orderDetailId);
+            if ($orderModel->orderDetails != null && $orderModel->orderDetails->count() > 0) {
+                foreach ($orderModel->orderDetails as $orderDetail) {
+                    $orderDetailModel = OrderDetail::find($orderDetail->id);
+                    $orderDetailModel->status = $status;
+                    $orderDetailModel->save();
+                }
+            }
+            $orderModel->status = $status;
+            $orderModel->save();
         }
 
 
         toast(__('Created successfully.'), 'success');
 
         return redirect()->back();
-                // return redirect()->route('orders.index', app()->getLocale());
+        // return redirect()->route('orders.index', app()->getLocale());
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show($language, $id)
@@ -163,7 +171,7 @@ class OrderController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($language, $id)
@@ -176,8 +184,8 @@ class OrderController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param  Order $order
+     * @param \Illuminate\Http\Request $request
+     * @param Order $order
      * @return \Illuminate\Http\Response
      */
     public function update($language, Request $request, Order $order)

@@ -56,8 +56,10 @@
                                                     {!! QrCode::size(100)->generate($depository->bar_code) !!}
                                                 @else
                                                     @php
-                                                        $generator = new Picqer\Barcode\BarcodeGeneratorPNG();
-                                                        echo '<img src="data:image/png;base64,' . base64_encode($generator->getBarcode($depository->bar_code, $generator::TYPE_CODE_128)) . '">';
+                                                        $generator = new Picqer\Barcode\BarcodeGeneratorSVG();
+                                                        echo $generator->getBarcode($depository->bar_code, $generator::TYPE_CODE_128, 2.30);
+
+//                                                        echo '<img src="data:image/png;base64,' . base64_encode($generator->getBarcode($depository->bar_code, $generator::TYPE_CODE_128)) . '">';
                                                     @endphp
                                                 @endif
 
@@ -67,9 +69,9 @@
                                             </td>
                                             <td>
                                             @if ($depository->bookInformation)
-                                                {{$depository->bookInformation->organization->title}}     <br>                                           
-                                                {{$depository->bookInformation->branch->title }}              <br>                                  
-                                                {{$depository->bookInformation->department->title }}                                                
+                                                {{$depository->bookInformation->organization->title}}     <br>
+                                                {{$depository->bookInformation->branch->title }}              <br>
+                                                {{$depository->bookInformation->department->title }}
                                             @endif
                                             </td>
                                              <td>
@@ -78,7 +80,7 @@
                                                 <br>
                                                 {!! $depository->department ? $depository->department->title : '' !!}
                                             </td>
-                                            
+
 
                                             <td>
                                                 <a class="btn btn-sm btn-primary "

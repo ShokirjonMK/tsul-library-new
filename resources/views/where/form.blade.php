@@ -18,7 +18,7 @@
 
                     </ul>
                     <div class="tab-content px-3 px-xl-5" id="myTabContent">
- 
+
                         @php
                             $step = 0;
                         @endphp
@@ -44,7 +44,7 @@
                                                 @endphp
                                                 <input type="text" class="form-control " name="title_{{ $k }}"
                                                     id="title_{{ $k }}" placeholder="{{ __('Title') }}"
-                                                    value="{{ $title }}" />
+                                                       value="{{ old('title_'.$k, $title) }}" />
                                                 @error('title_{{ $k }}')
                                                     <span class="text-danger">{{ $message }}</span>
                                                 @enderror
@@ -83,7 +83,7 @@
                         }
 
                     @endphp
-                     
+
                     <div class="form-group row">
 
                         <label for="isActive" class="form-label">{{ __('isActive') }}</label>
@@ -108,4 +108,3 @@
 
 </div>
 
-  

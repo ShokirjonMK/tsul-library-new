@@ -37,11 +37,11 @@ class MyProfile extends Component
             $this->gender_id=$this->userProfile->gender_id;
             $this->date_of_birth=$this->userProfile->date_of_birth;
             $this->course=$this->userProfile->kursi;
-    
+
         }
         $this->name=$this->user->name;
         $this->email=$this->user->email;
-       
+
      }
 
     public function render()
@@ -63,7 +63,7 @@ class MyProfile extends Component
                 'phone_number' => 'required|unique:user_profiles,phone_number,'.$this->user->profile->id,
                 'department_id' => 'required',
                 'email' => 'required|email|unique:users,email,'.$this->user_id,
-                'password' => 'confirmed' 
+                'password' => 'confirmed'
              ],
             [
                 'name.required' =>  __('The :attribute field is required.'),
@@ -73,7 +73,7 @@ class MyProfile extends Component
                 'password.required' =>  __('The :attribute field is required.'),
                 'email.required' =>  __('The :attribute field is required.'),
                 'phone_number.required' =>  __('The :attribute field is required.'),
-                 'inventar_number.required' =>  __('The :attribute field is required.'),
+                'inventar_number.required' =>  __('The :attribute field is required.'),
                 'inventar_number.unique' =>  __('The :attribute has already been taken.'),
                 'password.confirmed' =>  __('The :attribute confirmation does not match.'),
                 'email.unique' =>  __('The :attribute has already been taken.'),
@@ -102,9 +102,9 @@ class MyProfile extends Component
             }
         }else{
             $image_path=$this->user_old_image;
-        }         
+        }
         $userData = [
-            'password' => Hash::make($this->password), 
+            'password' => Hash::make($this->password),
             'name' => $this->name,
             'email' => $this->email,
          ];
@@ -112,7 +112,7 @@ class MyProfile extends Component
         //  dd(Hash::check($this->old_password, $hashedPassword));
         //  dd($hashedPassword);
         // dd(\Hash::check($this->old_password , $hashedPassword ));
-        if(!empty($this->old_password)) { 
+        if(!empty($this->old_password)) {
             if (\Hash::check($this->old_password , $hashedPassword )) {
                 if (!\Hash::check($this->password , $hashedPassword)) {
                     $this->password = Hash::make($this->password);
@@ -131,15 +131,15 @@ class MyProfile extends Component
             //     $this->alert('error',  __('Your current password does not matches with the password.'));
             //     // return redirect()->back()->with("error","Your current password does not matches with the password.");
             // }
-    
+
             // if(strcmp($this->old_password, $this->password) == 0){
             //     // Current password and new password same
             //     $this->alert('error',  __('New Password cannot be same as your current password.'));
             // }
-            
+
 
         } else {
-            $userData = Arr::except($userData, array('password'));    
+            $userData = Arr::except($userData, array('password'));
         }
          DB::beginTransaction();
         try {
@@ -167,7 +167,7 @@ class MyProfile extends Component
             // something went wrong
             throw $e;
         }
-        
+
 
     }
 

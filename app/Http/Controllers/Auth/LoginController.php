@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\Providers\RouteServiceProvider;
 use Darryldecode\Cart\Validators\Validator;
 use GuzzleHttp\Client;
@@ -33,7 +34,7 @@ class LoginController extends Controller
      */
     // protected $redirectTo = RouteServiceProvider::HOME;
     protected $redirectTo = '/home';
-    
+
 
     /**
      * Get the login username to be used by the controller.
@@ -42,10 +43,10 @@ class LoginController extends Controller
      */
     public function username()
     {
-        
+
         return 'login';
     }
-    
+
     /**
      * Create a new controller instance.
      *
@@ -67,18 +68,33 @@ class LoginController extends Controller
         // $response = $client->post(env('HEMIS_BASE_URL').'rest/v1/auth/login', [
         //     \GuzzleHttp\RequestOptions::JSON => ['login' => $request->input('student_id'), 'password'=>$request->input('password')]
         // ]);
-        $response = Http::post(env('HEMIS_BASE_URL').'rest/v1/auth/login', ['login' => $request->input('student_id'), 'password'=>$request->input('password')]);
-        if ($response->getStatusCode()==200){
-            echo "OOOOOOOOOOOOOOOOOK";
-            $dataRes =$response->json();
-            $responseData = Http::withToken($dataRes['data']['token'])->post(env('HEMIS_BASE_URL').'rest/v1/account/me');
-            dd($responseData->json());
+        $response = Http::post(env('HEMIS_BASE_URL') . '/rest/v1/auth/login', ['login' => $request->input('student_id'), 'password' => $request->input('password')]);
+        if ($response->getStatusCode() == 200) {
+            $user = User::where('student_id_number', $request->input('student_id'))->first();
+            // Find the user by studentId
+            $dataRes = $response->json();
 
-        }else{
-            echo "*******************K";
-            dd($response);
+            $responseData = Http::withToken($dataRes['data']['token'])->post(env('HEMIS_BASE_URL') . '/rest/v1/account/me');
+            if ($responseData->json()['success'] === true && $responseData->json()['code'] === 200) {
+                $user = User::createOrUpdateUserByHemisData($responseData->json()['data']);
+
+            }
+
+            if (!$user) {
+                return redirect()->back()->with('error', 'Student ID not found.');
+            }
+
+            // Log in the user
+            Auth::login($user);
+
+            // Redirect to home page
+            return redirect()->route('home', app()->getLocale())->with('success', 'Login successful.');
+
+        } else {
+            $dataRes = $response->json();
+            return redirect()->back()->with('error', 'HEMIS axborot tizimi orqali kirishda, ' . $dataRes['error']);
         }
-        
+
         // $this->validateLogin($request);
 
         // If the class is using the ThrottlesLogins trait, we can automatically throttle
@@ -113,13 +129,13 @@ class LoginController extends Controller
     //         'login' => 'required',
     //         'password' => 'required',
     //     ]);
-     
+
     //     $credentials = $request->only('login', 'password');
     //     if (Auth::attempt($credentials)) {
     //         return app()->getLocale() . '/home';
 
     //     }
-    
+
     //     return redirect(app()->getLocale() . "/home")->withSuccess('Oppes! You have entered invalid credentials');
     // }
 
@@ -134,7 +150,7 @@ class LoginController extends Controller
             return app()->getLocale() . '/admin/sisauthor';
         } elseif (in_array("Reader", $roles)) {
             return app()->getLocale() . '/admin/home';
-        }elseif (in_array("User", $roles)) {
+        } elseif (in_array("User", $roles)) {
             return app()->getLocale() . '/admin/home';
         }
         // return app()->getLocale() . '/home';

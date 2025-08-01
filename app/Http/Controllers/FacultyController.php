@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Branch;
 use App\Models\Faculty;
+use App\Models\Organization;
+use App\Models\UserProfile;
 use Illuminate\Http\Request;
 
 /**
@@ -20,29 +23,53 @@ class FacultyController extends Controller
     {
         $this->middleware(['role:SuperAdmin|Admin|Manager']);
 
-        // $this->middleware('permission:list|create|edit|delete|user-list|user-create|user-edit|user-delete', ['only' => ['index', 'store']]);
-        // $this->middleware('permission:create|user-create', ['only' => ['create', 'store']]);
-        // $this->middleware('permission:edit|user-edit', ['only' => ['edit', 'update']]);
-        // $this->middleware('permission:delete|user-delete', ['only' => ['destroy']]);
-        // $this->middleware('permission:deletedb', ['only' => ['destroyDB']]);
-        //  $this->middleware('permission:list|create|edit|delete', ['only' => ['index', 'store']]);
-        //  $this->middleware('permission:create', ['only' => ['create', 'store']]);
-        //  $this->middleware('permission:edit', ['only' => ['edit', 'update']]);
-        //  $this->middleware('permission:delete', ['only' => ['destroy']]);
-        //  $this->middleware('permission:deletedb', ['only' => ['destroyDB']]);
-
     }
     /**
      * Display a listing of the resource.
      *
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Http\Response
      */
-    public function index()
+    public function index($language, Request $request)
     {
         $perPage = 20;
-        $faculties = Faculty::with(['translations', 'organization', 'branch', 'organization.translations',  'branch.translations'])->withCount('profiles')->orderBy('id', 'desc')->paginate($perPage);
-        // withCount('books')
-        return view('faculty.index', compact('faculties'))
+        $q = Faculty::query();
+        $organization_id = trim($request->get('organization_id'));
+        $branch_id = trim($request->get('branch_id'));
+        $keyword = trim($request->get('keyword'));
+        if ($keyword != null) {
+            $q->whereHas('translations', function ($query) use ($keyword) {
+                if ($keyword) {
+                    $query->where('title', 'like', '%' . $keyword . '%');
+                }
+            });
+        }
+        if ($organization_id != null && $organization_id > 0) {
+            $q->where('organization_id', '=', $organization_id);
+        }
+        if ($branch_id != null && $branch_id > 0) {
+            $q->where('branch_id', '=', $branch_id);
+        }
+        $organizations = Organization::active()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
+        $branchs = Branch::active()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
+
+        $faculties = $q->with(['translations', 'organization', 'branch', 'organization.translations',  'branch.translations'])->withCount('profiles')->orderBy('id', 'desc')->paginate($perPage);
+        $facultyIds = $faculties->pluck('id')->toArray();
+
+        $totalUsers = UserProfile::whereNotNull('chair_id')
+            ->whereHas('faculty', function ($query) use ($organization_id, $branch_id, $facultyIds, $keyword) {
+                if (!empty($organization_id) && $organization_id > 0) {
+                    $query->where('organization_id', '=', $organization_id);
+                }
+                if (!empty($branch_id) && $branch_id > 0) {
+                    $query->where('branch_id', '=', $branch_id);
+                }
+                if (!empty($facultyIds) && count($facultyIds) > 0 && $keyword != null) {
+                    $query->whereIn('id', $facultyIds); // Filter by chair IDs
+                }
+            })
+            ->count();
+
+        return view('faculty.index', compact('faculties', 'keyword', 'branchs', 'organizations', 'organization_id', 'branch_id', 'totalUsers'))
             ->with('i', (request()->input('page', 1) - 1) * $faculties->perPage());
     }
 
@@ -74,9 +101,9 @@ class FacultyController extends Controller
         ],
         [
             'title_en' => __('Title EN'),
-            'title_uz' => __('Title UZ'), 
-            'organization_id' => __('Organization'), 
-            'branch_id' => __('Branches'), 
+            'title_uz' => __('Title UZ'),
+            'organization_id' => __('Organization'),
+            'branch_id' => __('Branches'),
         ]);
 
         $faculty = Faculty::create(Faculty::GetData($request));
@@ -118,7 +145,7 @@ class FacultyController extends Controller
      * @param  \Illuminate\Http\Request $request
      * @param  Faculty $faculty
      * @return \Illuminate\Http\Response
-     */ 
+     */
     public function update($language, Request $request, Faculty $faculty)
     {
 
@@ -131,9 +158,9 @@ class FacultyController extends Controller
         ],
         [
             'title_en' => __('Title EN'),
-            'title_uz' => __('Title UZ'), 
-            'organization_id' => __('Organization'), 
-            'branch_id' => __('Branches'), 
+            'title_uz' => __('Title UZ'),
+            'organization_id' => __('Organization'),
+            'branch_id' => __('Branches'),
         ]);
 
         $faculty->update(Faculty::GetData($request));
@@ -173,7 +200,7 @@ class FacultyController extends Controller
             // $booksType->isActive=false;
             // $booksType->Save();
             toast(__('Deleted successfully.'), 'info');
-            return back();    
+            return back();
         }else{
             return view('book-types.show', compact('booksType'));
         }

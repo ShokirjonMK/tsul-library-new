@@ -1,5 +1,5 @@
 <div>
-    
+
     <header id="site-header" class="site-header__v1">
         <div class="topbar border-bottom d-none d-md-block">
             <div class="container-fluid px-2 px-md-5 px-xl-8d75">
@@ -47,7 +47,7 @@
                             @endforeach
                             </div>
                         </li>
-                         
+
                     </ul>
 
                 </div>
@@ -86,28 +86,49 @@
                     </div>
                     <div class="site-navigation mr-auto d-none d-xl-block">
                         <ul class="nav">
-                            <li class="nav-item dropdown">
-                                <a id="homeDropdownInvoker" href="#"
-                                    class="dropdown-toggle nav-link link-black-100 mx-4 px-0 py-5 font-weight-medium d-flex align-items-center"
-                                    aria-haspopup="true" aria-expanded="false" data-unfold-event="hover"
-                                    data-unfold-target="#homeDropdownMenu" data-unfold-type="css-animation"
-                                    data-unfold-duration="200" data-unfold-delay="50"
-                                    data-unfold-hide-on-scroll="true" data-unfold-animation-in="slideInUp"
-                                    data-unfold-animation-out="fadeOut">
-                                    {{__('Home')}}
-                                </a>
-                                
-                            </li>
+
                             <li class="nav-item">
-                                <a  href="{{ url(app()->getLocale() . '/udcs/') }}" class=" nav-link link-black-100 mx-4 px-0 py-5 font-weight-medium d-flex align-items-center"
+                                <a  href="{{ url(app()->getLocale() . '/') }}" class=" nav-link link-black-100 mx-4 px-0 py-5 font-weight-medium d-flex align-items-center"
                                     aria-haspopup="true" aria-expanded="false" data-unfold-event="hover"
                                     data-unfold-target="#featuresDropdownMenu" data-unfold-type="css-animation"
                                     data-unfold-duration="200" data-unfold-delay="50"
                                     data-unfold-hide-on-scroll="true" data-unfold-animation-in="slideInUp"
                                     data-unfold-animation-out="fadeOut">
-                                    {{ __('Udc') }}
+                                    {{ __('Home') }}
                                 </a>
                             </li>
+                            <li class="nav-item">
+                                <a  href="{{ url(app()->getLocale() . '/books/') }}" class=" nav-link link-black-100 mx-4 px-0 py-5 font-weight-medium d-flex align-items-center"
+                                    aria-haspopup="true" aria-expanded="false" data-unfold-event="hover"
+                                    data-unfold-target="#featuresDropdownMenu" data-unfold-type="css-animation"
+                                    data-unfold-duration="200" data-unfold-delay="50"
+                                    data-unfold-hide-on-scroll="true" data-unfold-animation-in="slideInUp"
+                                    data-unfold-animation-out="fadeOut">
+                                    {{ __('Books') }}
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a  href="{{ url(app()->getLocale() . '/unilibrary/') }}" class=" nav-link link-black-100 mx-4 px-0 py-5 font-weight-medium d-flex align-items-center"
+                                    aria-haspopup="true" aria-expanded="false" data-unfold-event="hover"
+                                    data-unfold-target="#featuresDropdownMenu" data-unfold-type="css-animation"
+                                    data-unfold-duration="200" data-unfold-delay="50"
+                                    data-unfold-hide-on-scroll="true" data-unfold-animation-in="slideInUp"
+                                    data-unfold-animation-out="fadeOut">
+                                    {{ __('Unilibrary') }}
+                                </a>
+                            </li>
+                            @if (env('GET_ANDQXAI_BOOKS'))
+                                <li class="nav-item">
+                                    <a  href="{{ url(app()->getLocale() . '/andqxai/') }}" class=" nav-link link-black-100 mx-4 px-0 py-5 font-weight-medium d-flex align-items-center"
+                                        aria-haspopup="true" aria-expanded="false" data-unfold-event="hover"
+                                        data-unfold-target="#featuresDropdownMenu" data-unfold-type="css-animation"
+                                        data-unfold-duration="200" data-unfold-delay="50"
+                                        data-unfold-hide-on-scroll="true" data-unfold-animation-in="slideInUp"
+                                        data-unfold-animation-out="fadeOut">
+                                        {{ __('ANDQXAI') }}
+                                    </a>
+                                </li>
+                            @endif
                         </ul>
                     </div>
 

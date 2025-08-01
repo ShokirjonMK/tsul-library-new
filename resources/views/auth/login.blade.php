@@ -9,7 +9,7 @@
                     <div class="card-header bg-primary">
                         <div class="ec-brand">
                             <a href="/" title="AKBT">
-                                <img class="ec-brand-icon" src="/logo.png" alt="" />
+                                <img class="ec-brand-icon" src="/logo.png" alt=""/>
                             </a>
                         </div>
                     </div>
@@ -27,16 +27,17 @@
                             <ul class="nav nav-tabs" id="myRatingTab" role="tablist">
                                 <li class="nav-item">
                                     <a class="nav-link active" id="product-detail-tab" data-bs-toggle="tab"
-                                        data-bs-target="#login" href="#login" role="tab" aria-selected="true">
+                                       data-bs-target="#login" href="#login" role="tab" aria-selected="true">
                                         <i class="mdi mdi-library-books mr-1"></i> {{ __('Login') }} </a>
                                 </li>
-
-                                {{-- <li class="nav-item">
-                                    <a class="nav-link" id="product-information-tab" data-bs-toggle="tab"
-                                        data-bs-target="#hemisLogin" href="#hemisLogin" role="tab"
-                                        aria-selected="false">
-                                        <i class="mdi mdi-information mr-1"></i>HEMIS bn kirish</a>
-                                </li> --}}
+                                @if (env('LOGIN_WITH_HEMIS')==true)
+                                    <li class="nav-item">
+                                        <a class="nav-link" id="product-information-tab" data-bs-toggle="tab"
+                                           data-bs-target="#hemisLogin" href="#hemisLogin" role="tab"
+                                           aria-selected="false">
+                                            <i class="mdi mdi-information mr-1"></i>{{ __('Login through HEMIS information system') }}</a>
+                                    </li>
+                                @endif
 
 
                             </ul>
@@ -48,11 +49,13 @@
                                         <div class="row">
                                             <div class="form-group col-md-12 mb-4">
                                                 <label for="login"
-                                                    class="col-md-4 col-form-label text-md-start">{{ __('Login') }}</label>
+                                                       class="col-md-4 col-form-label text-md-start">{{ __('Login') }}</label>
                                                 <input id="login" type="text"
-                                                    class="form-control @error('login') is-invalid @enderror" name="login"
-                                                    value="{{ old('login') }}" required autocomplete="login" autofocus
-                                                    placeholder="{{ __('Login') }}">
+                                                       class="form-control @error('login') is-invalid @enderror"
+                                                       name="login"
+                                                       value="{{ old('login') }}" required autocomplete="login"
+                                                       autofocus
+                                                       placeholder="{{ __('Login') }}">
                                                 @error('login')
                                                     <span class="invalid-feedback" role="alert">
                                                         <strong>{{ $message }}</strong>
@@ -62,13 +65,13 @@
 
                                             <div class="form-group col-md-12">
                                                 <label for="password"
-                                                    class="col-md-4 col-form-label text-md-start">{{ __('Password') }}</label>
+                                                       class="col-md-4 col-form-label text-md-start">{{ __('Password') }}</label>
                                                 <input id="password" type="password"
-                                                    class="form-control @error('password') is-invalid @enderror"
-                                                    name="password" required autocomplete="current-password"
-                                                    placeholder="{{ __('Password') }}">
+                                                       class="form-control @error('password') is-invalid @enderror"
+                                                       name="password" required autocomplete="current-password"
+                                                       placeholder="{{ __('Password') }}">
                                                 @error('password')
-                                                    <span class="invalid-feedback" role="alert">
+                                                 <span class="invalid-feedback" role="alert">
                                                         <strong>{{ $message }}</strong>
                                                     </span>
                                                 @enderror
@@ -80,8 +83,9 @@
                                                             <label class="form-check-label" for="remember">
                                                                 {{ __('Remember Me') }}
                                                             </label>
-                                                            <input class="form-check-input" type="checkbox" name="remember"
-                                                                id="remember" {{ old('remember') ? 'checked' : '' }}>
+                                                            <input class="form-check-input" type="checkbox"
+                                                                   name="remember"
+                                                                   id="remember" {{ old('remember') ? 'checked' : '' }}>
                                                             <div class="control-indicator"></div>
                                                         </div>
                                                     </div>
@@ -93,7 +97,7 @@
                                                     <p class="sign-upp">
                                                         {{ __("Don't have an account yet?") }}
                                                         <a class="text-blue"
-                                                            href="{{ url(app()->getLocale() . '/register') }}">
+                                                           href="{{ url(app()->getLocale() . '/register') }}">
                                                             {{ __('Sign Up') }}
                                                         </a>
                                                     </p>
@@ -109,11 +113,13 @@
                                         <div class="row">
                                             <div class="form-group col-md-12 mb-4">
                                                 <label for="student_id"
-                                                    class="col-md-4 col-form-label text-md-start">{{ __('Student ID') }}</label>
+                                                       class="col-md-4 col-form-label text-md-start">{{ __('Student ID') }}</label>
                                                 <input id="student_id" type="text"
-                                                    class="form-control @error('student_id') is-invalid @enderror" name="student_id"
-                                                    value="{{ old('student_id') }}" required autocomplete="login" autofocus
-                                                    placeholder="{{ __('Student ID') }}">
+                                                       class="form-control @error('student_id') is-invalid @enderror"
+                                                       name="student_id"
+                                                       value="{{ old('student_id') }}" required autocomplete="login"
+                                                       autofocus
+                                                       placeholder="{{ __('Student ID') }}">
                                                 @error('student_id')
                                                     <span class="invalid-feedback" role="alert">
                                                         <strong>{{ $message }}</strong>
@@ -123,13 +129,13 @@
 
                                             <div class="form-group col-md-12">
                                                 <label for="password"
-                                                    class="col-md-4 col-form-label text-md-start">{{ __('Password') }}</label>
+                                                       class="col-md-4 col-form-label text-md-start">{{ __('Password') }}</label>
                                                 <input id="password" type="password"
-                                                    class="form-control @error('password') is-invalid @enderror"
-                                                    name="password" required autocomplete="current-password"
-                                                    placeholder="{{ __('Password') }}">
+                                                       class="form-control @error('password') is-invalid @enderror"
+                                                       name="password" required autocomplete="current-password"
+                                                       placeholder="{{ __('Password') }}">
                                                 @error('password')
-                                                    <span class="invalid-feedback" role="alert">
+                                                <span class="invalid-feedback" role="alert">
                                                         <strong>{{ $message }}</strong>
                                                     </span>
                                                 @enderror
@@ -142,7 +148,7 @@
                                                                 {{ __('Remember Me') }}
                                                             </label>
                                                             <input class="form-check-input" type="checkbox"
-                                                                name="remember" id="remember"
+                                                                   name="remember" id="remember"
                                                                 {{ old('remember') ? 'checked' : '' }}>
                                                             <div class="control-indicator"></div>
                                                         </div>
@@ -151,7 +157,7 @@
                                                 <button type="submit" class="btn btn-primary btn-block mb-4">
                                                     {{ __('Login') }}
                                                 </button>
-                                                 
+
                                             </div>
                                         </div>
                                     </form>

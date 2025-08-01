@@ -12,7 +12,7 @@
             </div>
         @endif
 
- 
+
         @if ($updateMode)
             @include('livewire.admin.books.partials.update-book-acts')
         @else
@@ -27,7 +27,7 @@
                 <td>{{ __('Price') }} ({{ __('Contract price') }}) </td>
                 <td></td>
             </tr>
- 
+
             @foreach ($book_acts as $row)
                 <tr>
                     <td>{{ $loop->index + 1 }}</td>
@@ -37,14 +37,14 @@
                     <td>{{ $row->price }}</td>
                     <td>
                         <button wire:click="edit({{ $row->id }})"
-                            class="btn btn-sm btn-outline-danger py-0">{{ __('Edit') }}</button> 
+                            class="btn btn-sm btn-outline-danger py-0">{{ __('Edit') }}</button>
                             @if (in_array('SuperAdmin', $this->roles))
                                 |
                                 <button wire:click="destroy({{ $row->id }})"
                                     class="btn btn-sm btn-outline-danger py-0">{{ __('Delete') }}</button>
                             @endif
-                
-                            
+
+
 
                     </td>
                 </tr>
@@ -60,6 +60,6 @@
             </ul>
         </div>
     @endif
-    <hr> 
+    <hr>
     <livewire:admin.books.add-book-data :book_id="$book->id" />
 </div>

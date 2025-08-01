@@ -18,16 +18,20 @@
         <a href="{{ url(app()->getLocale() . '/admin/user-types') }}"  class="btn btn-primary" >{{ __('Back') }}</a>
         </div>
     </div>
-    
+
     <div class="row">
         <div class="col-xl-12 col-lg-12">
             <div class="ec-cat-list card card-default">
                 <div class="card">
                     <div class="card-body">
-                         
+
                         <div class="form-group">
                             <strong>{{ __('Title') }}:</strong>
                             {{ $userType->title }}
+                        </div>
+                        <div class="form-group">
+                            <strong>{{ __('HEMIS Code') }}:</strong>
+                            {{ $userType->code }}
                         </div>
 
                         <div class="form-group">

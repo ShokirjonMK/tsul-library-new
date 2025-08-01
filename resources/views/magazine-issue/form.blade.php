@@ -48,7 +48,7 @@
                                                 @endphp
                                                 <input type="text" class="form-control "
                                                     name="title_{{ $k }}" id="title_{{ $k }}"
-                                                    placeholder="{{ __('Title') }}" value="{{ $title }}" />
+                                                    placeholder="{{ __('Title') }}"  value="{{ old('title_'.$k, $title) }}" />
                                                 @error('title_{{ $k }}')
                                                     <span class="text-danger">{{ $message }}</span>
                                                 @enderror
@@ -85,7 +85,7 @@
                         if ($magazineIssue->count() > 0 && isset($magazineIssue->isActive)) {
                             $isActive = $magazineIssue->isActive;
                         }
-                        
+
                     @endphp
 
                     <div class="form-group row">
@@ -129,12 +129,12 @@
                         {{ Form::label(__('full_text_path')) }}
                         <input type="file" name="full_text_path" class='form-control' />
                         @if ($magazineIssue->full_text_path)
-                             
+
                                 <a href="{{ asset('/storage/magazineIssues/full-text/' . $magazineIssue->full_text_path) }}" target="__blank">{{__('Download')}}</a>
                         @endif
                         {!! $errors->first('full_text_path', '<div class="invalid-feedback">:message</div>') !!}
                     </div>
- 
+
                     <div class="form-group">
                         {{ Form::label(__('Betlar Soni')) }}
                         {{ Form::number('betlar_soni', $magazineIssue->betlar_soni, ['class' => 'form-control' . ($errors->has('betlar_soni') ? ' is-invalid' : ''), 'placeholder' => __('Betlar Soni')]) }}

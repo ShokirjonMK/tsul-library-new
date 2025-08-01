@@ -51,11 +51,19 @@ class DebtorController extends Controller
 
         if ($keyword != null) {
 
-            $q->whereHas('bookInventar', function ($query) use ($keyword) {
+//            $q->whereHas('bookInventar', function ($query) use ($keyword) {
+//                if ($keyword) {
+//                    $query->where('bar_code', '=', $keyword);
+//                }
+//            });
+
+            $q->whereHas('reader', function ($query) use ($keyword) {
+
                 if ($keyword) {
-                    $query->where('bar_code', '=', $keyword);
+                    $query->where('inventar_number', '=', $keyword);
                 }
             });
+
         }
         if ($barcode != null) {
 

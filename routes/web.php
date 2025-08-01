@@ -21,6 +21,7 @@ use App\Http\Controllers\DebtorController;
 use App\Http\Controllers\DepartmentController;
 use App\Http\Controllers\DepositoryController;
 use App\Http\Controllers\DocumentController;
+use App\Http\Controllers\EducationTypeController;
 use App\Http\Controllers\ExtraAuthorController;
 use App\Http\Controllers\FacultyController;
 use App\Http\Controllers\GenTypeController;
@@ -46,6 +47,7 @@ use App\Http\Controllers\RoleController;
 use App\Http\Controllers\ScientificPublicationController;
 use App\Http\Controllers\SocialController;
 use App\Http\Controllers\SubjectController;
+use App\Http\Controllers\SubjectGroupController;
 use App\Http\Controllers\UdcController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\UserTypeController;
@@ -70,12 +72,15 @@ Route::redirect('/', '/uz');
 
 Route::group(['prefix' => '{langugae}', 'where' => ['locale' => '[a-zA-Z]{2}'], 'middleware' => 'setlocale'], function () {
 
-   
+
     Route::get('/', [App\Http\Controllers\SiteController::class, 'index'])->name('welcome');
     Route::get('/categories', [App\Http\Controllers\SiteController::class, 'categories'])->name('site.categories');
     Route::get('/categories/{slug}', [App\Http\Controllers\SiteController::class, 'category'])->name('site.category');
 
     Route::get('/udcs', [App\Http\Controllers\SiteController::class, 'udcs'])->name('site.udcs');
+    Route::get('/unilibrary', [App\Http\Controllers\SiteController::class, 'unilibrary'])->name('site.unilibrary');
+    Route::get('/andqxai', [App\Http\Controllers\SiteController::class, 'andqxai'])->name('site.andqxai');
+
     Route::get('/books', [App\Http\Controllers\SiteController::class, 'books'])->name('site.books');
     Route::get('/books/{slug}', [App\Http\Controllers\SiteController::class, 'book'])->name('site.book');
     Route::get('/journals', [App\Http\Controllers\SiteController::class, 'journals'])->name('site.journals');
@@ -83,22 +88,22 @@ Route::group(['prefix' => '{langugae}', 'where' => ['locale' => '[a-zA-Z]{2}'], 
     Route::get('/journals/{slug}/{subslug}', [App\Http\Controllers\SiteController::class, 'magazine'])->name('site.magazine');
 
     Route::get('/books/{slug}/pdf', [App\Http\Controllers\SiteController::class, 'bookpdf'])->name('site.bookpdf');
-    
+
     // Route::get('/product', 'App\Http\Controllers\SiteController@products')->name('site.products');
     // Route::get('/product/{slug}', 'App\Http\Controllers\SiteController@product')->name('site.product');
     // Route::get('/product/{slug}', ShowProduct::class)->name('site.product');
     // Route::get('/product/{slug}/{color}', ShowProduct::class)->name('site.productcolor');
     // Route::get('/cart', 'App\Http\Controllers\SiteController@cart')->name('site.cart');
     // Route::get('/cart/{slug}', 'App\Http\Controllers\SiteController@cartProduct')->name('site.cartProduct');
-    
-   
+
+
     Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
     Auth::routes();
     Route::get('/register', function() {
         return redirect(app()->getLocale() .'/login');
     });
 
-    
+
     Route::post('/register', function() {
         return redirect(app()->getLocale() .'/login');
     });
@@ -114,8 +119,9 @@ Route::group(['prefix' => '{langugae}', 'where' => ['locale' => '[a-zA-Z]{2}'], 
         Route::get('debtors/export',[DebtorController::class,'export'])->name('debtors.export');
         Route::resource('debtors', DebtorController::class);
         Route::get('take-give', [App\Http\Controllers\DebtorsController::class, 'takegive'])->name('debtors.takegive');
+        Route::get('take-give-rfid', [App\Http\Controllers\DebtorsController::class, 'takegiverfid'])->name('debtors.takegiverfid');
         Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('admin.index');
-        
+
         Route::get('book-types/export',[BooksTypeController::class,'export'])->name('book-types.export');
         Route::resource('book-types', BooksTypeController::class);
         Route::post('book-types/{id}', [BooksTypeController::class, 'delete'])->name('book-types.delete');
@@ -127,7 +133,7 @@ Route::group(['prefix' => '{langugae}', 'where' => ['locale' => '[a-zA-Z]{2}'], 
         Route::get('book-texts/export',[BookTextController::class,'export'])->name('book-texts.export');
         Route::resource('book-texts', BookTextController::class);
         Route::post('book-texts/{id}', [BookTextController::class, 'delete'])->name('book-texts.delete');
-        
+
 
         Route::get('book-text-types/export',[BookTextTypeController::class,'export'])->name('book-text-types.export');
         Route::resource('book-text-types', BookTextTypeController::class);
@@ -137,27 +143,37 @@ Route::group(['prefix' => '{langugae}', 'where' => ['locale' => '[a-zA-Z]{2}'], 
         Route::resource('book-file-types', BookFileTypeController::class);
         Route::post('book-file-types/{id}', [BookFileTypeController::class, 'delete'])->name('book-file-types.delete');
 
+        Route::resource('subject-groups', SubjectGroupController::class);
+        Route::post('subject-groups/{id}', [SubjectGroupController::class, 'delete'])->name('subject-groups.delete');
+
+        Route::resource('education-types', EducationTypeController::class);
+        Route::post('education-types/{id}', [EducationTypeController::class, 'delete'])->name('education-types.delete');
+
         Route::resource('book-subjects', BookSubjectController::class);
         Route::post('book-subjects/{id}', [BookSubjectController::class, 'delete'])->name('book-subjects.delete');
 
         Route::get('books/inventar', 'App\Http\Controllers\BookController@inventar')->name('admin.inventar');
         Route::get('books/inventarone/{id}', 'App\Http\Controllers\BookController@printinventar')->name('books.inventarone');
         Route::get('books/inventarByBookId/{id}', 'App\Http\Controllers\BookController@inventarByBookId')->name('books.inventarByBookId');
+        Route::get('books/rfidshow/{rfid}', 'App\Http\Controllers\BookController@rfidshow')->name('books.rfidshow');
+        Route::get('books/rfidshow/{rfid}/{id}', 'App\Http\Controllers\BookController@rfidgive')->name('books.rfidgive');
 
         Route::get('books/inventaronebarcode/{id}', 'App\Http\Controllers\BookController@inventaronebarcode')->name('books.inventaronebarcode');
-        
+
         Route::post('books/inventarstorage', 'App\Http\Controllers\BookController@inventarstorage')->name('admin.inventarstorage');
 
 
         Route::get('books/inventarshow/{id}', 'App\Http\Controllers\BookController@inventarshow')->name('books.inventarshow');
         Route::get('books/inventarremove/{id}', 'App\Http\Controllers\BookController@inventarremove')->name('books.inventarremove');
+        Route::post('books/addrfidinventar/{id}', 'App\Http\Controllers\BookController@addrfidinventar')->name('books.addrfidinventar');
+
         Route::get('books/exportInventarAllByFromTo', 'App\Http\Controllers\BookController@exportInventarAllByFromTo')->name('books.exportInventarAllByFromTo');
 
         Route::get('books/export',[BookController::class,'export'])->name('books.export');
         Route::get('books/export-with-inventars',[BookController::class,'exportWithInventars'])->name('books.export-with-inventars');
-        
+
         Route::resource('books', BookController::class);
-        
+
         Route::post('books/{id}', [BookController::class, 'delete'])->name('books.delete');
         Route::get('books/{id}/{infoid}', 'App\Http\Controllers\BookController@addinventar')->name('admin.add-book-inventar');
 
@@ -174,10 +190,15 @@ Route::group(['prefix' => '{langugae}', 'where' => ['locale' => '[a-zA-Z]{2}'], 
         Route::get('users/export',[UserController::class,'export'])->name('users.export');
         Route::get('users/card', 'App\Http\Controllers\UserController@card')->name('users.card');
         Route::get('users/inventaroneuser/{id}', 'App\Http\Controllers\UserController@printinventar')->name('users.inventaroneuser');
+
+        Route::get('users/rfid/{rfid}', 'App\Http\Controllers\UserController@rfidshow')->name('users.rfidshow');
+        Route::get('users/rfid/{rfid}/{id}', 'App\Http\Controllers\UserController@rfidgive')->name('users.rfidgive');
+
+
         Route::resource('users', UserController::class);
         Route::post('users/{id}', [UserController::class, 'delete'])->name('users.delete');
 
-        Route::resource('/user-types', UserTypeController::class); 
+        Route::resource('/user-types', UserTypeController::class);
         Route::resource('authors', AuthorController::class);
         Route::resource('roles', RoleController::class);
         Route::resource('permissions', PermissionController::class);
@@ -211,17 +232,17 @@ Route::group(['prefix' => '{langugae}', 'where' => ['locale' => '[a-zA-Z]{2}'], 
 
         Route::resource('magazine-issues', MagazineIssueController::class);
         Route::resource('udcs', UdcController::class);
-        
-        Route::resource('orders', OrderController::class);
-        Route::post('orders/{id}', [OrderController::class, 'change'])->name('orders.change');
 
-        
+        Route::resource('orders', OrderController::class);
+        Route::post('orders/{id}/change', [OrderController::class, 'change'])->name('orders.change');
+
+
         Route::resource('faculties', FacultyController::class);
         Route::post('faculties/{id}', [FacultyController::class, 'delete'])->name('faculties.delete');
-        
+
         Route::resource('chairs', ChairController::class);
         Route::post('chairs/{id}', [ChairController::class, 'delete'])->name('chairs.delete');
-        
+
         Route::resource('groups', GroupController::class);
         Route::post('groups/{id}', [GroupController::class, 'delete'])->name('groups.delete');
 
@@ -245,7 +266,7 @@ Route::group(['prefix' => '{langugae}', 'where' => ['locale' => '[a-zA-Z]{2}'], 
         Route::get('statdebtors/{id}', 'App\Http\Controllers\StatisticsController@debtorsshow')->name('statdebtors.show');
 
         Route::get('statbooks', 'App\Http\Controllers\StatisticsController@statbooks')->name('admin.statbooks');
-        
+
         Route::get('statbooks/{id}', 'App\Http\Controllers\StatisticsController@booksshow')->name('booksshow.show');
         Route::get('statbooktypes', 'App\Http\Controllers\StatisticsController@statbooktypes')->name('admin.statbooktypes');
         Route::get('statbooktexts', 'App\Http\Controllers\StatisticsController@statbooktexts')->name('admin.statbooktexts');
@@ -265,12 +286,14 @@ Route::group(['prefix' => '{langugae}', 'where' => ['locale' => '[a-zA-Z]{2}'], 
         Route::get('documents/bymonth',[DocumentController::class,'bymonth'])->name('documents.bymonth');
 
         Route::resource('documents', DocumentController::class);
-        
-        
+
+
 
         Route::resource('extra-authors', ExtraAuthorController::class);
         Route::resource('contacts', ContactController::class);
         Route::resource('socials', SocialController::class);
+        Route::resource('unilibrary', \App\Http\Controllers\UnilibraryController::class);
+        Route::resource('andqxai', \App\Http\Controllers\AndqxaiController::class);
 
     });
 
@@ -288,10 +311,11 @@ Route::group(['prefix' => '{langugae}', 'where' => ['locale' => '[a-zA-Z]{2}'], 
         Route::get('addtocart/{id}', [CartController::class, 'addToCart'])->name('addtocart');
         Route::patch('update-cart', [CartController::class, 'update'])->name('update.cart');
         Route::delete('remove-from-cart', [CartController::class, 'remove'])->name('remove.from.cart');
- 
+
         Route::get('reader', 'App\Http\Controllers\ReaderController@index')->name('admin.readerindex');
         Route::get('breader', 'App\Http\Controllers\ReaderController@book')->name('admin.readerbook');
         Route::get('breader/{id}', 'App\Http\Controllers\ReaderController@showbook')->name('admin.readershowbook');
+        Route::get('dreader', 'App\Http\Controllers\ReaderController@dissertation')->name('admin.readerdis');
     });
 
     Route::prefix('admin')->middleware(['auth', 'User'])->group(function () {

@@ -47,9 +47,10 @@
                                                 @endphp
                                                 <input type="text" class="form-control "
                                                     name="title_{{ $k }}" id="title_{{ $k }}"
-                                                    placeholder="{{ __('Title') }}" value="{{ $title }}" />
+                                                    placeholder="{{ __('Title') }}"
+                                                       value="{{ old('title_'.$k, $title) }}" />
 
-                                                    
+
                                                 @error('title_{{ $k }}')
                                                     <span class="text-danger">{{ $message }}</span>
                                                 @enderror
@@ -128,7 +129,7 @@
                                                     <span class="text-danger">{{ $message }}</span>
                                                 @enderror
                                             </div>
-                                           
+
                                         </div>
                                     </div>
                                 </div>
@@ -163,9 +164,9 @@
                         if ($scientificPublication->count() > 0 && isset($scientificPublication->isActive)) {
                             $isActive = $scientificPublication->isActive;
                         }
-                        
+
                     @endphp
-                    
+
                     <div class="form-group row">
 
                         <label for="isActive" class="form-label">{{ __('isActive') }}</label>
@@ -179,7 +180,7 @@
                     </div>
 
                     <livewire:admin.depdrops.journal-magazine-drop-down :journal_id="$scientificPublication->journal_id" :magazine_issue_id="$scientificPublication->magazine_issue_id" />
-                      
+
                     <div class="form-group">
                         {{ Form::label(__('Resource language')) }}
                         {!! Form::select('res_lang_id', $resourceLanguages, $scientificPublication->res_lang_id, [

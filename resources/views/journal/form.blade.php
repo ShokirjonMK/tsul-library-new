@@ -18,7 +18,7 @@
 
                     </ul>
                     <div class="tab-content px-3 px-xl-5" id="myTabContent">
- 
+
                         @php
                             $step = 0;
                         @endphp
@@ -35,7 +35,7 @@
                                                 <label class="required"
                                                     for="title_{{ $k }}">{{ __('Title') }}
                                                     {{ $k }}:</label>
-                                                @php 
+                                                @php
                                                     $title = null;
                                                      if (count($journal->journalTranslations) > 0 && isset($journal->journalTranslations[$step]) && $journal->journalTranslations[$step]->locale == $k) {
                                                         $title = $journal->journalTranslations[$step]->title;
@@ -44,10 +44,10 @@
                                                     $title=old('title_'.$k);
                                                    }
                                                 @endphp
-                                                
+
                                                 <input type="text" class="form-control " name="title_{{ $k }}"
                                                  id="title_{{ $k }}" placeholder="{{ __('Title') }}"
-                                                 value="{{ $title }}"  />
+                                                       value="{{ old('title_'.$k, $title) }}"  />
                                                 @error('title_{{ $k }}')
                                                     <span class="text-danger">{{ $message }}</span>
                                                 @enderror
@@ -131,8 +131,8 @@
                         {{ Form::text('phone_number', $journal->phone_number, ['class' => 'form-control' . ($errors->has('phone_number') ? ' is-invalid' : ''), 'placeholder' => __('Phone Number')]) }}
                         {!! $errors->first('phone_number', '<div class="invalid-feedback">:message</div>') !!}
                     </div>
-                    
-                    
+
+
                     <div class="form-group">
                         {{ Form::label(__('Subjects')) }}
                         {!! Form::select('subjects[]', $subjects, json_decode($journal->subjects), ['class' => 'js-example-basic-single-with-tags form-control '. ($errors->has('subjects') ? ' is-invalid' : ''), 'multiple']) !!}
@@ -156,7 +156,7 @@
                     <div class="form-group">
                         {{ Form::label(__('editor_in_chiefs')) }}
                         {{ Form::text('editor_in_chiefs', $journal->editor_in_chiefs, ['class' => 'form-control' . ($errors->has('editor_in_chiefs') ? ' is-invalid' : ''), 'placeholder' => __('editor_in_chiefs')]) }}
- 
+
                         {!! $errors->first('editor_in_chiefs', '<div class="invalid-feedback">:message</div>') !!}
                     </div>
                     <div class="form-group">
@@ -165,7 +165,7 @@
 
                         {!! $errors->first('editorial_members', '<div class="invalid-feedback">:message</div>') !!}
                     </div>
-                      
+
                     <div class="form-group">
                         {{ Form::label(__('Organization')) }}
                         {!! Form::select('organization_id', $organizations, $journal->organization_id, ['class' => ' form-control '. ($errors->has('organization_id') ? ' is-invalid' : '')]) !!}
@@ -193,7 +193,7 @@
                     </div>
 
                     <div class="form-group">
-                        
+
                         {{ Form::label(__('Image') ) }}
                         <input type="file" name="file" class='form-control' />
                         @if ($journal->image_path)
@@ -211,4 +211,4 @@
         </div>
     </div>
 </div>
- 
+

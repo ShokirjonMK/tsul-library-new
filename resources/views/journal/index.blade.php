@@ -76,7 +76,9 @@
                                             <td>{!! $journal->organization_id ? $journal->organization->title : '' !!}</td>
 
                                             <td>{{ $journal->title }}</td>
-                                            <td>{!! $journal->isActive == 1 ? '<span class="badge badge-success"><i class="mdi mdi-check-circle"></i></span>' : '<span class="badge badge-danger"><i class="mdi mdi-close-circle "></i></span>' !!}</td>
+                                            <td>
+                                                <ion-icon name="checkmark-done-outline"></ion-icon>
+                                                {!! $journal->isActive == 1 ? '<span class="badge badge-success"><i class="mdi mdi-check-circle"></i></span>' : '<span class="badge badge-danger"><i class="mdi mdi-close-circle "></i></span>' !!}</td>
 
                                             <td>{{ $journal->ISSN }}</td>
                                             <td>{{ $journal->email }}</td>

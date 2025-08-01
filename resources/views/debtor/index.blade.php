@@ -23,18 +23,18 @@
                 <div class="ec-vendor-list card card-default">
                     <div class="card-header">
                         <form action="{{ route('debtors.index', app()->getLocale()) }}" method="GET"
-                            accept-charset="UTF-8" role="search" style="width: 100%;">
+                              accept-charset="UTF-8" role="search" style="width: 100%;">
                             <div class="row">
                                 <div class="col-md-12">
                                     <input type="hidden" name="status" value="{{$status}}">
                                     <input type="text" class="form-control" name="keyword"
-                                        placeholder="{{ __('Keyword') }}..." value="{{ $keyword }}">
-                                        <hr>
-                                        <input type="text" class="form-control" name="title"
-                                        placeholder="{{ __('Dc Title') }}" value="{{ $title }}">
+                                           placeholder="{{ __('Keyword') }}..." value="{{ $keyword }}">
+                                    <hr>
+                                    <input type="text" class="form-control" name="title"
+                                           placeholder="{{ __('Dc Title') }}" value="{{ $title }}">
 
-                                        <input type="text" class="form-control" name="barcode"
-                                            placeholder="{{ __('Book barcode') }}" value="{{ $barcode }}">
+                                    <input type="text" class="form-control" name="barcode"
+                                           placeholder="{{ __('Book barcode') }}" value="{{ $barcode }}">
 
 
                                 </div>
@@ -42,29 +42,30 @@
 
                             <div class="card-footer">
                                 <button type="submit"
-                                    class="btn btn-sm btn-primary float-left">{{ __('Search') }}</button>
+                                        class="btn btn-sm btn-primary float-left">{{ __('Search') }}</button>
 
                                 <a href="{{ route('debtors.index', app()->getLocale()) }}"
-                                    class="btn btn-sm btn-info ">{{ __('Clear') }}</a>
-                                <a href="{{ route('debtors.export', [app()->getLocale(), 'keyword'=>$keyword, 'status'=>$status, 'barcode'=>$barcode, 'title'=>$title]) }}" class="btn btn-sm btn-success float-right">
+                                   class="btn btn-sm btn-info ">{{ __('Clear') }}</a>
+                                <a href="{{ route('debtors.export', [app()->getLocale(), 'keyword'=>$keyword, 'status'=>$status, 'barcode'=>$barcode, 'title'=>$title]) }}"
+                                   class="btn btn-sm btn-success float-right">
                                     {{ __('Export to Excel') }}
-                                </a> 
+                                </a>
                             </div>
                         </form>
                         <div class="row">
                             <div class="col">
                                 <hr>
                                 <a class="btn btn-sm btn-warning "
-                                    href="{{ route('debtors.index', [app()->getLocale(), 'status' => 99, 'keyword'=>$keyword, 'barcode'=>$barcode, 'title'=>$title]) }}">{{ __('ALL') }}</a>
+                                   href="{{ route('debtors.index', [app()->getLocale(), 'status' => 99, 'keyword'=>$keyword, 'barcode'=>$barcode, 'title'=>$title]) }}">{{ __('ALL') }}</a>
 
                                 <a class="btn btn-sm btn-primary "
-                                    href="{{ route('debtors.index', [app()->getLocale(), 'status' => 1, 'keyword'=>$keyword, 'barcode'=>$barcode, 'title'=>$title]) }}">{{ __('GIVEN') }}</a>
+                                   href="{{ route('debtors.index', [app()->getLocale(), 'status' => 1, 'keyword'=>$keyword, 'barcode'=>$barcode, 'title'=>$title]) }}">{{ __('GIVEN') }}</a>
                                 <a class="btn btn-sm btn-primary "
-                                    href="{{ route('debtors.index', [app()->getLocale(), 'status' => 2, 'keyword'=>$keyword, 'barcode'=>$barcode, 'title'=>$title]) }}">{{ __('TAKEN') }}</a>
+                                   href="{{ route('debtors.index', [app()->getLocale(), 'status' => 2, 'keyword'=>$keyword, 'barcode'=>$barcode, 'title'=>$title]) }}">{{ __('TAKEN') }}</a>
                                 <a class="btn btn-sm btn-success "
-                                    href="{{ route('debtors.index', [app()->getLocale(), 'status' => 98, 'keyword'=>$keyword, 'barcode'=>$barcode, 'title'=>$title]) }}">{{ __('Debtors') }}</a>
+                                   href="{{ route('debtors.index', [app()->getLocale(), 'status' => 98, 'keyword'=>$keyword, 'barcode'=>$barcode, 'title'=>$title]) }}">{{ __('Debtors') }}</a>
                                 <a class="btn btn-sm btn-danger "
-                                    href="{{ route('debtors.index', [app()->getLocale(), 'status' => 0, 'keyword'=>$keyword, 'barcode'=>$barcode, 'title'=>$title]) }}">{{ __('DELETED') }}</a>
+                                   href="{{ route('debtors.index', [app()->getLocale(), 'status' => 0, 'keyword'=>$keyword, 'barcode'=>$barcode, 'title'=>$title]) }}">{{ __('DELETED') }}</a>
 
                                 <br>
                                 {!! __('Number of books is :attribute', ['attribute' => $debtors->total()]) !!}
@@ -75,39 +76,38 @@
                         <div class="table-responsive">
                             <table class="table table-striped table-hover">
                                 <thead class="thead">
-                                    <tr>
-                                        <th>No</th>
-                                        <th>{{ __('Reader') }}</th>
-                                        <th>{{ __('GIVEN') }}</th>
-                                        <th>{{ __('TAKEN') }}</th>
-                                        <th></th>
-                                    </tr>
+                                <tr>
+                                    <th>No</th>
+                                    <th>{{ __('Reader') }}</th>
+                                    <th>{{ __('GIVEN') }}</th>
+                                    <th>{{ __('TAKEN') }}</th>
+                                    <th></th>
+                                </tr>
                                 </thead>
                                 <tbody>
-                                    {{-- <form action="{{ route('debtors.index', app()->getLocale()) }}" method="GET"
-                                        accept-charset="UTF-8" role="search">
-                                        <tr>
-                                            <td></td>
-                                            <td>
+                                {{-- <form action="{{ route('debtors.index', app()->getLocale()) }}" method="GET"
+                                    accept-charset="UTF-8" role="search">
+                                    <tr>
+                                        <td></td>
+                                        <td>
 
-                                                <input type="text" class="form-control" name="keyword"
-                                                    placeholder="{{ __('Keyword') }}..." value="{{ $keyword }}">
+                                            <input type="text" class="form-control" name="keyword"
+                                                placeholder="{{ __('Keyword') }}..." value="{{ $keyword }}">
 
-                                            </td>
-                                            <td></td>
-                                            <td></td>
-                                            <td>
-                                                <button type="submit"
-                                                    class="btn btn-sm btn-primary float-left">{{ __('Search') }}</button>
-                                                <a href="{{ route('debtors.index', app()->getLocale()) }}"
-                                                    class="btn btn-sm btn-info float-right">{{ __('Clear') }}</a>
+                                        </td>
+                                        <td></td>
+                                        <td></td>
+                                        <td>
+                                            <button type="submit"
+                                                class="btn btn-sm btn-primary float-left">{{ __('Search') }}</button>
+                                            <a href="{{ route('debtors.index', app()->getLocale()) }}"
+                                                class="btn btn-sm btn-info float-right">{{ __('Clear') }}</a>
 
-                                            </td>
-                                        </tr>
-                                    </form> --}}
-                                    @foreach ($debtors as $debtor)
+                                        </td>
+                                    </tr>
+                                </form> --}}
+                                @foreach ($debtors as $debtor)
                                     @if (isset($debtor->reader))
-                                        
 
                                         <tr>
                                             <td>{{ $debtor->id }}</td>
@@ -115,19 +115,27 @@
                                                 {!! $debtor->reader ? $debtor->reader->name : '' !!}
                                                 <br>
                                                 {{ __('Email') }} : <a
-                                                    href="mailTo:{!! $debtor->reader ? $debtor->reader->email : '' !!}">{!! $debtor->reader ? $debtor->reader->email : '' !!}</a> <br>
+                                                    href="mailTo:{!! $debtor->reader ? $debtor->reader->email : '' !!}">{!! $debtor->reader ? $debtor->reader->email : '' !!}</a>
+                                                <br>
                                                 {{ __('Phone Number') }} : <a
-                                                    href="tel:{!! $debtor->reader ? $debtor->reader->profile->phone_number : '' !!}">{!! $debtor->reader ? $debtor->reader->profile->phone_number : '' !!}</a> <br>
+                                                    href="tel:{!! $debtor->reader ? $debtor->reader->profile->phone_number : '' !!}">{!! $debtor->reader ? $debtor->reader->profile->phone_number : '' !!}</a>
+                                                <br>
                                                 {{ __('Inventar Number') }} :
                                                 <div class="text-left">
                                                     @if ( $debtor->reader->inventar_number)
-                                                    @php
-                                                        $generator = new Picqer\Barcode\BarcodeGeneratorPNG();
-                                                        echo '<img src="data:image/png;base64,' . base64_encode($generator->getBarcode($debtor->reader->inventar_number, $generator::TYPE_CODE_128)) . '">';
-                                                    @endphp
-                                                    <br>
-                                                    {{ $debtor->reader->inventar_number }}
-                                                      
+
+                                                        @if (env('USER_BAR_CODE_TYPE')=='QRCODE')
+                                                            {!! QrCode::size(100)->generate($debtor->reader->inventar_number); !!}
+                                                        @else
+                                                            @php
+                                                                $generator = new Picqer\Barcode\BarcodeGeneratorSVG();
+                                                                echo $generator->getBarcode($debtor->reader->inventar_number, $generator::TYPE_CODE_128, 2.30);
+
+                                                            @endphp
+                                                        @endif
+                                                        <br>
+                                                        {{ $debtor->reader->inventar_number }}
+
                                                     @endif
                                                 </div>
                                             </td>
@@ -136,7 +144,7 @@
 
                                             <td>
                                                 <a class="btn btn-sm btn-primary "
-                                                    href="{{ route('debtors.show', [app()->getLocale(), $debtor->reader_id, 'status' => $status]) }}">
+                                                   href="{{ route('debtors.show', [app()->getLocale(), $debtor->reader_id, 'status' => $status]) }}">
                                                     {{ __('Show') }}</a>
                                                 {{-- <a class="btn btn-sm btn-success" href="{{ route('debtors.edit', [app()->getLocale(), $debtor->id]) }}"> {{ __('Edit') }}</a>
                                                 @csrf
@@ -144,8 +152,8 @@
                                                 <button type="submit" class="btn btn-danger btn-sm">{{ __('Delete') }}</button> --}}
                                             </td>
                                         </tr>
-                                        @endif
-                                        @endforeach
+                                    @endif
+                                @endforeach
                                 </tbody>
                             </table>
                         </div>

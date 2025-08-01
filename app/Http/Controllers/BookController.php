@@ -25,9 +25,8 @@ use App\Models\Where;
 use App\Models\Who;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
-use PDO;
-use Barryvdh\DomPDF\Facade\Pdf;
 use Exception;
 use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Facades\Excel;
@@ -38,7 +37,7 @@ use Maatwebsite\Excel\Facades\Excel;
  */
 class BookController extends Controller
 {
-        /**
+    /**
      * create a new instance of the class
      *
      * @return void
@@ -59,6 +58,7 @@ class BookController extends Controller
         //  $this->middleware('permission:deletedb', ['only' => ['destroyDB']]);
 
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -66,194 +66,231 @@ class BookController extends Controller
      */
     public function index($language, Request $request)
     {
-        $show_accardion=false;
+        $show_accardion = false;
         $q = Book::query();
- 
-        $organization_id  =trim($request->get('organization_id'));
-        $dc_date=trim($request->get('dc_date'));
 
-        $book_bookType_id=trim($request->get('book_type_id'));
-        $book_bookLanguage_id=trim($request->get('book_language_id'));
-        $book_bookText_id=trim($request->get('book_text_id'));
-        $book_bookTextType_id=trim($request->get('book_text_type_id'));
-        $book_access_type_id=trim($request->get('book_access_type_id'));
-        $book_file_type_id=trim($request->get('book_file_type_id'));
-        $book_subject_id=trim($request->get('book_subject_id'));
-        $book_author_id=trim($request->get('book_author_id'));
-        $status=trim($request->get('status'));
-        $keyword=trim($request->get('keyword'));
-        $book_subject_id=trim($request->get('book_subject_id'));
-        $id=trim($request->get('id'));
-        $isbn=trim($request->get('isbn'));
-        $title=trim($request->get('title'));
-        $muallif=trim($request->get('muallif'));
-        $location_index=trim($request->get('location_index'));
-        $perPage = 20;
-        $sqlBuild='';
+        $organization_id = trim($request->get('organization_id'));
+        $dc_date = trim($request->get('dc_date'));
+
+        $book_bookType_id = trim($request->get('book_type_id'));
+        $book_bookLanguage_id = trim($request->get('book_language_id'));
+        $book_bookText_id = trim($request->get('book_text_id'));
+        $book_bookTextType_id = trim($request->get('book_text_type_id'));
+        $book_access_type_id = trim($request->get('book_access_type_id'));
+        $book_file_type_id = trim($request->get('book_file_type_id'));
+        $fields_science_id = trim($request->get('fields_science_id'));
+
+        $book_author_id = trim($request->get('book_author_id'));
+        $status = trim($request->get('status'));
+        $keyword = trim($request->get('keyword'));
+        $book_subject_id = trim($request->get('book_subject_id'));
+        $id = trim($request->get('id'));
+
+        $isbn = trim($request->get('isbn'));
+        $title = trim($request->get('title'));
+        $muallif = trim($request->get('muallif'));
+        $location_index = trim($request->get('location_index'));
+        $perPage = 15;
+        $sqlBuild = '';
 
         $current_roles = Auth::user()->getRoleNames()->toArray();
         $current_user = Auth::user()->profile;
-    
 
-        if ($book_bookType_id != null && $book_bookType_id>0)
-        {
-            $show_accardion=true;
+
+        if ($book_bookType_id != null && $book_bookType_id > 0) {
+            $show_accardion = true;
             $q->where('books_type_id', '=', $book_bookType_id);
         }
- 
-        if ($organization_id != null && $organization_id>0)
-        {
-            $show_accardion=true;
+
+        if ($organization_id != null && $organization_id > 0) {
+            $show_accardion = true;
             $q->where('organization_id', '=', $organization_id);
-        }else{
-            $show_accardion=true;
-            $organization_id=$current_user->organization_id;
+        } else {
+            $show_accardion = true;
+            $organization_id = $current_user->organization_id;
             $q->where('organization_id', '=', $organization_id);
         }
-        
-        if ($book_bookLanguage_id != null && $book_bookLanguage_id>0)
-        {
-            $show_accardion=true;
+
+        if ($book_bookLanguage_id != null && $book_bookLanguage_id > 0) {
+            $show_accardion = true;
             $q->where('book_language_id', '=', $book_bookLanguage_id);
         }
-        
-        if ($dc_date != null && $dc_date>0)
-        {
-            $show_accardion=true;
+
+        if ($dc_date != null && $dc_date > 0) {
+            $show_accardion = true;
             $q->where('dc_date', '=', $dc_date);
         }
-        if ($book_bookText_id != null && $book_bookText_id>0)
-        {
-            $show_accardion=true;
+        if ($book_bookText_id != null && $book_bookText_id > 0) {
+            $show_accardion = true;
             $q->where('book_text_id', '=', $book_bookText_id);
         }
-        if ($book_bookTextType_id != null && $book_bookTextType_id>0)
-        {
-            $show_accardion=true;
+        if ($book_bookTextType_id != null && $book_bookTextType_id > 0) {
+            $show_accardion = true;
             $q->where('book_text_type_id', '=', $book_bookTextType_id);
         }
-        if ($book_access_type_id != null && $book_access_type_id>0)
-        {
-            $show_accardion=true;
+        if ($book_access_type_id != null && $book_access_type_id > 0) {
+            $show_accardion = true;
             $q->where('book_access_type_id', '=', $book_access_type_id);
         }
-        if ($book_file_type_id != null && $book_file_type_id>0)
-        {
-            $show_accardion=true;
+        if ($book_file_type_id != null && $book_file_type_id > 0) {
+            $show_accardion = true;
             $q->where('book_file_type_id', '=', $book_file_type_id);
         }
-        
-        // if ($book_subject_id != null && $book_subject_id>0)
-        // {
-        //     $show_accardion=true;
-        //     $q->where('subject_id', '=', $book_subject_id);
-        // }
 
-        if ($book_subject_id != null && $book_subject_id>0)
-        {
-            $show_accardion=true;
-            $dc_subjects = \App\Models\BookSubject::GetTitleById($book_subject_id);
-            
+        if ($book_subject_id != null && $book_subject_id > 0) {
+            $show_accardion = true;
+            $q->where('subject_id', '=', $book_subject_id);
+        }
+
+        if ($fields_science_id != null && $fields_science_id > 0) {
+            $show_accardion = true;
+            $dc_subjects = \App\Models\BookSubject::GetTitleById($fields_science_id);
             $q->whereJsonContains('dc_subjects', $dc_subjects);
         }
-        
-        if ($book_author_id != null && $book_author_id>0)
-        {
-            $show_accardion=true;
+
+        if ($book_author_id != null && $book_author_id > 0) {
+            $show_accardion = true;
             $author = \App\Models\Author::GetTitleById($book_author_id);
             $q->whereJsonContains('dc_authors', $author);
-            
+
         }
 
-        if ($status != null)
-        {
-            $show_accardion=true;
-            if($status>2){
-                if($status==3){
+        if ($status != null) {
+            $show_accardion = true;
+            if ($status > 2) {
+                if ($status == 3) {
                     $q->where('full_text_path', '<>', "");
                 }
-                if($status==4){
+                if ($status == 4) {
                     $q->where('dc_source', '<>', "");
                 }
 
-            }else{
+            } else {
                 $q->where('status', '=', $status);
-            } 
-        }else{
-            $status=1;
+            }
+        } else {
+            $status = 1;
         }
-        if($keyword != null){
-            $show_accardion=true;
-            $q->where(function($query) use($keyword){
-                $query->orWhere('dc_authors', 'LIKE', '%'.$keyword.'%');
+        if ($keyword != null) {
+            $show_accardion = true;
+            $q->where(function ($query) use ($keyword) {
+                $query->orWhere('dc_authors', 'LIKE', '%' . $keyword . '%');
             })
-            ->orWhere('dc_title', 'LIKE', "%$keyword%")
-            ->orWhere('location_index', 'LIKE', "%$keyword%")
-            ->orWhere('dc_UDK', 'LIKE', "%$keyword%")
-            ->orWhere('dc_BBK', 'LIKE', "%$keyword%")
-            ->orWhere('ISBN', 'LIKE', "%$keyword%")
-            ->orWhere('extra1', 'LIKE', "%$keyword%")
-            ->orWhere('dc_description', 'LIKE', "%$keyword%")
-            ->orWhere('published_year', 'LIKE', "%$keyword%")
-            ->orWhereHas('extraAuthorBooks', function ($query) use ($keyword) {
-                if($keyword) {
-                    $query->where('name', 'like', '%'.$keyword.'%');
-                }
-            });
+                ->orWhere('dc_title', 'LIKE', "%$keyword%")
+                ->orWhere('location_index', 'LIKE', "%$keyword%")
+                ->orWhere('dc_UDK', 'LIKE', "%$keyword%")
+                ->orWhere('dc_BBK', 'LIKE', "%$keyword%")
+                ->orWhere('ISBN', 'LIKE', "%$keyword%")
+                ->orWhere('extra1', 'LIKE', "%$keyword%")
+                ->orWhere('dc_description', 'LIKE', "%$keyword%")
+                ->orWhere('published_year', 'LIKE', "%$keyword%")
+                ->orWhereHas('extraAuthorBooks', function ($query) use ($keyword) {
+                    if ($keyword) {
+                        $query->where('name', 'like', '%' . $keyword . '%');
+                    }
+                });
         }
 
-        if ($id != null && $id>0)
-        {
+        if ($id != null && $id > 0) {
+
             $q->where('id', '=', $id);
         }
-        if ($isbn != null && $isbn>0)
-        {
+
+        if ($isbn != null && $isbn > 0) {
             $q->where('ISBN', 'LIKE', "%$isbn%");
         }
-        if ($title != "")
-        {
+        if ($title != "") {
             $q->where('dc_title', 'LIKE', "%$title%");
         }
-        if ($muallif != "")
-        {
+        if ($muallif != "") {
             $q->where('extra1', 'LIKE', "%$muallif%")
-            ->orWhere(function($query) use($muallif){
-                $query->orWhere('dc_authors', 'LIKE', '%'.$muallif.'%');
-            });
+                ->orWhere(function ($query) use ($muallif) {
+                    $query->orWhere('dc_authors', 'LIKE', '%' . $muallif . '%');
+                });
         }
 
-        if ($location_index != "")
-        {
+        if ($location_index != "") {
             $q->where('location_index', 'LIKE', "%$location_index%");
         }
 
-        $bookTypes = BooksType::active()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
-        $bookLanguages = BookLanguage::active()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
-        $bookTexts = BookText::active()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
-        $bookTextTypes = BookTextType::active()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
-        $bookAccessTypes = BookAccessType::active()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
-        $bookFileTypes = BookFileType::active()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
-        $bookSubjects = BookSubject::active()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
-        $subjects = Subject::active()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
-        $organizations = Organization::active()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
-        
-        $bookAuthors = Author::active()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
+        $locale = app()->getLocale();
 
-        $books = $q->with(['BooksType', 'BooksType.translations', 'BookLanguage', 'BookLanguage.translations'])->orderBy('id', 'desc')->paginate($perPage);
+        $bookTypes = Cache::remember("book_types_$locale", 86400, function () use ($locale) {
+            return BooksType::active()->translatedIn($locale)->listsTranslations('title')->pluck('title', 'id');
+        });
 
-        
-        return view('book.index', compact('books','bookSubjects', 'organizations', 'bookAuthors', 'bookTypes', 'bookLanguages', 'bookTexts', 'bookTextTypes', 'bookAccessTypes', 'bookFileTypes', 'book_bookType_id', 'book_bookLanguage_id', 'book_bookText_id', 'book_bookTextType_id', 'book_access_type_id', 'book_file_type_id', 'book_subject_id', 'status', 'keyword', 'show_accardion', 'book_author_id', 'subjects', 'book_subject_id', 'current_roles', 'current_user', 'id', 'isbn', 'title', 'location_index', 'request', 'muallif', 'dc_date', 'organization_id'))
+        $bookLanguages = Cache::remember("book_languages_$locale", 86400, function () use ($locale) {
+            return BookLanguage::active()->translatedIn($locale)->listsTranslations('title')->pluck('title', 'id');
+        });
+
+        $bookTexts = Cache::remember("book_texts_$locale", 86400, function () use ($locale) {
+            return BookText::active()->translatedIn($locale)->listsTranslations('title')->pluck('title', 'id');
+        });
+
+        $bookTextTypes = Cache::remember("book_text_types_$locale", 86400, function () use ($locale) {
+            return BookTextType::active()->translatedIn($locale)->listsTranslations('title')->pluck('title', 'id');
+        });
+
+        $bookAccessTypes = Cache::remember("book_access_types_$locale", 86400, function () use ($locale) {
+            return BookAccessType::active()->translatedIn($locale)->listsTranslations('title')->pluck('title', 'id');
+        });
+
+        $bookFileTypes = Cache::remember("book_file_types_$locale", 86400, function () use ($locale) {
+            return BookFileType::active()->translatedIn($locale)->listsTranslations('title')->pluck('title', 'id');
+        });
+
+        $bookSubjects = Cache::remember("book_subjects_$locale", 86400, function () use ($locale) {
+            return BookSubject::active()->translatedIn($locale)->listsTranslations('title')->pluck('title', 'id');
+        });
+
+        $subjects = Cache::remember("subjects_$locale", 86400, function () use ($locale) {
+            return Subject::active()->translatedIn($locale)->listsTranslations('title')->pluck('title', 'id');
+        });
+
+        $organizations = Cache::remember("organizations_$locale", 86400, function () use ($locale) {
+            return Organization::active()->translatedIn($locale)->listsTranslations('title')->pluck('title', 'id');
+        });
+
+//        $bookAuthors = Cache::remember("book_authors_$locale", 86400, function () use ($locale) {
+//            return Author::active()->translatedIn($locale)->listsTranslations('title')->pluck('title', 'id');
+//        });
+
+        $page = request()->get('page', 1); // joriy sahifa
+        $perPage = $perPage ?? 15;         // fallback agar null bo‘lsa
+//        $cacheKey = "books_list_page_{$page}_perpage_{$perPage}";
+//
+//        $books = Cache::remember($cacheKey, 86400, function () use ($q, $perPage) {
+//            return $q->with([
+//                'BooksType',
+//                'BooksType.translations',
+//                'BookLanguage',
+//                'bookInventar',
+//                'BookLanguage.translations'
+//            ])->orderBy('id', 'desc')->paginate($perPage);
+//        });
+        $books = $q->with([
+            'BooksType',
+            'BooksType.translations',
+            'BookLanguage',
+            'bookInventar',
+            'BookLanguage.translations'
+        ])->orderBy('id', 'desc')->paginate($perPage);
+
+        return view('book.index', compact('books', 'bookSubjects', 'organizations', 'bookTypes', 'bookLanguages', 'bookTexts', 'bookTextTypes', 'bookAccessTypes', 'bookFileTypes', 'book_bookType_id', 'book_bookLanguage_id', 'book_bookText_id', 'book_bookTextType_id', 'book_access_type_id', 'book_file_type_id', 'book_subject_id', 'status', 'keyword', 'show_accardion', 'book_author_id', 'subjects', 'book_subject_id', 'current_roles', 'current_user', 'id', 'isbn', 'title', 'location_index', 'request', 'muallif', 'dc_date', 'organization_id', 'fields_science_id'))
             ->with('i', (request()->input('page', 1) - 1) * $books->perPage());
     }
-    
-    public function export($language, Request $request){
-        $file_name = 'book_'.date('Y_m_d_H_i_s').'.xlsx';
+
+
+    public function export($language, Request $request)
+    {
+        $file_name = 'book_' . date('Y_m_d_H_i_s') . '.xlsx';
+//        dd($request);
         return Excel::download(new ExportBooks($request), $file_name);
     }
 
-    public function exportWithInventars($language, Request $request) 
+    public function exportWithInventars($language, Request $request)
     {
-        $file_name = 'book_'.date('Y_m_d_H_i_s').'.xlsx';
+        $file_name = 'book_' . date('Y_m_d_H_i_s') . '.xlsx';
 
         // return (new BooksWithInventarsExport($request))->queue($file_name)->allOnQueue('member');
 
@@ -278,7 +315,7 @@ class BookController extends Controller
         $bookFileTypes = BookFileType::active()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
         $subjects = Subject::active()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
         $wheres = Where::active()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
-        $whos  = Who::active()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
+        $whos = Who::active()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
 
         $book->price = 0;
         $book->betlar_soni = 0;
@@ -286,58 +323,64 @@ class BookController extends Controller
         return view('book.create', compact('import', 'book', 'bookSubjects', 'bookAuthors', 'bookTypes', 'bookLanguages', 'bookTexts', 'bookTextTypes', 'bookAccessTypes', 'bookFileTypes', 'subjects', 'wheres', 'whos'));
     }
 
-    public function inventarstorage(Request $request){
+    public function inventarstorage(Request $request)
+    {
         $inventar_id = $request->input('inventar_id');
         $comment = $request->input('comment');
         $inventar = BookInventar::find($inventar_id);
-        if($inventar){
+
+        if ($inventar) {
             try {
-                $data=[
-                    'comment'=>$comment,
-                    'inventar_number'=>$inventar->inventar_number,
-                    'bar_code'=>$inventar->bar_code,
-                    'book_id'=>$inventar->book_id,
-                    'book_information_id'=>$inventar->book_information_id,
-                    'book_inventar_id'=>$inventar->id,
-                    'branch_id'=>$inventar->branch_id,
-                    'department_id'=>$inventar->deportmetn_id,
+                $data = [
+                    'comment' => $comment,
+                    'inventar_number' => $inventar->inventar_number,
+                    'bar_code' => $inventar->bar_code,
+                    'book_id' => $inventar->book_id,
+                    'book_information_id' => $inventar->book_information_id,
+                    'book_inventar_id' => $inventar->id,
+                    'organization_id' => $inventar->organization_id,
+                    'branch_id' => $inventar->branch_id,
+                    'department_id' => $inventar->deportmetn_id,
                 ];
                 $depository = Depository::create($data);
-                BookInventar::changeStatus($inventar->id, BookInventar::$WAREHOUSE);
-                toast(__('Successfully saved'), 'success');
 
+//                BookInventar::changeStatus($inventar->id, BookInventar::$WAREHOUSE);
+                toast(__('Successfully saved'), 'success');
+                $inventar->isActive = BookInventar::$WAREHOUSE;
+                $inventar->save();
                 return redirect()->back();
-              } catch (Exception $e) {
+            } catch (Exception $e) {
                 return $e->getMessage();
-              }
+            }
         }
     }
+
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
+     * @param \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
         request()->validate(
             [
-                'dc_title' => 'required|min:3', 
+                'dc_title' => 'required|min:3',
                 'dc_date' => 'required',
                 'betlar_soni' => 'required',
-                'betlar_soni' => 'required',
                 'books_type_id' => 'required',
-                'price' => 'required', 
-                
+                'price' => 'required',
+                'file' => 'mimetypes:image/jpeg,image/png,image/jpg',
             ],
             [
-                'dc_title.required' =>  __('The :attribute field is required.'),
-                'dc_authors.required' =>  __('The :attribute field is required.'),
-                'dc_date.required' =>  __('The :attribute field is required.'),
-                'betlar_soni.required' =>  __('The :attribute field is required.'),
-                'books_type_id.required' =>  __('The :attribute field is required.'),
-                'price.required' =>  __('The :attribute field is required.'),
-                'authors_mark.required' =>  __('The :attribute field is required.'),
+                'dc_title.required' => __('The :attribute field is required.'),
+                'dc_authors.required' => __('The :attribute field is required.'),
+                'dc_date.required' => __('The :attribute field is required.'),
+                'betlar_soni.required' => __('The :attribute field is required.'),
+                'books_type_id.required' => __('The :attribute field is required.'),
+                'price.required' => __('The :attribute field is required.'),
+                'authors_mark.required' => __('The :attribute field is required.'),
+                'file.mimetypes' => __('The :attribute turi: image/jpeg, image/png, image/jpg lardan biri boʻlishi shart.'),
             ],
             [
                 'dc_title' => __('Dc Title'),
@@ -347,19 +390,20 @@ class BookController extends Controller
                 'books_type_id' => __('Books Type'),
                 'price' => __('Price'),
                 'authors_mark' => __("Author's mark"),
+                'file' => __("Book face image"),
             ]
         );
-        $extra1="";
+        $extra1 = "";
 
         $subjectsAll = [];
-        
-        if ($request->input('dc_subjects') != null ) {
+
+        if ($request->input('dc_subjects') != null) {
             $book_subjects = BookSubject::find($request->input('dc_subjects'));
             $subjectsAll[0] = $book_subjects->title;
         }
-       
+
         $authorsAll = [];
-        if ($request->input('dc_authors') != null ) {
+        if ($request->input('dc_authors') != null) {
             $tags = explode(",", $request->input('dc_authors'));
             foreach ($tags as $k => $v) {
                 $author = Author::find($v);
@@ -375,9 +419,9 @@ class BookController extends Controller
                     }
                     Author::create($authorData);
                     $authorsAll[$k] = $v;
-                    $extra1.=$v.", ";
+                    $extra1 .= $v . ", ";
                 } else {
-                    $extra1.=$author->title.", ";
+                    $extra1 .= $author->title . ", ";
                     $authorsAll[$k] = $author->title;
                 }
             }
@@ -394,7 +438,7 @@ class BookController extends Controller
         $file_format_type = null;
         $file_size = null;
         $import = Import::find($request->input('import_id'));
-        
+
         if ($request->file('full_text')) {
             $filePath = Auth::id() . '_' . uniqid() . '_' . time() . '.' . $request->file('full_text')->getClientOriginalExtension();
             $up = $request->file('full_text')->storeAs('books/fulltext', $filePath, 'public');
@@ -402,14 +446,14 @@ class BookController extends Controller
             $file_format = $request->file('full_text')->getClientOriginalExtension();
             $file_format_type = $request->file('full_text')->getMimeType();
             $file_size = $request->file('full_text')->getSize();
-        }else{
-            if($import!=null){
+        } else {
+            if ($import != null) {
                 $full_text_path = $import->full_text_path;
                 $file_format = $import->file_format;
                 $file_format_type = $import->file_format_type;
                 $file_size = $import->file_size;
             }
-            
+
         }
 
         $input = [
@@ -431,53 +475,55 @@ class BookController extends Controller
             'status' => $request->input('status'),
             'published_year' => $request->input('dc_date'),
             'image_path' => $image_path,
-            'books_type_id' =>  $request->input('books_type_id'),
-            'book_language_id' =>  $request->input('book_language_id'),
-            'book_text_id' =>  $request->input('book_text_id'),
+            'books_type_id' => $request->input('books_type_id'),
+            'book_language_id' => $request->input('book_language_id'),
+            'book_text_id' => $request->input('book_text_id'),
             'book_text_type_id' => $request->input('book_text_type_id'),
-            'book_access_type_id' =>  $request->input('book_access_type_id'),
-            'book_file_type_id' =>  $request->input('book_file_type_id'),
-            'subject_id' =>  $request->input('subject_id'),
-            'where_id' =>  $request->input('where_id'),
-            'who_id' =>  $request->input('who_id'),
-            'authors_mark' =>  $request->input('authors_mark'),
-            'circulation' =>  $request->input('circulation'),
-            'printing_plate' =>  $request->input('printing_plate'),
+            'book_access_type_id' => $request->input('book_access_type_id'),
+            'book_file_type_id' => $request->input('book_file_type_id'),
+            'subject_id' => $request->input('subject_id'),
+            'where_id' => $request->input('where_id'),
+            'who_id' => $request->input('who_id'),
+            'authors_mark' => $request->input('authors_mark'),
+            'circulation' => $request->input('circulation'),
+            'printing_plate' => $request->input('printing_plate'),
             'full_text_path' => $full_text_path,
             'file_format' => $file_format,
             'file_format_type' => $file_format_type,
             'file_size' => $file_size,
-            'extra1'=>$extra1,
-        ]; 
-        $previous_page=$request->input('previous_page');
-        
+            'extra1' => $extra1,
+        ];
+
+        $previous_page = $request->input('previous_page');
+
         DB::beginTransaction();
         try {
-            $book = Book::create($input); 
-            if($import!=null){
-                $import->status=2;
-                $import->save();    
+            $book = Book::create($input);
+
+            if ($import != null) {
+                $import->status = 2;
+                $import->save();
             }
             DB::commit();
             toast(__('Successfully saved'), 'success');
             // return redirect()->route('books.index', app()->getLocale());
             // return redirect()->route('dashboard');
             // return redirect()->to(app()->getLocale() . '/admin/books/' . $book->id);
-            return redirect()->to(app()->getLocale() . '/admin/books/' . $book->id.'?previous_page='.$previous_page);
+            return redirect()->to(app()->getLocale() . '/admin/books/' . $book->id . '?previous_page=' . $previous_page);
 
         } catch (\Exception $e) {
             DB::rollback();
             dd($e->getMessage());
             // Send error back to user
         }
- 
+
     }
 
-    
+
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($language, $id)
@@ -496,8 +542,8 @@ class BookController extends Controller
         $book->dc_subjects = \App\Models\BookSubject::GetIdByJsonName($book->dc_subjects);
         $subjects = Subject::active()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
         $wheres = Where::active()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
-        $whos  = Who::active()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
-        $import = null; 
+        $whos = Who::active()->translatedIn(app()->getLocale())->listsTranslations('title')->pluck('title', 'id');
+        $import = null;
 
         return view('book.edit', compact('import', 'book', 'bookSubjects', 'bookAuthors', 'bookTypes', 'bookLanguages', 'bookTexts', 'bookTextTypes', 'bookAccessTypes', 'bookFileTypes', 'subjects', 'wheres', 'whos'));
     }
@@ -505,29 +551,30 @@ class BookController extends Controller
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request $request
-     * @param  Book $book
+     * @param \Illuminate\Http\Request $request
+     * @param Book $book
      * @return \Illuminate\Http\Response
      */
     public function update($language, Request $request, Book $book)
     {
         request()->validate(
             [
-                'dc_title' => 'required|min:3', 
+                'dc_title' => 'required|min:3',
                 'dc_date' => 'required',
                 'betlar_soni' => 'required',
-                'betlar_soni' => 'required',
                 'books_type_id' => 'required',
-                'price' => 'required', 
+                'price' => 'required',
+                'file' => 'mimetypes:image/jpeg,image/png,image/jpg',
             ],
             [
-                'dc_title.required' =>  __('The :attribute field is required.'),
-                'dc_authors.required' =>  __('The :attribute field is required.'),
-                'dc_date.required' =>  __('The :attribute field is required.'),
-                'betlar_soni.required' =>  __('The :attribute field is required.'),
-                'books_type_id.required' =>  __('The :attribute field is required.'),
-                'price.required' =>  __('The :attribute field is required.'),
-                'authors_mark.required' =>  __('The :attribute field is required.'),
+                'dc_title.required' => __('The :attribute field is required.'),
+                'dc_authors.required' => __('The :attribute field is required.'),
+                'dc_date.required' => __('The :attribute field is required.'),
+                'betlar_soni.required' => __('The :attribute field is required.'),
+                'books_type_id.required' => __('The :attribute field is required.'),
+                'price.required' => __('The :attribute field is required.'),
+                'authors_mark.required' => __('The :attribute field is required.'),
+                'file.mimetypes' => __('The :attribute turi: image/jpeg, image/png, image/jpg lardan biri boʻlishi shart.'),
             ],
             [
                 'dc_title' => __('Dc Title'),
@@ -537,17 +584,18 @@ class BookController extends Controller
                 'books_type_id' => __('Books Type'),
                 'price' => __('Price'),
                 'authors_mark' => __("Author's mark"),
+                'file' => __("Book face image"),
             ]
         );
         $subjectsAll = [];
-        $extra1="";   
-        if ($request->input('dc_subjects') != null ) {
+        $extra1 = "";
+        if ($request->input('dc_subjects') != null) {
             $book_subjects = BookSubject::find($request->input('dc_subjects'));
             $subjectsAll[0] = $book_subjects->title;
         }
-       
+
         $authorsAll = [];
-        if ($request->input('dc_authors') != null ) {
+        if ($request->input('dc_authors') != null) {
             $tags = explode(",", $request->input('dc_authors'));
             foreach ($tags as $k => $v) {
                 $author = Author::find($v);
@@ -562,9 +610,9 @@ class BookController extends Controller
                     }
                     Author::create($authorData);
                     $authorsAll[$k] = $v;
-                    $extra1.=$v.", ";
+                    $extra1 .= $v . ", ";
                 } else {
-                    $extra1.=$author->title.", ";
+                    $extra1 .= $author->title . ", ";
                     $authorsAll[$k] = $author->title;
                 }
             }
@@ -630,28 +678,28 @@ class BookController extends Controller
             'status' => $request->input('status'),
             'published_year' => $request->input('dc_date'),
             'image_path' => $image_path,
-            'books_type_id' =>  $request->input('books_type_id'),
-            'book_language_id' =>  $request->input('book_language_id'),
-            'book_text_id' =>  $request->input('book_text_id'),
+            'books_type_id' => $request->input('books_type_id'),
+            'book_language_id' => $request->input('book_language_id'),
+            'book_text_id' => $request->input('book_text_id'),
             'book_text_type_id' => $request->input('book_text_type_id'),
-            'book_access_type_id' =>  $request->input('book_access_type_id'),
-            'book_file_type_id' =>  $request->input('book_file_type_id'),
-            'subject_id' =>  $request->input('subject_id'),
-            'where_id' =>  $request->input('where_id'),
-            'who_id' =>  $request->input('who_id'),
-            'authors_mark' =>  $request->input('authors_mark'),
-            'circulation' =>  $request->input('circulation'),
-            'printing_plate' =>  $request->input('printing_plate'),
+            'book_access_type_id' => $request->input('book_access_type_id'),
+            'book_file_type_id' => $request->input('book_file_type_id'),
+            'subject_id' => $request->input('subject_id'),
+            'where_id' => $request->input('where_id'),
+            'who_id' => $request->input('who_id'),
+            'authors_mark' => $request->input('authors_mark'),
+            'circulation' => $request->input('circulation'),
+            'printing_plate' => $request->input('printing_plate'),
             'full_text_path' => $full_text_path,
             'file_format' => $file_format,
             'file_format_type' => $file_format_type,
             'file_size' => $file_size,
-            'extra1'=>$extra1,
+            'extra1' => $extra1,
         ];
-        $previous_page=$request->input('previous_page');
-         
+        $previous_page = $request->input('previous_page');
+
         DB::beginTransaction();
-        
+
         try {
             $new_book = Book::find($book->id);
             $new_book->update($input);
@@ -659,7 +707,7 @@ class BookController extends Controller
             toast(__('Successfully saved'), 'success');
             // return redirect()->route('books.index', app()->getLocale());
             // return redirect()->route('dashboard');
-            return redirect()->to(app()->getLocale() . '/admin/books/' . $book->id.'?previous_page='.$previous_page);
+            return redirect()->to(app()->getLocale() . '/admin/books/' . $book->id . '?previous_page=' . $previous_page);
         } catch (\Exception $e) {
             DB::rollback();
             // Send error back to user
@@ -677,21 +725,22 @@ class BookController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function show($language, $id, Request $request)
     {
-        $book = Book::with(['bookFileType', 'bookFileType.translation', 'booksType', 'booksType.translation'])->find($id); 
+        $book = Book::with(['bookFileType', 'bookFileType.translation', 'booksType', 'booksType.translation', 'bookLanguage.translations'])->find($id);
+
         $previous_page = $request->get('previous_page');
-        
+
         return view('book.show', compact('book', 'previous_page'));
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function inventarshow($language, $id, Request $request)
@@ -699,102 +748,160 @@ class BookController extends Controller
         $perPage = 20;
         $bookInventar = BookInventar::find($id);
         $book_id = trim($request->get('book_id'));
-        
-        if($bookInventar != null && $book_id != null){
-            $debtors = Debtor::where('book_inventar_id','=',$bookInventar->id)->orderBy('status', 'asc')->paginate($perPage);
+
+        if ($bookInventar != null && $book_id != null) {
+            $debtors = Debtor::where('book_inventar_id', '=', $bookInventar->id)->orderBy('status', 'asc')->paginate($perPage);
             $book = Book::find($book_id);
             $book_information = BookInformation::where('book_id', '=', $book_id)->first();
-            
-            return view('book.debtors', compact('bookInventar','debtors', 'book', 'book_information'));
-        }else{
+
+            return view('book.debtors', compact('bookInventar', 'debtors', 'book', 'book_information'));
+        } else {
             abort(404);
         }
     }
-    
+
     /**
      * Display the specified resource.
      *
-     * @param  int $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function inventarremove($language, $id, Request $request)
     {
         $bookInventar = BookInventar::find($id)->delete();
-        
+
         toast(__('Deleted successfully.'), 'info');
-        return back();    
+        return back();
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function printinventar($language, $id,  Request $request)
+    public function printinventar($language, $id, Request $request)
     {
         $from = trim($request->get('from'));
         $to = trim($request->get('to'));
         $inventar = trim($request->get('inventar'));
         $q = BookInventar::query();
-       
+
         if (!empty($from) && !empty($to)) {
-            
             $q->whereBetween('bar_code', [intval($from), intval($to)]);
         } elseif (!empty($from)) {
             $q->where('bar_code', '=', $from);
         } elseif (!empty($to)) {
             $q->where('bar_code', '=', $to);
-        } 
-        
-        if ($inventar != "") {
-            $q->where('inventar_number', '=', $inventar);    
         }
-        $bookInventars= $q->with(['book', 'branch', 'branch.translations', 'department', 'department.translations'])->orderBy('id', 'desc')->get();
-         
+
+        if ($inventar != "") {
+            $q->where('inventar_number', '=', $inventar);
+        }
+        $bookInventars = $q->with(['book', 'branch', 'branch.translations', 'department', 'department.translations'])->orderBy('id', 'desc')->get();
+
 
         if ($id == 'all') {
             $bookInventars = BookInventar::active()->orderBy('id', 'desc')->get();
             return view('pdf.inventarall', compact('bookInventars'));
-        }elseif ($id == 10) {
-            
-            // $bookInventars = BookInventar::whereBetween('bar_code', [intval($from), intval($to)])->get();
-            return view('pdf.inventarallpdf', compact('bookInventars'));
-        }elseif (!empty($from) && !empty($to)) {
+        }  else {
+            $bookInventar = BookInventar::where('id', $id)->firstOrFail();
 
-            // $bookInventars = BookInventar::whereBetween('bar_code', [intval($from), intval($to)])->get();
-            return view('pdf.inventarall', compact('bookInventars'));
-        } else {
-            $bookInventar = BookInventar::find($id);
             return view('pdf.inventarone', compact('bookInventar'));
         }
     }
-   
-    public function inventarByBookId ($language, $id,  Request $request)
+
+    public function inventarByBookId($language, $id, Request $request)
     {
         $book_id = trim($request->get('book_id'));
 
         $q = BookInventar::query();
-        
-        
+
+
         if ($book_id != "") {
-            $q->where('book_id', '=', $book_id);    
+            $q->where('book_id', '=', $book_id);
         }
-        $bookInventars= $q->with(['book', 'branch', 'branch.translations', 'department', 'department.translations'])->orderBy('id', 'desc')->get();
-         
-        if($id==1){
+        $bookInventars = $q->with(['book', 'branch', 'branch.translations', 'department', 'department.translations'])->orderBy('id', 'desc')->get();
+
+        if ($id == 1) {
             return view('pdf.inventarallpdf', compact('bookInventars'));
-        }else{
+        } else {
             return view('pdf.inventarall', compact('bookInventars'));
         }
     }
+
+    public function rfidshow($language, $rfid_tag_id, Request $request)
+    {
+        $q = BookInventar::query();
+
+
+        if ($rfid_tag_id != "") {
+            $q->where('rfid_tag_id', '=', $rfid_tag_id);
+        }
+        $bookInventar = $q->with(['book', 'branch', 'branch.translations', 'department', 'department.translations', 'book.booksType', 'book.booksType.translations', 'book.bookFileType.translations', 'book.bookLanguage.translations',])->orderBy('id', 'desc')->first();
+
+        return view('book.rfidshow', compact('bookInventar', 'rfid_tag_id'));
+    }
+
+    public function addrfidinventar($language, $id, Request $request){
+        $rfid_tag_id = trim($request->get('rfid_tag_id'));
+
+        $oldInventar = BookInventar::where('rfid_tag_id', '=', $rfid_tag_id)->first();
+        if($oldInventar != null){
+
+            toast(__('This data has already exist please fill another one!'), 'danger');
+            return back();
+        }else{
+            $bookInventar = BookInventar::find($id);
+            $bookInventar->rfid_tag_id = $rfid_tag_id;
+            $bookInventar->save();
+            toast(__('Successfully saved'), 'info');
+            return back();
+        }
+
+
+
+    }
+    public function rfidgive($language, $rfid_tag_id, $book_id, Request $request)
+    {
+        $organization_id = null;
+        $branch_id  = null;
+        $department_id  = null;
+        $book_informations  = null;
+
+        $book = Book::find($book_id);
+
+        $roles = Auth::user()->getRoleNames()->toArray();
+        if (count($roles) > 0) {
+            $user = Auth::user()->profile;
+            if ($user != null) {
+                $organization_id = $user->organization_id;
+                $branch_id = $user->branch_id;
+                $department_id = $user->department_id;
+            }
+        }
+
+        if (in_array('SuperAdmin', $roles)) {
+            $book_informations = BookInformation::where('book_id', '=', $book_id)->get();
+        } else {
+            $book_informations = BookInformation::where('book_id', '=', $book_id)->where('organization_id', $organization_id)->get();
+        }
+
+//        if ($rfid_tag_id != "") {
+//            $q->where('rfid_tag_id', '=', $rfid_tag_id);
+//        }
+        $bookinventars = BookInventar::with(['organization'])->where('book_id', '=', $book_id)->with(['book', 'branch', 'branch.translations', 'department', 'department.translations', 'book.booksType', 'book.booksType.translations', 'book.bookFileType.translations'])->orderBy('id', 'desc')->paginate(20);
+
+        return view('book.rfidgive', compact('book', 'rfid_tag_id', 'book_id', 'bookinventars', 'book_informations', 'organization_id'));
+    }
+
     /**
      * Display the specified resource.
      *
-     * @param  int $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
-    public function inventaronebarcode($language, $id,  Request $request)
+    public function inventaronebarcode($language, $id, Request $request)
     {
         $from = trim($request->get('from'));
         $to = trim($request->get('to'));
@@ -802,68 +909,74 @@ class BookController extends Controller
 
         if (!empty($from) && !empty($to)) {
             $bookInventars = BookInventar::whereBetween('bar_code', [intval($from), intval($to)])->get();
-        }elseif(!empty($book_information)){
+        } elseif (!empty($book_information)) {
             $bookInventars = BookInventar::where('book_information_id', $book_information)->get();
         } else {
             $bookInventars = BookInventar::find($id);
         }
- 
+
         return view('pdf.inventarall', compact('bookInventars'));
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function inventar($language, Request $request)
     {
         $from = trim($request->get('from'));
+        $status = trim($request->get('status'));
+        if ($status < 0) {
+            $status = null;
+        }
         $to = trim($request->get('to'));
         $inventar = trim($request->get('inventar'));
         $perPage = 20;
         $q = BookInventar::query();
-        
+
         if (!empty($from) && !empty($to)) {
             $q->whereBetween('bar_code', [intval($from), intval($to)]);
         } elseif (!empty($from)) {
             $q->where('bar_code', '=', $from);
         } elseif (!empty($to)) {
             $q->where('bar_code', '=', $to);
-        } 
+        }
 
         if ($inventar != "") {
             $q->where('inventar_number', '=', $inventar);
         }
+        if ($status != "") {
+            $q->where('isActive', '=', $status);
+        }
 
         $current_roles = Auth::user()->getRoleNames()->toArray();
         $current_user = Auth::user()->profile;
-        if($current_user != null){
+        if ($current_user != null) {
             $q->where('organization_id', '=', $current_user->organization_id);
         }
-        
-        $barcodes= $q->with(['book', 'organization', 'organization.translations', 'branch', 'branch.translations', 'department', 'department.translations'])->orderBy('id', 'desc')->paginate($perPage);
-        
-        
 
-        return view('book.inventar', compact('barcodes', 'from', 'to', 'inventar'));
+        $barcodes = $q->with(['book', 'organization', 'organization.translations', 'branch', 'branch.translations', 'department', 'department.translations'])->orderBy('id', 'desc')->paginate($perPage);
+
+        return view('book.inventar', compact('barcodes', 'from', 'to', 'inventar', 'status'));
     }
+
     /**
      * Display the specified resource.
      *
-     * @param  int $id
+     * @param int $id
      * @return \Illuminate\Http\Response
      */
     public function addinventar($language, $id, $book_information_id)
     {
 
         $book = Book::find($id);
-        if($book!=null){
+        if ($book != null) {
             return view('book.addinventar', compact('book', 'book_information_id'));
-        }else{
+        } else {
             toast(__('Nothing found'), 'danger');
-            return back();    
+            return back();
         }
     }
 
@@ -874,31 +987,32 @@ class BookController extends Controller
      */
     public function destroy($language, $id, Request $request)
     {
-        $type=$request->input('type');
-        
-        
-        if($type == null){
+        $type = $request->input('type');
+
+
+        if ($type == null) {
             $book = Book::find($id);
             $book->status = false;
             $book->save();
             toast(__('Deleted successfully.'), 'info');
-    
+
             return redirect()->route('books.index', app()->getLocale());
-        }elseif($type=='DELETE_FILE'){
+        } elseif ($type == 'DELETE_FILE') {
             $book = Book::find($id);
-            $book->full_text_path=null;
-            $book->file_format=null;
-            $book->file_format_type=null;
-            $book->file_size=null;
+            $book->full_text_path = null;
+            $book->file_format = null;
+            $book->file_format_type = null;
+            $book->file_size = null;
             $book->save();
             // $booksType->isActive=false;
             // $booksType->Save();
             toast(__('Deleted successfully.'), 'info');
-            return back();    
+            return back();
         }
-        
-        return back();    
+
+        return back();
     }
+
     /**
      * Write code on Method
      *
@@ -906,49 +1020,49 @@ class BookController extends Controller
      */
     public function delete($language, $id, Request $request)
     {
-        $type=$request->input('type');
-        if (Auth::user()->hasRole('SuperAdmin')){
+        $type = $request->input('type');
+        if (Auth::user()->hasRole('SuperAdmin')) {
 
             // BooksType::find($id)->delete();
-            $book= Book::find($id);
-            if($type=='DELETE'){
+            $book = Book::find($id);
+            if ($type == 'DELETE') {
                 // Book::find($id)->delete();
                 $book = Book::find($id);
 
-                if(Storage::disk('public')->exists( $book->full_text_path)) {
+                if (Storage::disk('public')->exists($book->full_text_path)) {
                     Storage::disk('public')->delete($book->full_text_path);
-                } 
+                }
                 $book->delete();
                 // $booksType->isActive=false;
                 // $booksType->Save();
 
 
                 toast(__('Deleted successfully.'), 'info');
-                return back();    
-            }elseif($type=='DELETE_FULL_FROM_SERVER'){
+                return back();
+            } elseif ($type == 'DELETE_FULL_FROM_SERVER') {
                 $book = Book::find($id);
-                
-                if(Storage::disk('public')->exists( $book->full_text_path)) {
+
+                if (Storage::disk('public')->exists($book->full_text_path)) {
                     Storage::disk('public')->delete($book->full_text_path);
 
-                    $book->full_text_path=null;
-                    $book->file_format=null;
-                    $book->file_format_type=null;
-                    $book->file_size=null;
+                    $book->full_text_path = null;
+                    $book->file_format = null;
+                    $book->file_format_type = null;
+                    $book->file_size = null;
                     $book->save();
                     toast(__('Deleted successfully.'), 'info');
-                    return back();    
+                    return back();
                 } else {
                     toast(__('File not Found.'), 'danger');
-                    return back();    
+                    return back();
                 }
-                
-            }else{
+
+            } else {
                 return view('book.show', compact('book'));
             }
-        }else{
+        } else {
             toast(__('You are not SuperAdmin'), 'danger');
-            return back();    
+            return back();
         }
     }
 }

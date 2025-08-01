@@ -16,7 +16,7 @@
         </div>
         <div>
             <a href="{{ route('orders.create', app()->getLocale()) }}" class="btn btn-primary float-right">
-                {{ __('Create') }}  
+                {{ __('Create') }}
             </a>
         </div>
     </div>
@@ -37,11 +37,11 @@
                                     <th></th>
                                 </tr>
                             </thead>
-                            <tbody> 
+                            <tbody>
                                 <form action="{{ route('orders.index', app()->getLocale()) }}" method="GET" accept-charset="UTF-8"
                                     role="search">
-                                <tr> 
-                                    <th>No</th>                                    
+                                <tr>
+                                    <th>No</th>
                                     <th>
                                         <div class="form-group">
                                             <input type="text" class="form-control " name="order_number"
@@ -90,7 +90,7 @@
                                                 <br>
                                                 <b>{{ __('Email') }}</b>: <a href="mailTo:{!! $order->reader ? $order->reader->email : '' !!}">{!! $order->reader ? $order->reader->email : '' !!}</a>
                                                 <br>
-                                                <b>{{ __('Phone Number') }}: </b><a href="tel:{!! $order->reader ? $order->reader->profile->phone_number : '' !!}">{!! $order->reader ? $order->reader->profile->phone_number : '' !!}</a>                                            
+                                                <b>{{ __('Phone Number') }}: </b><a href="tel:{!! $order->reader ? $order->reader->profile->phone_number : '' !!}">{!! $order->reader ? $order->reader->profile->phone_number : '' !!}</a>
                                             </td>
                                         <td>
                                             <form action="{{ route('orders.destroy',[app()->getLocale(), $order->id]) }}" method="POST">
@@ -101,12 +101,12 @@
                                             </form>
                                             <form action="{{ route('orders.change',[app()->getLocale(), $order->id]) }}" method="POST">
                                                 <input type="hidden" name="detail_id" value="{{$order->id}}">
-                                                <input type="hidden" name="type" value="detail">
+                                                <input type="hidden" name="type" value="accept_detail">
                                                 <div class="form-group">
                                                     <select class=" form-select form-control " id="status" name="status">
                                                         {{-- <option value='0' >{{ __('DELETED') }}</option>
                                                          --}}
-                                                        
+
                                                         @if ($order->status==1)
                                                             <option value='1' selected>{{ __('SENT') }}</option>
                                                         @else
@@ -114,13 +114,13 @@
                                                         @endif
 
                                                         @if ($order->status==2)
-                                                            <option value='2' selected>{{ __('ACCEPTED') }}</option> 
+                                                            <option value='2' selected>{{ __('ACCEPTED') }}</option>
                                                         @else
                                                             <option value='2' >{{ __('ACCEPTED') }}</option>
                                                         @endif
                                                         @if ($order->status==3)
                                                             <option value='3' selected>{{ __('READY') }}</option>
-                                                        @else                                                            
+                                                        @else
                                                             <option value='3'>{{ __('READY') }}</option>
                                                         @endif
                                                         @if ($order->status==4)
@@ -139,7 +139,7 @@
                                             </form>
                                         </td>
                                     </tr>
-                                @endforeach                                    
+                                @endforeach
                             </tbody>
                         </table>
                     </div>

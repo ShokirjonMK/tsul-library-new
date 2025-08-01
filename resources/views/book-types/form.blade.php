@@ -18,7 +18,7 @@
 
                     </ul>
                     <div class="tab-content px-3 px-xl-5" id="myTabContent">
- 
+
                         @php
                             $step = 0;
                         @endphp
@@ -44,7 +44,7 @@
                                                 @endphp
                                                 <input type="text" class="form-control " name="title_{{ $k }}"
                                                     id="title_{{ $k }}" placeholder="{{ __('Title') }}"
-                                                    value="{{ $title }}" />
+                                                       value="{{ old('title_'.$k, $title) }}" />
                                                 @error('title_{{ $k }}')
                                                     <span class="text-danger">{{ $message }}</span>
                                                 @enderror
@@ -80,9 +80,9 @@
                         if ($booksType->count() > 0 && isset($booksType->isActive)){
                             $isActive = $booksType->isActive;
                         }
-                        
+
                     @endphp
-                   
+
                     <div class="form-group row">
 
                         <label for="isActive" class="form-label">{{ __('isActive') }}</label>
@@ -94,7 +94,7 @@
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
-                    
+
                     <div class="form-group">
                         {{ Form::label(__('Image') ) }}
                         <input type="file" name="file" class='form-control' />
@@ -104,7 +104,7 @@
                         {!! $errors->first('image_path', '<div class="invalid-feedback">:message</div>') !!}
                     </div>
 
-                    
+
 
                     <div class="form-group">
                         {{ Form::label(__('Icon Path')) }}

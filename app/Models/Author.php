@@ -139,10 +139,10 @@ class Author extends Model implements TranslatableContract
 
     public static function GetIdByJsonName($names)
     {
-
         $ids = [];
         if ($names != null && json_decode($names) != null && count(json_decode($names)) > 0) {
             foreach (json_decode($names) as $k => $v) {
+
                 $model = self::active()->whereTranslation('title', self::change_str_with_alphabet($v))->first();
                 if ($model != null) {
                     $ids[$k] = $model->id;
@@ -168,7 +168,7 @@ class Author extends Model implements TranslatableContract
         } else {
             if($names != null){
                 $model = self::active()->whereTranslation('title', self::change_str_with_alphabet($names))->first();
-            
+
                 if ($model != null) {
                     $ids = $model->id;
                 } else {
@@ -177,6 +177,58 @@ class Author extends Model implements TranslatableContract
                     foreach (config('app.locales') as $til_code => $locale) {
                         $authorData[$til_code] = [
                             'title' => self::change_str_with_alphabet($names)
+                        ];
+                        $count += 1;
+                    }
+                    $modelAuthor = Author::create($authorData);
+                }
+            }
+
+        }
+        return $ids;
+    }
+
+
+    public static function GetIdByUnilibraryName($names)
+    {
+        $ids = [];
+        $authors = explode(",",$names);
+        if ($authors != null && count($authors) > 0) {
+            foreach ($authors as $k => $v) {
+
+                $model = self::active()->whereTranslation('title', self::change_str_with_alphabet(trim($v)))->first();
+                if ($model != null) {
+                    $ids[$k] = $model->id;
+                } else {
+                    foreach ($authors as $ks => $v) {
+                        $author = Author::whereTranslation("title", self::change_str_with_alphabet(trim($v)))->first();
+
+                        if ($author == null && $v != '') {
+                            $authorData = null;
+                            $count = 0;
+                            foreach (config('app.locales') as $til_code => $locale) {
+                                $authorData[$til_code] = [
+                                    'title' => self::change_str_with_alphabet(trim($v))
+                                ];
+                                $count += 1;
+                            }
+                            $modelAuthor = Author::create($authorData);
+                            $ids[$k] = $modelAuthor->id;
+                        }
+                    }
+                }
+            }
+        } else {
+            if($authors != null){
+                $model = self::active()->whereTranslation('title', self::change_str_with_alphabet(trim($authors)))->first();
+                if ($model != null) {
+                    $ids = $model->id;
+                } else {
+                    $authorData = null;
+                    $count = 0;
+                    foreach (config('app.locales') as $til_code => $locale) {
+                        $authorData[$til_code] = [
+                            'title' => self::change_str_with_alphabet(trim($authors))
                         ];
                         $count += 1;
                     }

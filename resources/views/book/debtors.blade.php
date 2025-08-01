@@ -21,7 +21,7 @@
                     class="btn btn-primary">{{ __('Back') }}</a>
             </div>
         </div>
-        
+
         <div class="row">
             <div class="col-xl-12 col-lg-12">
                 <div class="ec-cat-list card card-default">
@@ -58,17 +58,25 @@
                                     <div class="form-group">
                                         <strong>{{ __('Bar code') }}:</strong>
                                         <div class=" text-center">
-                                            @if (env('BAR_CODE_TYPE')=='QRCODE') 
+                                            @if (env('BAR_CODE_TYPE')=='QRCODE')
                                                 {!! QrCode::size(100)->generate($bookInventar->bar_code); !!}
                                             @else
                                                 @php
-                                                    $generator = new Picqer\Barcode\BarcodeGeneratorPNG();
-                                                    echo '<img src="data:image/png;base64,' . base64_encode($generator->getBarcode($bookInventar->bar_code, $generator::TYPE_CODE_128)) . '">';
+                                                    $generator = new Picqer\Barcode\BarcodeGeneratorSVG();
+                                                    echo $generator->getBarcode($bookInventar->bar_code, $generator::TYPE_CODE_128, 2.30);
+
+//                                                    echo '<img src="data:image/png;base64,' . base64_encode($generator->getBarcode($bookInventar->bar_code, $generator::TYPE_CODE_128)) . '">';
                                                 @endphp
                                             @endif
                                             <br>
                                             {{ $bookInventar->bar_code }}
                                         </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <strong>{{ __('RFID') }}:</strong>
+                                        {{ $bookInventar->rfid_tag_id }}
                                     </div>
                                 </div>
 
@@ -122,7 +130,7 @@
                                                     </td>
                                                     <td>{!! $debtor->created_by ? $debtor->createdBy->name : '' !!}</td>
                                                     <td>{!! $debtor->updated_by ? $debtor->updatedBy->name : '' !!}</td>
-                                                    
+
                                                 </tr>
                                             @endforeach
                                             <tr>

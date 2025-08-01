@@ -1,4 +1,12 @@
 
+<li class="{{ \Request::is(app()->getLocale() . '/admin/dreader*') ? 'active' : '' }}">
+    <a href="{{ url(app()->getLocale() . '/admin/dreader') }}"
+        class="sidenav-item-link ">
+        <i class="mdi mdi-comment-text-outline"></i>
+        <span class="nav-text">{{ __('Scientific publications') }}</span>
+    </a>
+</li>
+
 <li class="{{ \Request::is(app()->getLocale() . '/admin/reader*') ? 'active' : '' }}">
     <a href="{{ url(app()->getLocale() . '/admin/reader') }}"
         class="sidenav-item-link ">

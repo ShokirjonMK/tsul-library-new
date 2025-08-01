@@ -19,7 +19,7 @@ class DepositoryController extends Controller
     public function index()
     {
         $perPage = 20;
-        $depositories = Depository::with(['bookInformation', 'branch', 'department'])->orderBy('id', 'desc')->paginate($perPage);
+        $depositories = Depository::with(['bookInformation', 'branch', 'department', 'branch.translations', 'department.translations'])->orderBy('id', 'desc')->paginate($perPage);
 
         return view('depository.index', compact('depositories'))
             ->with('i', (request()->input('page', 1) - 1) * $depositories->perPage());

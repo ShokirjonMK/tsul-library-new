@@ -26,7 +26,7 @@
                         <div class="shop-control-bar__left mb-4 m-lg-0">
                             <p class="woocommerce-result-count m-0"> {{__("Total")}}: <b>{{$books->total()}}</b> {{__("ta kitob")}}</p>
                         </div>
-                        <div class="shop-control-bar__right d-md-flex align-items-center"> 
+                        <div class="shop-control-bar__right d-md-flex align-items-center">
                             <ul class="nav nav-tab ml-lg-4 justify-content-center justify-content-md-start ml-md-auto"
                                 id="pills-tab" role="tablist">
                                 <li class="nav-item border">
@@ -169,7 +169,7 @@
                                                                 class="img-fluid d-block mx-auto attachment-shop_catalog size-shop_catalog wp-post-image img-fluid"
                                                                 alt="{{ $book->dc_title }}"
                                                                 title="{{ $book->dc_title }}" style="max-width: 300px;">
-                                                        @endif                                                    
+                                                        @endif
                                                     </a>
                                                 </div>
                                                 <div
@@ -195,7 +195,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="col-md-auto d-flex align-items-center">
-                                                     
+
                                                 </div>
                                             </div>
                                         </div>
@@ -213,6 +213,7 @@
                 </div>
                 <div id="secondary" class="sidebar widget-area order-1" role="complementary">
                     <div id="widgetAccordion">
+
                         @if ($bookTypes != null && $bookTypes->count() > 0)
                             <div id="woocommerce_product_categories-2"
                                 class="widget p-4d875 border woocommerce widget_product_categories">
@@ -332,5 +333,5 @@
         </div>
     </div>
     <!-- ====== END MAIN CONTENT ====== -->
- 
+
 @endsection

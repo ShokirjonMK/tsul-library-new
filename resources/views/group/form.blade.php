@@ -28,12 +28,17 @@
         <div class="ec-cat-list card card-default mb-24px">
             <div class="card-body">
                 <div class="ec-cat-form">
+                    <div class="form-group row">
+                        {{ Form::label('HEMIS Code') }}
+                        {{ Form::text('code', $group->code, ['class' => 'form-control' . ($errors->has('code') ? ' is-invalid' : ''), 'placeholder' => 'Code']) }}
+                        {!! $errors->first('code', '<div class="invalid-feedback">:message</div>') !!}
+                    </div>
                     @php
                         $isActive = 1;
                         if ($group->count() > 0 && isset($group->isActive)) {
                             $isActive = $group->isActive;
                         }
-                        
+
                     @endphp
 
                     <div class="form-group row">
@@ -47,9 +52,9 @@
                             <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
-                    
+
                     <livewire:admin.references.org-br-dep-fac-chair :org_id="$group->organization_id" :branch_id="$group->branch_id" :faculty_id="$group->faculty_id"  :chair_id="$group->chair_id" />
-                    
+
                     <div class="row">
                         <div class="col-12">
                             <button type="submit" class="btn btn-primary">{{ __('Save') }}</button>

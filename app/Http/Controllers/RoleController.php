@@ -49,6 +49,8 @@ class RoleController extends Controller
      */
     public function create()
     {
+        return redirect()->route('roles.index', app()->getLocale());
+
         $permission = Permission::get();
         $role = null;
         $isUpdateMode = false;
@@ -64,6 +66,8 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
+        return redirect()->route('roles.index', app()->getLocale());
+
         $this->validate($request, [
             'name' => 'required|unique:roles,name',
             'permission' => 'required',
@@ -83,6 +87,8 @@ class RoleController extends Controller
      */
     public function show($language, $id)
     {
+        return redirect()->route('roles.index', app()->getLocale());
+
         $role = Role::find($id);
         $rolePermissions = Permission::join('role_has_permissions', 'role_has_permissions.permission_id', 'permissions.id')
             ->where('role_has_permissions.role_id', $id)
@@ -99,6 +105,8 @@ class RoleController extends Controller
      */
     public function edit($language, $id)
     {
+        return redirect()->route('roles.index', app()->getLocale());
+
         $role = Role::findOrFail($id);
         $permission = Permission::get();
         $rolePermissions = DB::table('role_has_permissions')
@@ -118,6 +126,8 @@ class RoleController extends Controller
      */
     public function update($language, Request $request, $id)
     {
+        return redirect()->route('roles.index', app()->getLocale());
+
         $this->validate($request, [
             'name' => 'required',
             'permission' => 'required',
@@ -141,6 +151,8 @@ class RoleController extends Controller
      */
     public function destroy($language, $id)
     {
+        return redirect()->route('roles.index', app()->getLocale());
+
         // Role::find($id)->delete();
         Role::find($id)->delete();
 
@@ -155,9 +167,10 @@ class RoleController extends Controller
      */
     public function destroyDB($language, $id)
     {
-        Role::find($id)->delete();
-
-        return redirect()->route('roles.index')
-            ->with('success', 'Role deleted successfully');
+        return redirect()->route('roles.index');
+//        Role::find($id)->delete();
+//
+//        return redirect()->route('roles.index')
+//            ->with('success', 'Role deleted successfully');
     }
 }

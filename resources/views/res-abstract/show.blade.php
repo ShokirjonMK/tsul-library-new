@@ -19,13 +19,13 @@
         <a href="{{ url(app()->getLocale() . '/admin/res-abstracts') }}"  class="btn btn-primary" >{{ __('Back') }}</a>
         </div>
     </div>
-    
+
     <div class="row">
         <div class="col-xl-12 col-lg-12">
             <div class="ec-cat-list card card-default">
                 <div class="card">
                     <div class="card-body">
-                        
+
                         <div class="form-group">
                             <strong>{{ __('IsActive') }}:</strong>
                             {!! $scientificPublication->isActive == 1
@@ -64,7 +64,7 @@
                             <strong>{{__('Copies')}}:</strong>
                             {{ $scientificPublication->copies }}
                         </div>
-                         
+
                         <div class="form-group">
                             <strong>{{__('Published Year')}}:</strong>
                             {{ $scientificPublication->publication_year }}
@@ -79,10 +79,23 @@
                         </div> --}}
                         <div class="form-group">
                             <strong>{{ __('Bar code') }}:</strong>
+                            <br>
+                            @if (env('BAR_CODE_TYPE')=='QRCODE')
+                                {!! QrCode::size(100)->generate($scientificPublication->barcode) !!}
+                            @else
+                                @php
+
+                                    $generator = new Picqer\Barcode\BarcodeGeneratorSVG();
+                                    echo $generator->getBarcode($scientificPublication->barcode, $generator::TYPE_CODE_128, 2.30);
+                                @endphp
+                            @endif
+
+                            <br>
                             {{ $scientificPublication->barcode }}
                         </div>
                         <div class="form-group">
                             <strong>{{ __('Inventar Number') }}:</strong>
+
                             {{ $scientificPublication->inventar_number }}
                         </div>
 

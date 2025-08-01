@@ -2,7 +2,7 @@
 
     <div class="col-xl-12 col-lg-12">
         <div class="ec-cat-list card card-default">
-            <div class="card-body"> 
+            <div class="card-body">
                 <div class="ec-cat-form">
                     <div class="form-group">
                         {{ Form::label(__('Title')) }}
@@ -27,7 +27,7 @@
                     <div class="form-group">
                         <label for="where_id">{{ __('Where') }}</label>
                         <select autocomplete="off" id="where_id"  name="where_id" class=" form-select form-control" >
-                            <option value="0">{{ __('Choose') }}</option>
+                            <option value>{{ __('Choose') }}</option>
                             @foreach ($wheres as $k => $v)
                                 @if ($k==$document->where_id)
                                     <option value="{{ $k }}" selected="selected"  >{{ $v }}</option>
@@ -36,7 +36,7 @@
                                 @endif
                             @endforeach
                         </select>
-                         
+
                         {!! $errors->first('where_id', '<div class="invalid-feedback">:message</div>') !!}
                     </div>
 
@@ -55,7 +55,7 @@
                         {{ Form::label(__('Consignment Note')) }}
                         {{ Form::text('consignment_note', $document->consignment_note, ['class' => 'form-control' . ($errors->has('consignment_note') ? ' is-invalid' : ''), 'placeholder' => 'Consignment Note']) }}
                         {!! $errors->first('consignment_note', '<div class="invalid-feedback">:message</div>') !!}
-                    </div> 
+                    </div>
                     <div class="form-group">
                         {{ Form::label(__('Act Number')) }}
                         {{ Form::text('act_number', $document->act_number, ['class' => 'form-control' . ($errors->has('act_number') ? ' is-invalid' : ''), 'placeholder' => 'Act Number']) }}
@@ -72,7 +72,7 @@
                         {!! $errors->first('comment', '<div class="invalid-feedback">:message</div>') !!}
                     </div> --}}
                 </div>
-               
+
 
                 <div class="box-footer mt20">
                     <button type="submit" class="btn btn-primary">{{ __('Save') }}</button>

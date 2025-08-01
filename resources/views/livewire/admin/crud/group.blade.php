@@ -40,6 +40,12 @@
                 <div class="card-body">
                     <div class="ec-cat-form">
                         <div class="form-group row">
+                            <label for="isActive" class="form-label">{{ __('HEMIS Code') }}</label>
+                            <input class="form-control" placeholder="{{ __('HEMIS Code') }}" name="code" type="text" wire:model="code">
+                        </div>
+
+
+                        <div class="form-group row">
                             <label for="isActive" class="form-label">{{ __('isActive') }}</label>
                             <select class="form-select" id="isActive" name="isActive" wire:model="isActive">
 

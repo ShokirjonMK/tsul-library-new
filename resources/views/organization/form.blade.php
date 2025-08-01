@@ -9,51 +9,51 @@
                         @foreach (config('app.locales') as $k => $locale)
                             <li class="nav-item" role="presentation">
                                 <button class="nav-link {{ $k == 'uz' ? 'active' : '' }}"
-                                    id="language-tab-{{ $k }}" data-bs-toggle="tab"
-                                    data-bs-target="#language-{{ $k }}" type="button" role="tab"
-                                    aria-controls="language-{{ $k }}"
-                                    aria-selected="{{ $k == 'uz' ? 'true' : 'false' }}">{{ $locale }}</button>
+                                        id="language-tab-{{ $k }}" data-bs-toggle="tab"
+                                        data-bs-target="#language-{{ $k }}" type="button" role="tab"
+                                        aria-controls="language-{{ $k }}"
+                                        aria-selected="{{ $k == 'uz' ? 'true' : 'false' }}">{{ $locale }}</button>
                             </li>
                         @endforeach
 
                     </ul>
                     <div class="tab-content px-3 px-xl-5" id="myTabContent">
- 
+
                         @php
                             $step = 0;
                         @endphp
                         @foreach (config('app.locales') as $k => $locale)
                             <div class="tab-pane fade {{ $k == 'uz' ? 'active show' : '' }}"
-                                id="language-{{ $k }}" role="tabpanel"
-                                aria-labelledby="language-tab-{{ $k }}">
+                                 id="language-{{ $k }}" role="tabpanel"
+                                 aria-labelledby="language-tab-{{ $k }}">
                                 <div class="tab-widget mt-5">
                                     <div class="row">
                                         <div class="col-md-12">
                                             <input type="hidden" class="form-control " name="locale_{{ $k }}"
-                                                id="locale_{{ $k }}" value="{{ $k }}" />
+                                                   id="locale_{{ $k }}" value="{{ $k }}" />
                                             <div class="form-group">
                                                 <label class="required"
-                                                    for="title_{{ $k }}">{{ __('Title') }}
+                                                       for="title_{{ $k }}">{{ __('Title') }}
                                                     {{ $k }}:</label>
-                                                @php  
+                                                @php
                                                     $title = null;
                                                      if (count($organization->organizationTranslations) > 0 && isset($organization->organizationTranslations[$step]) && $organization->organizationTranslations[$step]->locale == $k) {
                                                         $title = $organization->organizationTranslations[$step]->title;
                                                     }
-                                                    
+
                                                 @endphp
                                                 <input type="text" class="form-control " name="title_{{ $k }}"
-                                                    id="title_{{ $k }}" placeholder="{{ __('Title') }}"
-                                                    value="{{ $title }}" />
+                                                       id="title_{{ $k }}" placeholder="{{ __('Title') }}"
+                                                       value="{{ old('title_'.$k, $title) }}" />
                                                 @error('title_{{ $k }}')
-                                                    <span class="text-danger">{{ $message }}</span>
+                                                <span class="text-danger">{{ $message }}</span>
                                                 @enderror
                                             </div>
                                         </div>
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <label class="required"
-                                                    for="address_{{ $k }}">{{ __('Address') }}
+                                                       for="address_{{ $k }}">{{ __('Address') }}
                                                     {{ $k }}:</label>
                                                 @php
                                                     $address = null;
@@ -64,7 +64,7 @@
                                                 @endphp
                                                 <textarea name="address_{{ $k }}" class="address body form-control ckeditor " id="address_{{ $k }}" cols="30" rows="10">{{ $address }}</textarea>
                                                 @error('address_{{ $k }}')
-                                                    <span class="text-danger">{{ $message }}</span>
+                                                <span class="text-danger">{{ $message }}</span>
                                                 @enderror
                                             </div>
                                         </div>
@@ -101,7 +101,7 @@
                         }
 
                     @endphp
-                   
+
                     <div class="form-group row">
 
                         <label for="isActive" class="form-label">{{ __('isActive') }}</label>
@@ -110,7 +110,7 @@
                             <option value='1' {{ $isActive ? 'selected' : '' }}>{{ __('Active') }}</option>
                         </select>
                         @error('isActive')
-                            <span class="text-danger">{{ $message }}</span>
+                        <span class="text-danger">{{ $message }}</span>
                         @enderror
                     </div>
                     <div class="form-group">
@@ -132,4 +132,4 @@
         </div>
     </div>
 </div>
- 
+

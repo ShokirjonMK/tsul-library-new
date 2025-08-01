@@ -46,12 +46,12 @@
         .barcode {
             display: table-cell;
             position: relative;
-            width: 7 * @moduleWidth; 
+            width: 7 * @moduleWidth;
             overflow: hidden;
-        } 
+        }
     </style>
 <style type="text/css">
-     
+
     @page {
         size: 2.16535in 1.1811in landscape;
         margin: 0;
@@ -63,10 +63,18 @@
 
     <div class="toPrint d-flex align-content-start flex-wrap">
         <div class="barcode text-center">
-            @php
-                $generator = new Picqer\Barcode\BarcodeGeneratorPNG();
-                echo '<img src="data:image/png;base64,' . base64_encode($generator->getBarcode($user->inventar_number, $generator::TYPE_CODE_128)) . '">';
-            @endphp
+            @if(($user->inventar_number))
+
+                @if (env('USER_BAR_CODE_TYPE')=='QRCODE')
+                    {!! QrCode::size(100)->generate($user->inventar_number); !!}
+                @else
+                    @php
+                        $generator = new Picqer\Barcode\BarcodeGeneratorSVG();
+                        echo $generator->getBarcode($user->inventar_number, $generator::TYPE_CODE_128, 2.30);
+
+                    @endphp
+                @endif
+            @endif
             <center>{{ $user->inventar_number }}</center>
         </div>
     </div>

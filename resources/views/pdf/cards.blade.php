@@ -110,12 +110,12 @@ scratch. This page gets rid of all links and provides the needed markup only.
         }
 
         .barcode {
-            text-align: center; 
+            text-align: center;
         }
 
         .back {
-            /* height: 310px;
-            width: 540px; */
+             height: 210px;
+            /*width: 540px; */
             /* background-color: #ffffff;
             border: 1px solid #000; */
         }
@@ -169,19 +169,18 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                             @foreach ($users as $k=>$user)
 
                                                 @if ($user->profile != null)
-                                                    <div class="col-md-6" style="max-height: 310px; min-height:245px">
+                                                    <div class="col-md-6" style=" width:50%; height: 300px; max-height: 310px; min-height:245px">
                                                         <div class="back">
                                                             <h1 class="Details">{!! $user->profile->organization ? $user->profile->organization->title : '' !!}</h1>
                                                             <div class="row">
-                                                                <div class="col-md-4">
+                                                                <div class="col-md-4"  style="width: 40%;">
                                                                     <div class="top text-center">
                                                                         <div class="form-group">
-                                                                            
-                                                                            
                                                                             @if ($user->profile->image)
 
-                                                                            <img src="/storage/{{ $user->profile->image }}" style="width: 100px;max-width: 120px;">
-                                                    
+                                                                            <img src="/storage/{{ $user->profile->image }}"
+                                                                                 style="width: 120px;max-width: 150px; height: 120px">
+
                                                                             @else
                                                                                 {{ __('No image') }}
                                                                             @endif
@@ -191,16 +190,21 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                                <div class="col-md-7">
+                                                                <div class="col-md-7"  style="width: 60%;">
                                                                     <div class="details-info">
                                                                         <div class="barcode">
-                                                                            @php
-                                                                                if ($user->inventar_number) {
-                                                                                    $generator = new Picqer\Barcode\BarcodeGeneratorPNG();
-                                                                                    echo '<img src="data:image/png;base64,' . base64_encode($generator->getBarcode($user->inventar_number, $generator::TYPE_CODE_128)) . '" >';
-                                                                                }
-                                                                            @endphp
-                                                                            <center>{{ $user->inventar_number }}</center>
+                                                                            @if(($user->inventar_number))
+
+                                                                                @if (env('USER_BAR_CODE_TYPE')=='QRCODE')
+                                                                                    {!! QrCode::size(100)->generate($user->inventar_number); !!}
+                                                                                @else
+                                                                                    @php
+                                                                                        $generator = new Picqer\Barcode\BarcodeGeneratorSVG();
+                                                                                        echo $generator->getBarcode($user->inventar_number, $generator::TYPE_CODE_128, 2.30);
+                                                                                    @endphp
+                                                                                @endif
+                                                                            @endif
+                                                                            <center style="margin-top: 6px;">{{ $user->inventar_number }}</center>
                                                                             <br>
                                                                         </div>
                                                                         <div class="form-group">
@@ -214,7 +218,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                                                         @if ($user->profile->date_of_birth)
                                                                             <div class="form-group mb-10">
                                                                                 <b>{{ __('Date Of Birth') }}:</b> {{ $user->profile->date_of_birth }}
-                                                                            </div>    
+                                                                            </div>
                                                                         @endif
                                                                         @if ($user->profile->faculty_id)
                                                                             <div class="mb-10">
@@ -237,9 +241,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
                                                 @if( $i%10==0)
                                                          <div class="col-md-12">
                                                             <br>
-                                                            <br>
-                                                            <br>
-                                                            <br> 
                                                              {{-- <h1>&nbsp;</h1> --}}
                                                         </div>
 
@@ -277,7 +278,6 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <script src="{{ asset('dist/js/bootstrap-switch.min.js') }}"></script>
     <!-- Select2 -->
     <script src="{{ asset('dist/js/select2.full.min.js') }}"></script>
-
     <script>
         window.onload = function() {
             window.print();
