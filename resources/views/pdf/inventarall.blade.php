@@ -44,7 +44,7 @@
     @foreach ($bookInventars as $book_inventar)
         <div class="label">
             {!! QrCode::size(95)->generate($book_inventar->bar_code) !!}
-            <div class="barcode-value">{{ $book_inventar->bar_code }}</div>
+            <div class="barcode-value" style="font-size: 20px; font-weight: bold;">{{ $book_inventar->bar_code }}</div>
         </div>
     @endforeach
 @else

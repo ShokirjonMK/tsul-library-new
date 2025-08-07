@@ -294,6 +294,7 @@ Route::group(['prefix' => '{langugae}', 'where' => ['locale' => '[a-zA-Z]{2}'], 
         Route::resource('socials', SocialController::class);
         Route::resource('unilibrary', \App\Http\Controllers\UnilibraryController::class);
         Route::resource('andqxai', \App\Http\Controllers\AndqxaiController::class);
+        Route::resource('book-taken-without-permissions', \App\Http\Controllers\BookTakenWithoutPermissionController::class);
 
     });
 

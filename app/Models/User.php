@@ -218,6 +218,7 @@ class User extends Authenticatable
     public function activeDebtors()
     {
         return $this->hasMany('App\Models\Debtor', 'reader_id', 'id')
-            ->where('status', 1);
+            ->where('status', 1)
+            ->with('bookInventar:id,id,rfid_tag_id');
     }
 }

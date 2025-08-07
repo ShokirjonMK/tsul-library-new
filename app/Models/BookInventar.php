@@ -149,6 +149,7 @@ class BookInventar extends Model
         $model = self::find($id);
         $model->isActive = $status;
         $model->save();
+
         return $model;
     }
 

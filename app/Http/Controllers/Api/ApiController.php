@@ -8,6 +8,7 @@ use App\Models\BookFileType;
 use App\Models\BookInventar;
 use App\Models\BookLanguage;
 use App\Models\BooksType;
+use App\Models\BookTakenWithoutPermission;
 use App\Models\BookText;
 use App\Models\BookTextType;
 use App\Models\Debtor;
@@ -399,6 +400,93 @@ class ApiController extends Controller
             'message' => 'saved',
             'data' => "Qarzdorlik yo'q"
         ], 400);
+
+    }
+
+    public function acceptByRfid(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'rfid_tag_id' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed.',
+                'errors'  => $validator->errors()
+            ], 422);
+        }
+
+        $inventar = BookInventar::where('rfid_tag_id','=',$request->get('rfid_tag_id'))->first();
+        if ($inventar==null){
+            return response()->json([
+                'message' => 'Book not found.',
+                'errors'  => "Book not found."
+            ], 404);
+        }
+
+
+        $debtorHas = Debtor::where('book_inventar_id', '=', $inventar->id)->whereNull('returned_time')->first();
+
+        if ($debtorHas != null) {
+            $debtor = Debtor::find($debtorHas->id);
+            $debtor->status = Debtor::$TAKEN;
+            $debtor->returned_time = date("Y-m-d");
+            $debtor->updated_at  = \Carbon\Carbon::now();
+            $debtor->save();
+            \App\Models\BookInventar::changeStatus($debtor->book_inventar_id, BookInventar::$ACTIVE);
+            return response()->json([
+                'message' => 'saved',
+                'data' => "success"
+            ], 200);
+        }
+
+        return response()->json([
+            'message' => 'not saved',
+            'data' => "Kitob berilgani yo'q"
+        ], 200);
+
+    }
+
+
+    public function takenBookWithoutPermission(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'rfid_tag_id' => 'required',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'message' => 'Validation failed.',
+                'errors'  => $validator->errors()
+            ], 422);
+        }
+
+        $inventar = BookInventar::where('rfid_tag_id','=',$request->get('rfid_tag_id'))->where('isActive', '!=', BookInventar::$GIVEN)->first();
+
+        if ($inventar==null){
+            return response()->json([
+                'message' => 'Book not found.',
+                'errors'  => "Book not found."
+            ], 404);
+        }
+
+        $data = [];
+        $data['bar_code'] = $inventar->bar_code;
+        $data['rfid_tag_id'] = $inventar->rfid_tag_id;
+        $data['book_id'] = $inventar->book_id;
+        $data['book_information_id'] = $inventar->book_information_id;
+        $data['book_inventar_id'] = $inventar->id;
+        $data['organization_id'] = $inventar->organization_id;
+        $data['branch_id']  = $inventar->branch_id;
+        $data['deportmetn_id'] = $inventar->deportmetn_id;
+
+        $bookTakenWithoutPermission = BookTakenWithoutPermission::create($data);
+
+        return response()->json([
+            'message' => 'saved',
+            'data' => $bookTakenWithoutPermission
+        ], 200);
+
 
     }
 

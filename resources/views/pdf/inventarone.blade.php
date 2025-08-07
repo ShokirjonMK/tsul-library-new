@@ -54,8 +54,8 @@
 <div class="label">
     @if (env('BAR_CODE_TYPE') === 'QRCODE')
         <div class="qr_code">
-            {!! QrCode::format('svg')->size(95)->generate($bookInventar->bar_code) !!}
-            <div class="barcode-value">{{ $bookInventar->bar_code }}</div>
+            {!! QrCode::format('svg')->size(100)->generate($bookInventar->bar_code) !!}
+            <div class="barcode-value" style="font-size: 20px; font-weight: bold;">{{ $bookInventar->bar_code }}</div>
         </div>
     @else
         <div class="barcode">

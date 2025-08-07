@@ -31,13 +31,13 @@
     </div>
 </li>
 <li
-    class="has-sub {{ \Request::is(app()->getLocale() . '/admin/extra-authors*') || \Request::is(app()->getLocale() . '/admin/depositories*') || \Request::is(app()->getLocale() . '/admin/book-acts*') || \Request::is(app()->getLocale() . '/admin/book*')  || \Request::is(app()->getLocale() . '/admin/whos*') || \Request::is(app()->getLocale() . '/admin/wheres*') ? 'active expand' : '' }}">
+    class="has-sub {{ \Request::is(app()->getLocale() . '/admin/extra-authors*') || \Request::is(app()->getLocale() . '/admin/depositories*') || \Request::is(app()->getLocale() . '/admin/book-taken-without-permissions*') || \Request::is(app()->getLocale() . '/admin/book-acts*') || \Request::is(app()->getLocale() . '/admin/book*')  || \Request::is(app()->getLocale() . '/admin/whos*') || \Request::is(app()->getLocale() . '/admin/wheres*') ? 'active expand' : '' }}">
     <a class="sidenav-item-link" href="javascript:void(0)">
         <i class="mdi mdi-bookshelf"></i>
         <span class="nav-text">{{ __('Cataloging') }}</span> <b class="caret"></b>
     </a>
     <div
-        class="collapse {{ \Request::is(app()->getLocale() . '/admin/extra-authors*') || \Request::is(app()->getLocale() . '/admin/depositories*') || \Request::is(app()->getLocale() . '/admin/book-acts*') || \Request::is(app()->getLocale() . '/admin/book*') || \Request::is(app()->getLocale() . '/admin/whos*') || \Request::is(app()->getLocale() . '/admin/wheres*') ? 'show' : '' }}">
+        class="collapse {{ \Request::is(app()->getLocale() . '/admin/extra-authors*') || \Request::is(app()->getLocale() . '/admin/depositories*') || \Request::is(app()->getLocale() . '/admin/book-taken-without-permissions*') || \Request::is(app()->getLocale() . '/admin/book-acts*') || \Request::is(app()->getLocale() . '/admin/book*') || \Request::is(app()->getLocale() . '/admin/whos*') || \Request::is(app()->getLocale() . '/admin/wheres*') ? 'show' : '' }}">
         <ul class="sub-menu" id="vendors" data-parent="#sidebar-menu">
 
             <li class="{{ \Request::is(app()->getLocale() . '/admin/book-types*') ? 'active' : '' }}">
@@ -116,6 +116,12 @@
             <li class="{{ \Request::is(app()->getLocale() . '/admin/depositories*') ? 'active' : '' }}">
                 <a href="{{ url(app()->getLocale() . '/admin/depositories') }}" class="sidenav-item-link ">
                     <span class="nav-text">{{ __('Depository') }}</span>
+                </a>
+            </li>
+
+            <li class="{{ \Request::is(app()->getLocale() . '/admin/book-taken-without-permissions*') ? 'active' : '' }}">
+                <a href="{{ url(app()->getLocale() . '/admin/book-taken-without-permissions') }}" class="sidenav-item-link ">
+                    <span class="nav-text">{{ __('Book Taken Without Permission') }}</span>
                 </a>
             </li>
 

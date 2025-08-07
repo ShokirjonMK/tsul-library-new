@@ -42,6 +42,8 @@ Route::middleware('basic.custom')->prefix('v1/')->group(function () {
     Route::post('user-books-add-debt', [ApiController::class, 'addBookDebtors'])->name('api.addBookDebtors');
 
     Route::post('user-book-accept', [ApiController::class, 'accept'])->name('api.accept');
+    Route::post('user-book-accept-by-rfid', [ApiController::class, 'acceptByRfid'])->name('api.acceptByRfid');
+    Route::post('taken-book-without-permission', [ApiController::class, 'takenBookWithoutPermission'])->name('api.takenBookWithoutPermission');
 
 
 });
